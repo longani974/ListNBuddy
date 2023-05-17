@@ -1,19 +1,31 @@
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import useSignUp from "../hooks/useSignUp";
 
 type SignUpProps = {
     // props
 };
 
-interface IFormInput {
+export interface SignUpFormInput {
     username: string;
     email: string;
     password: string;
 }
 
 const SignUp: React.FC<SignUpProps> = () => {
-    const { register, handleSubmit } = useForm<IFormInput>();
-    const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+    const { register, handleSubmit, reset } = useForm<SignUpFormInput>();
+    const {
+        mutate: signUp,
+        isLoading,
+        isSuccess,
+        isError,
+        error,
+    } = useSignUp();
+    const onSubmit: SubmitHandler<SignUpFormInput> = (data) => {
+        signUp(data);
+        isSuccess && reset();
+        isError && console.log("error" + error);
+    };
 
     return (
         <form
@@ -38,7 +50,12 @@ const SignUp: React.FC<SignUpProps> = () => {
                 className="input input-bordered w-full max-w-xs"
                 {...register("password")}
             />
-            <button type="submit" className="btn btn-primary">
+            <button
+                type="submit"
+                className={`btn btn-primary ${
+                    isLoading && "loading disabled"
+                } `}
+            >
                 Créer un compte
             </button>
         </form>
