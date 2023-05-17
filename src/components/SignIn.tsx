@@ -12,11 +12,12 @@ export interface signInFormInput {
 }
 
 const SignIn: React.FC<SignInProps> = () => {
-    const {mutate: signIn, isLoading} = useSignIn();
+    const {mutate: signIn, isLoading, isSuccess, isError, error} = useSignIn();
     const { register, handleSubmit, reset } = useForm<signInFormInput>();
     const onSubmit: SubmitHandler<signInFormInput> = (data) => {
         signIn(data);
-        reset()
+        isSuccess && reset()
+        isError && console.log(error)
     };
 
     return (
