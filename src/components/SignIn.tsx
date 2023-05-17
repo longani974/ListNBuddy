@@ -12,12 +12,18 @@ export interface signInFormInput {
 }
 
 const SignIn: React.FC<SignInProps> = () => {
-    const {mutate: signIn, isLoading, isSuccess, isError, error} = useSignIn();
+    const {
+        mutate: signIn,
+        isLoading,
+        isSuccess,
+        isError,
+        error,
+    } = useSignIn();
     const { register, handleSubmit, reset } = useForm<signInFormInput>();
     const onSubmit: SubmitHandler<signInFormInput> = (data) => {
         signIn(data);
-        isSuccess && reset()
-        isError && console.log(error)
+        isSuccess && reset();
+        isError && console.log(error);
     };
 
     return (
@@ -37,7 +43,12 @@ const SignIn: React.FC<SignInProps> = () => {
                 className="input input-bordered w-full max-w-xs"
                 {...register("password")}
             />
-            <button type="submit" className={`btn btn-primary ${isLoading && "loading"}`}>
+            <button
+                type="submit"
+                className={`btn btn-primary ${
+                    isLoading && "loading disabled"
+                } `}
+            >
                 Se connecter
             </button>
         </form>
