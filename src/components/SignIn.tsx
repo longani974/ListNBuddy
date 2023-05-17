@@ -1,18 +1,23 @@
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import useSignIn from "../hooks/useSignIn";
 
 type SignInProps = {
     // props
 };
 
-interface IFormInput {
+export interface signInFormInput {
     email: string;
     password: string;
 }
 
 const SignIn: React.FC<SignInProps> = () => {
-    const { register, handleSubmit } = useForm<IFormInput>();
-    const onSubmit: SubmitHandler<IFormInput> = (data) => console.log(data);
+    const {mutate: signIn, isLoading} = useSignIn();
+    const { register, handleSubmit, reset } = useForm<signInFormInput>();
+    const onSubmit: SubmitHandler<signInFormInput> = (data) => {
+        signIn(data);
+        reset()
+    };
 
     return (
         <form
@@ -31,7 +36,7 @@ const SignIn: React.FC<SignInProps> = () => {
                 className="input input-bordered w-full max-w-xs"
                 {...register("password")}
             />
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className={`btn btn-primary ${isLoading && "loading"}`}>
                 Se connecter
             </button>
         </form>

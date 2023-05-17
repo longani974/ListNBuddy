@@ -1,10 +1,10 @@
 import "./App.css";
 import Navbar from "./components/Navbar";
-import PocketBase from "pocketbase";
 import Auth from "./components/Auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import pb from "./lib/pocketbase";
 
-const pb = new PocketBase("http://127.0.0.1:8090");
+
 
 // Create a client
 const queryClient = new QueryClient()
