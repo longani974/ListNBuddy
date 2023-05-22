@@ -1,14 +1,15 @@
 export interface Lists {
-    articles:       string[];
-    collectionId:   string;
+    articles: string[];
+    collectionId: string;
     collectionName: string;
-    createBy:       string;
-    created:        Date;
-    expand:         ListsExpand;
-    id:             string;
-    name:           string;
-    participants:   string[];
-    updated:        Date;
+    createBy: string;
+    created: Date;
+    expand: ListsExpand;
+    id: string;
+    name: string;
+    participants: string[];
+    updated: Date;
+    modifiedArticle: string;
 }
 
 export interface ListsExpand {
@@ -16,15 +17,15 @@ export interface ListsExpand {
 }
 
 export interface Article {
-    addBy:          string;
-    collectionId:   string;
+    addBy: string;
+    collectionId: string;
     collectionName: string;
-    created:        Date;
-    id:             string;
-    isBuyed:        boolean;
-    isBuyedBy:      string;
-    name:           string;
-    quantity:       string;
-    updated:        Date;
-    expand:         Article[];
+    created: Date;
+    id: string;
+    isBuyed: boolean;
+    isBuyedBy: string;
+    name: string;
+    quantity: string;
+    updated: Date;
+    expand: Article[];
 }
