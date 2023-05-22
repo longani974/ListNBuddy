@@ -3,22 +3,14 @@ import Navbar from "./components/Navbar";
 import Auth from "./components/Auth";
 import { useRecoilValue } from "recoil";
 import { userState } from "./atoms/userAtoms";
-import useGetList from "./hooks/useGetList";
 import Table from "./components/Table";
-import { useEffect } from "react";
+import useGetLastListAndRealTime from "./hooks/useGetLastListAndRealTime";
 
 export default function App() {
     const { isLogin } = useRecoilValue(userState);
+    const { data } = useGetLastListAndRealTime();
 
-    const { data } = useGetList();
-
-    useEffect(() => {
-        console.log("mount");
-
-        return () => {
-            console.log("unmount");
-        };
-    }, []);
+    // console.log(data)
 
     return (
         <>
@@ -28,7 +20,7 @@ export default function App() {
 
             {isLogin && (
                 <div>
-                    <h1>{data?.name}</h1>
+                    {/* <h1>{data?.name}</h1> */}
 
                     <div className="overflow-x-auto w-full">
                         {data && <Table {...data} />}

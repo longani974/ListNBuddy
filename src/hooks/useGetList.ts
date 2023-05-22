@@ -7,7 +7,6 @@ export default function useGetList() {
     const queryClient = useQueryClient();
 
     useEffectOnce(() => {
-        console.log("useEffect");
         // Subscribe to changes only in the specified record
 
         const realTime = async () =>
@@ -40,16 +39,4 @@ export default function useGetList() {
     return { lists: queryResult.data ?? [], ...queryResult };
 }
 
-// export default function useGetList() {
-//     const getList = async () => {
-//         return await pb.collection("lists").getOne<Lists>("fruv4feowetokkn", {
-//             expand: "articles",
-//         });
-//     };
-//     const queryResult = useQuery(["lists"], getList);
 
-//     // Handle the undefined case by giving some "initial data"
-//     // https://github.com/TanStack/query/discussions/1331
-//     // nedgrady answer
-//     return { lists: queryResult.data ?? [], ...queryResult };
-// }

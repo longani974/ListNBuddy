@@ -6,16 +6,14 @@ import pb from "../lib/pocketbase";
 // }
 
 const Table: React.FC<Lists> = (data) => {
-
-
-    const updateIsBuyed = async (id: string, data: boolean) => {
+    const updateIsBuyed = async (id: string, data: boolean, listId: string) => {
         await pb
             .collection("articles")
             .update(id, { isBuyed: data })
             .then(
                 await pb
                     .collection("lists")
-                    .update("fruv4feowetokkn", { modifiedArticle: Date.now() })
+                    .update(listId, { modifiedArticle: Date.now() })
             );
     };
 
@@ -31,33 +29,36 @@ const Table: React.FC<Lists> = (data) => {
             </thead>
             <tbody>
                 {/* rows */}
-                {data?.expand.articles.map((article) => (
-                    <tr key={article.id} className="hover">
-                        <td>
-                            {article.name}
-                            <br />
-                            {/* <span className="badge badge-ghost badge-sm">
+                {data?.expand.articles.map((article) => {
+                    return (
+                        <tr key={article.id} className="hover">
+                            <td>
+                                {article.name}
+                                <br />
+                                {/* <span className="badge badge-ghost badge-sm">
                     Community Outreach Specialist
                 </span> */}
-                        </td>
-                        <td>{article.quantity}</td>
-                        <th>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    className="checkbox"
-                                    checked={article.isBuyed}
-                                    onChange={() => {
-                                        updateIsBuyed(
-                                            article.id,
-                                            !article.isBuyed
-                                        );
-                                    }}
-                                />
-                            </label>
-                        </th>
-                    </tr>
-                ))}
+                            </td>
+                            <td>{article.quantity}</td>
+                            <th>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        className="checkbox"
+                                        checked={article.isBuyed}
+                                        onChange={() => {
+                                            updateIsBuyed(
+                                                article.id,
+                                                !article.isBuyed,
+                                                data.id
+                                            );
+                                        }}
+                                    />
+                                </label>
+                            </th>
+                        </tr>
+                    );
+                })}
             </tbody>
             {/* foot */}
             {/* <tfoot>
