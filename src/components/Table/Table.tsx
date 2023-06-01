@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
     const [articleLeft, setArticleLeft] = useState<number>(0);
+    const [mode, setMode] = useState<"update" | "create">("update");
+
     const updateIsBuyed = async (id: string, data: boolean, listId: string) => {
         await pb
             .collection("articles")
@@ -39,7 +41,9 @@ const Table: React.FC<Lists> = (data) => {
         <div>
             <h1>{data?.name}</h1>
             <progress
-                className={`progress w-56 ${articleLeft === 0 ? 'progress-success' : ''}`}
+                className={`progress w-56 ${
+                    articleLeft === 0 ? "progress-success" : ""
+                }`}
                 value={data?.expand.articles.length - articleLeft}
                 max={data?.expand.articles.length}
             ></progress>
@@ -68,9 +72,10 @@ const Table: React.FC<Lists> = (data) => {
                                     <div className="flex-none">
                                         <label
                                             htmlFor="articleModal"
-                                            onClick={() =>
-                                                setArticleData({ ...article })
-                                            }
+                                            onClick={() => {
+                                                setMode("update");
+                                                setArticleData({ ...article });
+                                            }}
                                             className="btn btn-square btn-ghost w-6 "
                                         >
                                             <svg
@@ -126,7 +131,30 @@ const Table: React.FC<Lists> = (data) => {
         </tr>
     </tfoot> */}
             </table>
-            <ModalToModifieArticle articleData={articleData} listId={data.id} />
+            <label
+                htmlFor="articleModal"
+                onClick={() => {
+                    setMode("create");
+                    setArticleData(null);
+                }}
+                className="btn btn-square "
+            >
+                +
+                {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <g fill="none">
+                        <path
+                            d="M24 16a3.5 3.5 0 1 1 0-7a3.5 3.5 0 0 1 0 7zm0 11.5a3.5 3.5 0 1 1 0-7a3.5 3.5 0 0 1 0 7zm-3.5 8a3.5 3.5 0 1 0 7 0a3.5 3.5 0 0 0-7 0z"
+                            fill="currentColor"
+                        ></path>
+                    </g>
+                </svg> */}
+            </label>
+            <ModalToModifieArticle
+                articleData={articleData}
+                listId={data.id}
+                articlesList={data.articles}
+                mode={mode}
+            />
         </div>
     );
 };

@@ -3,14 +3,19 @@ import { Article } from "../../types/dbPocketbasetypes";
 import pb from "../../lib/pocketbase";
 import { useMutation } from "@tanstack/react-query";
 
-// type ModalToModifieArticleProps = {
-//     // props here
-// };
-
-const ModalToModifieArticle: React.FC<{
+type ModalToModifieArticleProps = {
     articleData: Article | null;
     listId: string;
-}> = ({ articleData, listId }) => {
+    mode: "update" | "create";
+    articlesList: string[];
+};
+
+const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
+    articleData,
+    listId,
+    mode,
+    articlesList,
+}) => {
     const [articleName, setArticleName] = React.useState<string>(
         articleData?.name || ""
     );
@@ -27,24 +32,56 @@ const ModalToModifieArticle: React.FC<{
         setArticleId(articleData?.id || "");
     }, [articleData]);
 
-    const updateArticle = async () =>
-        // id: string,
-        // data: { name: string; quantity: string },
-        // listId: string
-        {
-            await pb
-                .collection("articles")
-                .update(articleId, {
-                    name: articleName,
-                    quantity: articleQuantity,
-                })
-                .then(
-                    await pb
-                        .collection("lists")
-                        .update(listId, { modifiedArticle: Date.now() })
-                );
-        };
-        const mutateArticle = useMutation(updateArticle);
+    const updateArticle = async () => {
+        await pb
+            .collection("articles")
+            .update(articleId, {
+                name: articleName,
+                quantity: articleQuantity,
+            })
+            .then(
+                await pb
+                    .collection("lists")
+                    .update(listId, { modifiedArticle: Date.now() })
+            );
+    };
+    const deleteArticle = async () => {
+        await pb
+            .collection("articles")
+            .delete(articleId)
+            .then(
+                await pb
+                    .collection("lists")
+                    .update(listId, {
+                        modifiedArticle: Date.now(),
+                        articles: articlesList.filter(
+                            (article) => article !== articleId
+                        ),
+                    })
+            );
+    };
+
+    const addNewArticle = async () => {
+        await pb
+            .collection("articles")
+            .create({
+                name: articleName,
+                quantity: articleQuantity,
+                isBuyed: false,
+                addBy: "6p39jij1dx51q5b",
+                isBuyedBy: "",
+            })
+            .then(
+                async (res) =>
+                    await pb.collection("lists").update(listId, {
+                        modifiedArticle: Date.now(),
+                        articles: [...articlesList, res.id],
+                    })
+            );
+    };
+
+    const mutateArticle = useMutation(updateArticle);
+    const mutateDeleteArticle = useMutation(deleteArticle);
 
     return (
         <>
@@ -85,22 +122,37 @@ const ModalToModifieArticle: React.FC<{
                                     setArticleQuantity(e.target.value)
                                 }
                             />
-                            <label
-                                htmlFor="articleModal"
-                                className="btn btn-primary mt-4"
-                                onClick={() => mutateArticle.mutate()}
-                            >
-                                Modifier
-                            </label>
                         </form>
-                        <div className="divider"></div>
-                        <label
-                            htmlFor="articleModal"
-                            className="btn btn-primary mt-4 w-full"
-                            onClick={() => mutateArticle.mutate()}
-                        >
-                            Supprimer
-                        </label>
+                        {mode === "update" && (
+                            <>
+                                <label
+                                    htmlFor="articleModal"
+                                    className="btn btn-primary mt-4"
+                                    onClick={() => mutateArticle.mutate()}
+                                >
+                                    Modifier
+                                </label>
+                                <div className="divider"></div>
+                                <label
+                                    htmlFor="articleModal"
+                                    className="btn btn-primary mt-4 w-full"
+                                    onClick={() => mutateDeleteArticle.mutate()}
+                                >
+                                    Supprimer
+                                </label>
+                            </>
+                        )}
+                        {mode === "create" && (
+                            <>
+                                <label
+                                    htmlFor="articleModal"
+                                    className="btn btn-primary mt-4"
+                                    onClick={() => addNewArticle()}
+                                >
+                                    Ajouter
+                                </label>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
