@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Auth from "./components/Auth";
 import { useRecoilValue } from "recoil";
 import { userState } from "./atoms/userAtoms";
-import Table from "./components/Table";
+import Table from "./components/Table/Table";
 import useGetLastListAndRealTime from "./hooks/useGetLastListAndRealTime";
 
 export default function App() {
@@ -20,7 +20,7 @@ export default function App() {
 
             {isLogin && (
                 <div>
-                    {/* <h1>{data?.name}</h1> */}
+                    
 
                     <div className="overflow-x-auto w-full">
                         {data && <Table {...data} />}
