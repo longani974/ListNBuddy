@@ -127,7 +127,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                             <>
                                 <label
                                     htmlFor="articleModal"
-                                    className="btn btn-primary mt-4"
+                                    className="btn btn-primary mt-4 w-full"
                                     onClick={() => mutateArticle.mutate()}
                                 >
                                     Modifier
@@ -146,7 +146,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                             <>
                                 <label
                                     htmlFor="articleModal"
-                                    className="btn btn-primary mt-4"
+                                    className="btn btn-primary mt-4 w-full"
                                     onClick={() => addNewArticle()}
                                 >
                                     Ajouter
