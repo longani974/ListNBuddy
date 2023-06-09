@@ -31,13 +31,23 @@ export default function useGetLastListAndRealTime() {
             expand: "articles",
         });
         const latestItem = listItems.items[0];
-        setListId(latestItem.id);
+        if (latestItem) {
+            setListId(latestItem.id);
+            return latestItem;
+          } else {
+            return null;
+          }
+        // setListId(latestItem.id);
         // const latestItemId = latestItem.id;
         // const lastModifiedItem = await pb.collection('lists').get(latestItemId);
-        return latestItem;
+        // return latestItem;
     };
 
     const queryResult = useQuery([listId], getLastList);
+
+    // if (queryResult.isLoading) {
+    //     return { lists: [], ...queryResult };
+    //   }
 
     // Handle the undefined case by giving some "initial data"
     // https://github.com/TanStack/query/discussions/1331

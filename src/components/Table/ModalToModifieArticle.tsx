@@ -68,7 +68,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                 name: articleName,
                 quantity: articleQuantity,
                 isBuyed: false,
-                addBy: "6p39jij1dx51q5b",
+                addBy: "22lmlf6iuk6gtex",
                 isBuyedBy: "",
             })
             .then(

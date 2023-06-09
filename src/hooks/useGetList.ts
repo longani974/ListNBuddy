@@ -12,9 +12,9 @@ export default function useGetList() {
         const realTime = async () =>
             await pb
                 .collection("lists")
-                .subscribe("fruv4feowetokkn", function () {
+                .subscribe("f4gark15jx0vwuc", function () {
                     getList().then((e) => {
-                        queryClient.setQueryData(["listsfruv4feowetokkn"], e);
+                        queryClient.setQueryData(["listsf4gark15jx0vwuc"], e);
                     });
                 });
 
@@ -22,16 +22,16 @@ export default function useGetList() {
 
         return () => {
             console.log("destroy");
-            pb.collection("lists").unsubscribe("fruv4feowetokkn");
+            pb.collection("lists").unsubscribe("f4gark15jx0vwuc");
         }; // remove all 'RECORD_ID' subscriptions
     });
 
     const getList = async () => {
-        return await pb.collection("lists").getOne<Lists>("fruv4feowetokkn", {
+        return await pb.collection("lists").getOne<Lists>("f4gark15jx0vwuc", {
             expand: "articles",
         });
     };
-    const queryResult = useQuery(["listsfruv4feowetokkn"], getList);
+    const queryResult = useQuery(["listsf4gark15jx0vwuc"], getList);
 
     // Handle the undefined case by giving some "initial data"
     // https://github.com/TanStack/query/discussions/1331
