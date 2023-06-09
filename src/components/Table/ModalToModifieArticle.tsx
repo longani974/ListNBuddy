@@ -35,18 +35,18 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         setArticleId(articleData?.id || "");
     }, [articleData]);
 
-    const mutateArticle = useArticleModifier(
+    const articleModifier = useArticleModifier(
         { name: articleName, quantity: articleQuantity, id: articleId },
         listId
     );
 
-    const mutateDeleteArticle = useArticleDeleter(
+    const articleDeleter = useArticleDeleter(
         articleId,
         listId,
         articlesList
     );
 
-    const mutateAddNewArticle = useNewArticleAdder({
+    const newArticleAdder = useNewArticleAdder({
         name: articleName,
         quantity: articleQuantity,
         isBuyed: false,
@@ -54,14 +54,14 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     },listId,articlesList);
 
     const handleModifieArticle = () => {
-        mutateArticle.mutateAsync();
+        articleModifier.mutateAsync();
     };
 
     const handleDeleteArticle = () => {
-        mutateDeleteArticle.mutateAsync();
+        articleDeleter.mutateAsync();
     };
     const handleAddNewArticle = () => {
-        mutateAddNewArticle.mutateAsync();
+        newArticleAdder.mutateAsync();
     };
 
     return (
