@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Article } from "../../types/dbPocketbasetypes";
-import pb from "../../lib/pocketbase";
-import { useMutation } from "@tanstack/react-query";
+import { useRecoilValue } from "recoil";
+import { userState } from "../../atoms/userAtoms";
+import { useArticleModifier } from "../../hooks/useArticleModifier";
+import { useArticleDeleter } from "../../hooks/useArticleDeleter";
+import { useNewArticleAdder } from "../../hooks/useNewArticleAdder";
 
 type ModalToModifieArticleProps = {
     articleData: Article | null;
@@ -16,15 +19,15 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     mode,
     articlesList,
 }) => {
-    const [articleName, setArticleName] = React.useState<string>(
+    const [articleName, setArticleName] = useState<string>(
         articleData?.name || ""
     );
-    const [articleQuantity, setArticleQuantity] = React.useState<string>(
+    const [articleQuantity, setArticleQuantity] = useState<string>(
         articleData?.quantity || ""
     );
-    const [articleId, setArticleId] = React.useState<string>(
-        articleData?.id || ""
-    );
+    const [articleId, setArticleId] = useState<string>(articleData?.id || "");
+
+    const { userId } = useRecoilValue(userState);
 
     useEffect(() => {
         setArticleName(articleData?.name || "");
@@ -32,56 +35,34 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         setArticleId(articleData?.id || "");
     }, [articleData]);
 
-    const updateArticle = async () => {
-        await pb
-            .collection("articles")
-            .update(articleId, {
-                name: articleName,
-                quantity: articleQuantity,
-            })
-            .then(
-                await pb
-                    .collection("lists")
-                    .update(listId, { modifiedArticle: Date.now() })
-            );
-    };
-    const deleteArticle = async () => {
-        await pb
-            .collection("articles")
-            .delete(articleId)
-            .then(
-                await pb
-                    .collection("lists")
-                    .update(listId, {
-                        modifiedArticle: Date.now(),
-                        articles: articlesList.filter(
-                            (article) => article !== articleId
-                        ),
-                    })
-            );
+    const mutateArticle = useArticleModifier(
+        { name: articleName, quantity: articleQuantity, id: articleId },
+        listId
+    );
+
+    const mutateDeleteArticle = useArticleDeleter(
+        articleId,
+        listId,
+        articlesList
+    );
+
+    const mutateAddNewArticle = useNewArticleAdder({
+        name: articleName,
+        quantity: articleQuantity,
+        isBuyed: false,
+        addBy: userId,
+    },listId,articlesList);
+
+    const handleModifieArticle = () => {
+        mutateArticle.mutateAsync();
     };
 
-    const addNewArticle = async () => {
-        await pb
-            .collection("articles")
-            .create({
-                name: articleName,
-                quantity: articleQuantity,
-                isBuyed: false,
-                addBy: "22lmlf6iuk6gtex",
-                isBuyedBy: "",
-            })
-            .then(
-                async (res) =>
-                    await pb.collection("lists").update(listId, {
-                        modifiedArticle: Date.now(),
-                        articles: [...articlesList, res.id],
-                    })
-            );
+    const handleDeleteArticle = () => {
+        mutateDeleteArticle.mutateAsync();
     };
-
-    const mutateArticle = useMutation(updateArticle);
-    const mutateDeleteArticle = useMutation(deleteArticle);
+    const handleAddNewArticle = () => {
+        mutateAddNewArticle.mutateAsync();
+    };
 
     return (
         <>
@@ -128,7 +109,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 <label
                                     htmlFor="articleModal"
                                     className="btn btn-primary mt-4 w-full"
-                                    onClick={() => mutateArticle.mutate()}
+                                    onClick={handleModifieArticle}
                                 >
                                     Modifier
                                 </label>
@@ -136,7 +117,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 <label
                                     htmlFor="articleModal"
                                     className="btn btn-primary mt-4 w-full"
-                                    onClick={() => mutateDeleteArticle.mutate()}
+                                    onClick={handleDeleteArticle}
                                 >
                                     Supprimer
                                 </label>
@@ -147,7 +128,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 <label
                                     htmlFor="articleModal"
                                     className="btn btn-primary mt-4 w-full"
-                                    onClick={() => addNewArticle()}
+                                    onClick={handleAddNewArticle}
                                 >
                                     Ajouter
                                 </label>
