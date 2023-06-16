@@ -6,6 +6,7 @@ export interface Lists {
     created: Date;
     expand: ListsExpand;
     id: string;
+    invited: string[];
     name: string;
     participants: string[];
     updated: Date;

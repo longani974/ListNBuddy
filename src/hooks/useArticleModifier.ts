@@ -9,15 +9,16 @@ import { useListChangedSignaler } from "./useListChangedSignaler";
 // };
 interface Article {
     id: string;
-    name: string;
-    quantity: string;
+    name?: string;
+    quantity?: string;
+    isBuyed?: boolean;
+    isBuyedBy?: string;
 }
 
 export const useArticleModifier = (article: Article, listId: string) => {
     const updateArticle = async () => {
         return await pb.collection("articles").update(article.id, {
-            name: article.name,
-            quantity: article.quantity,
+            ...article,
         });
     };
 
