@@ -6,6 +6,7 @@ import { userState } from "./atoms/userAtoms";
 import Table from "./components/Table/Table";
 import useGetLastListAndRealTime from "./hooks/useGetLastListAndRealTime";
 import pb from "./lib/pocketbase";
+import Drawer from "./components/Drawer";
 
 export default function App() {
     const { isLogin, userId } = useRecoilValue(userState);
@@ -14,26 +15,24 @@ export default function App() {
     // console.log(data)
 
     const addNewArticle = async () => {
-       const recordArticle = await pb
-            .collection("articles")
-            .create({
-                name: "lait",
-                quantity: "1l",
-                isBuyed: false,
-                addBy: userId,
-                isBuyedBy: "",
-            })
-            // .then(
-            //     async (res) =>
-            //         await pb.collection("lists").update(listId, {
-            //             modifiedArticle: Date.now(),
-            //             articles: [...articlesList, res.id],
-            //         })
-            // );
-            return recordArticle
+        const recordArticle = await pb.collection("articles").create({
+            name: "lait",
+            quantity: "1l",
+            isBuyed: false,
+            addBy: userId,
+            isBuyedBy: "",
+        });
+        // .then(
+        //     async (res) =>
+        //         await pb.collection("lists").update(listId, {
+        //             modifiedArticle: Date.now(),
+        //             articles: [...articlesList, res.id],
+        //         })
+        // );
+        return recordArticle;
     };
 
-    const createList = async (articleId:string) => {
+    const createList = async (articleId: string) => {
         console.log("createFirstList");
         // example create data
         const data = {
@@ -45,19 +44,20 @@ export default function App() {
         };
 
         const recordList = await pb.collection("lists").create(data);
-        return recordList
+        return recordList;
         // await addNewArticle(recordList.id);
     };
 
     const createFirstList = async () => {
         console.log("createFirstList");
-        const article = await addNewArticle()
-        await createList(article.id)
-    }
+        const article = await addNewArticle();
+        await createList(article.id);
+    };
 
     return (
         <>
             <Navbar />
+            <Drawer />
             {/* <h1>Logged In: {isLogin.toString()}</h1> */}
             {!isLogin && <Auth />}
 
@@ -68,12 +68,12 @@ export default function App() {
                             <Table {...data} />
                         ) : (
                             <label
-                            htmlFor="articleModal"
-                            onClick={() => {
-                                createFirstList();
-                            }}
-                            className="btn"
-                        >
+                                htmlFor="articleModal"
+                                onClick={() => {
+                                    createFirstList();
+                                }}
+                                className="btn"
+                            >
                                 Créer votre première liste
                             </label>
                         )}

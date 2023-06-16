@@ -8,11 +8,14 @@ type NavbarProps = {
 
 const Navbar: React.FC<NavbarProps> = () => {
     const logout = useLogout();
-    const {isLogin} = useRecoilValue(userState);
+    const { isLogin } = useRecoilValue(userState);
     return (
         <div className="navbar bg-base-100">
             <div className="flex-none">
-                <button className="btn btn-square btn-ghost">
+                <label
+                    htmlFor="my-drawer-2"
+                    className="btn btn-square btn-ghost"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -26,17 +29,14 @@ const Navbar: React.FC<NavbarProps> = () => {
                             d="M4 6h16M4 12h16M4 18h16"
                         ></path>
                     </svg>
-                </button>
+                </label>
             </div>
             <div className="flex-1">
                 <a className="btn btn-ghost normal-case text-xl">ListMate</a>
             </div>
             <div className="flex-none">
                 {isLogin && (
-                    <button
-                        className="btn btn-ghost"
-                        onClick={logout}
-                    >
+                    <button className="btn btn-ghost" onClick={logout}>
                         Se déconnecter
                     </button>
                 )}
