@@ -57,10 +57,10 @@ export default function App() {
     return (
         <>
             <Navbar />
-            <Drawer />
+            
             {/* <h1>Logged In: {isLogin.toString()}</h1> */}
             {!isLogin && <Auth />}
-
+            <Drawer>
             {isLogin && (
                 <div>
                     <div className="overflow-x-auto w-full">
@@ -80,6 +80,7 @@ export default function App() {
                     </div>
                 </div>
             )}
+            </Drawer>
         </>
     );
 }
