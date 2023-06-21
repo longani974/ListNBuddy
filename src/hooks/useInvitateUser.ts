@@ -19,39 +19,53 @@ interface List {
 export const useInvitateUser = (list: List) => {
     const { userId } = useRecoilValue(userState);
 
+    const createInvitation = async ( listId:string, invitateId:string ) => {
+        const data = {
+            "user": invitateId,
+            "list": listId,
+            "by": userId
+        };
+        {
+            try {
+                await pb.collection('invitations').create(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    };
+
     const updateList = async () => {
-        const record = await pb.collection('users').getList(1, 20, {
-            filter: `email = "${list.email}"`
-        })
+        const record = await pb.collection("users").getList(1, 20, {
+            filter: `email = "${list.email}"`,
+        });
 
         if (record.items.length === 0) {
-            return console.log("Pas d'utilisateur avec cette email")
+            return console.log("Pas d'utilisateur avec cette email");
         }
 
         if (list.invited.includes(record.items[0].id)) {
-            return console.log("Utilisateur déjà invité")
+            return console.log("Utilisateur déjà invité");
         }
 
         if (record.items[0].id === userId) {
-            return console.log("Vous ne pouvez pas vous inviter vous même")
+            return console.log("Vous ne pouvez pas vous inviter vous même");
         }
 
         if (list.participants.includes(record.items[0].id)) {
-            return console.log("Utilisateur déjà dans la liste")
+            return console.log("Utilisateur déjà dans la liste");
         }
-            
-        return await pb.collection("lists").update(list.id, {
-            ...list, invited: [...list.invited, record.items[0].id]
-        });
-    };
 
-    // const signalListChanged = useListChangedSignaler(listId);
+        return await pb.collection("lists").update(list.id, {
+            ...list,
+            invited: [...list.invited, record.items[0].id],
+        }).then(() => createInvitation(list.id, record.items[0].id ));
+    }
 
     const mutateList = useMutation(updateList, {
         onSuccess: () => {
             console.log("updateList");
-            // signalListChanged();
         },
+
         onError: (e) => {
             console.log("error");
             console.log(e);

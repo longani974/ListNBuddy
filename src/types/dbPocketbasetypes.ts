@@ -1,16 +1,18 @@
-export interface Lists {
+import { Record } from "pocketbase";
+
+export interface Lists extends Record {
     articles: string[];
-    collectionId: string;
-    collectionName: string;
-    createBy: string;
-    created: Date;
-    expand: ListsExpand;
-    id: string;
+    // collectionId: string;
+    // collectionName: string;
+    // createBy: string;
+    // created: Date;
+    // expand: ListsExpand;
+    // id: string;
     invited: string[];
     name: string;
     participants: string[];
-    updated: Date;
-    modifiedArticle: string;
+    // updated: Date;
+    // modifiedArticle: string;
 }
 
 export interface ListsExpand {

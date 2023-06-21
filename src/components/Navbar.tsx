@@ -1,14 +1,25 @@
 import { useRecoilValue } from "recoil";
 import useLogout from "../hooks/useLogout";
 import { userState } from "../atoms/userAtoms";
+import { invitationState } from "../atoms/invitationAtoms";
+import { useEffect, useState } from "react";
 
 type NavbarProps = {
     // props here
 };
 
 const Navbar: React.FC<NavbarProps> = () => {
+    const [notifications, setNotifications] = useState<number>(0);
     const logout = useLogout();
     const { isLogin } = useRecoilValue(userState);
+    const { invitations } = useRecoilValue(invitationState);
+
+    useEffect(() => {
+        setNotifications(invitations?.length);
+    }
+    , [invitations]);
+    
+
     return (
         <div className="navbar bg-base-100">
             <div className="flex-none">
@@ -16,19 +27,26 @@ const Navbar: React.FC<NavbarProps> = () => {
                     htmlFor="my-drawer-2"
                     className="btn btn-square btn-ghost"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        className="inline-block w-5 h-5 stroke-current"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M4 6h16M4 12h16M4 18h16"
-                        ></path>
-                    </svg>
+                    <div className="indicator ">
+                        {notifications > 0 && (
+                            <span className="indicator-item text-gray-400">
+                                {notifications}
+                            </span>
+                        )}
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            className="inline-block w-5 h-5 stroke-current"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            ></path>
+                        </svg>
+                    </div>
                 </label>
             </div>
             <div className="flex-1">

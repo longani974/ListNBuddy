@@ -7,6 +7,7 @@ import Table from "./components/Table/Table";
 import useGetLastListAndRealTime from "./hooks/useGetLastListAndRealTime";
 import pb from "./lib/pocketbase";
 import Drawer from "./components/Drawer";
+import ModalMyInvitations from "./components/Table/ModalMyInvitations";
 
 export default function App() {
     const { isLogin, userId } = useRecoilValue(userState);
@@ -57,29 +58,32 @@ export default function App() {
     return (
         <>
             <Navbar />
-            
+
             {/* <h1>Logged In: {isLogin.toString()}</h1> */}
             {!isLogin && <Auth />}
             <Drawer>
-            {isLogin && (
-                <div>
-                    <div className="overflow-x-auto w-full">
-                        {data ? (
-                            <Table {...data} />
-                        ) : (
-                            <label
-                                htmlFor="articleModal"
-                                onClick={() => {
-                                    createFirstList();
-                                }}
-                                className="btn"
-                            >
-                                Créer votre première liste
-                            </label>
-                        )}
+                {isLogin && (
+                    <div>
+                        <div className="overflow-x-auto w-full">
+                            {data ? (
+                                <Table {...data} />
+                            ) : (
+                                <label
+                                    htmlFor="articleModal"
+                                    onClick={() => {
+                                        createFirstList();
+                                    }}
+                                    className="btn"
+                                >
+                                    Créer votre première liste
+                                </label>
+                            )}
+                        </div>
+                        <ModalMyInvitations
+
+                        />
                     </div>
-                </div>
-            )}
+                )}
             </Drawer>
         </>
     );
