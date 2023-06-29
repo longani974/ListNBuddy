@@ -18,7 +18,7 @@ const Table: React.FC<Lists> = (data) => {
     const [mode, setMode] = useState<"update" | "create">("update");
 
     const { userId } = useRecoilValue(userState);
-
+// console.log("data", data)
     const articleModifier = useArticleModifier(
         {
             id: articleData?.id || "",
@@ -54,8 +54,8 @@ const Table: React.FC<Lists> = (data) => {
                         className={`progress w-56 ${
                             articleLeft === 0 ? "progress-success" : ""
                         }`}
-                        value={data?.expand.articles.length - articleLeft}
-                        max={data?.expand.articles.length}
+                        value={data?.expand.articles?.length - articleLeft}
+                        max={data?.expand.articles?.length}
                     ></progress>
                 )}
                 <div className="w-full absolute z-10 top-0 flex justify-end">
@@ -102,7 +102,7 @@ const Table: React.FC<Lists> = (data) => {
                     <tbody>
                         {/* rows */}
                         {!!data.articles.length &&
-                            data?.expand.articles.map((article) => {
+                            data?.expand.articles?.map((article) => {
                                 return (
                                     <tr key={article.id} className="hover">
                                         <th className="w-0">

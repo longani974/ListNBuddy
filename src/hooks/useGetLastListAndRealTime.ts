@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
-import { Lists } from "../types/dbPocketbasetypes";
+// import { Lists } from "../types/dbPocketbasetypes";
 import { useEffect, useState } from "react";
 
 export default function useGetLastListAndRealTime() {
@@ -20,27 +20,47 @@ export default function useGetLastListAndRealTime() {
         };
 
         listId.length && realTime();
-
+        listId.length && console.log("realTime")
         return () => {
             pb.collection("lists").unsubscribe(listId);
         }; // remove all 'RECORD_ID' subscriptions
     }, [queryClient, listId]);
 
     const getLastList = async () => {
-        const listItems = await pb.collection("lists").getList<Lists>(1, 1, {
-            expand: "articles",
+        // const listItems = await pb.collection("lists").getList<Lists>(1, 1, {
+        //     expand: "articles",
+        //     filter: `participants.id = "${pb.authStore.model?.id}"`
+        // });
+        // const latestItem = listItems.items[0];
+        // if (latestItem) {
+        //     setListId(latestItem.id);
+        //     return latestItem;
+        //   } else {
+        //     return null;
+        //   }
+
+        const lastInvitation = await pb.collection("invitations").getList(1, 1, {
+            filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
+            expand: "list.articles",
         });
-        const latestItem = listItems.items[0];
+
+        // const acceptedInvitations = lastInvitation.items.filter(
+            
+        //     (e) => {
+        //         console.log(e)
+        //         console.log(e.status === "accept")
+        //         return e.status === "accept"}
+        // );
+
+        
+        const latestItem = lastInvitation.items[0]?.expand?.list;
         if (latestItem) {
+            console.log("latestItem", latestItem);
             setListId(latestItem.id);
             return latestItem;
-          } else {
+        }   else {
             return null;
-          }
-        // setListId(latestItem.id);
-        // const latestItemId = latestItem.id;
-        // const lastModifiedItem = await pb.collection('lists').get(latestItemId);
-        // return latestItem;
+        }
     };
 
     const queryResult = useQuery([listId], getLastList);

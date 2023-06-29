@@ -23,7 +23,8 @@ export const useInvitateUser = (list: List) => {
         const data = {
             "user": invitateId,
             "list": listId,
-            "by": userId
+            "by": userId,
+            "status": "waiting",
         };
         {
             try {
@@ -51,14 +52,17 @@ export const useInvitateUser = (list: List) => {
             return console.log("Vous ne pouvez pas vous inviter vous même");
         }
 
+        // TODO: change the way to check if user is already in the list
+        // because particpants in list doesn't exist anymore
         if (list.participants.includes(record.items[0].id)) {
             return console.log("Utilisateur déjà dans la liste");
         }
 
-        return await pb.collection("lists").update(list.id, {
-            ...list,
-            invited: [...list.invited, record.items[0].id],
-        }).then(() => createInvitation(list.id, record.items[0].id ));
+        // return await pb.collection("lists").update(list.id, {
+        //     ...list,
+        //     invited: [...list.invited, record.items[0].id],
+        // }).then(() => createInvitation(list.id, record.items[0].id ));
+        await createInvitation(list.id, record.items[0].id );
     }
 
     const mutateList = useMutation(updateList, {

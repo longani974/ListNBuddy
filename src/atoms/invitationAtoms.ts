@@ -15,8 +15,12 @@ export interface Invitations extends Record {
     user: string;
     list: string;
     by: string;
-    expand: { list: Lists, user: Users, by: Users };
+    status: InvitationStatus;
+    expand: { list: Lists; user: Users; by: Users };
 }
+
+
+export type InvitationStatus = "accept" | "reject" | "block" | "waiting";
 
 export interface InvitationsExpand {
     list: Lists;

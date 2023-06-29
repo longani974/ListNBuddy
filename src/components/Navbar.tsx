@@ -1,8 +1,8 @@
 import { useRecoilValue } from "recoil";
 import useLogout from "../hooks/useLogout";
 import { userState } from "../atoms/userAtoms";
-import { invitationState } from "../atoms/invitationAtoms";
 import { useEffect, useState } from "react";
+import useInvitations from "../hooks/useInvitations";
 
 type NavbarProps = {
     // props here
@@ -12,13 +12,13 @@ const Navbar: React.FC<NavbarProps> = () => {
     const [notifications, setNotifications] = useState<number>(0);
     const logout = useLogout();
     const { isLogin } = useRecoilValue(userState);
-    const { invitations } = useRecoilValue(invitationState);
+
+    const waitingInvitations = useInvitations('waiting');
+
 
     useEffect(() => {
-        setNotifications(invitations?.length);
-    }
-    , [invitations]);
-    
+        setNotifications(waitingInvitations?.length);
+    }, [waitingInvitations?.length]);
 
     return (
         <div className="navbar bg-base-100">

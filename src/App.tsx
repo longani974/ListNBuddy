@@ -1,17 +1,74 @@
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Auth from "./components/Auth";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "./atoms/userAtoms";
 import Table from "./components/Table/Table";
 import useGetLastListAndRealTime from "./hooks/useGetLastListAndRealTime";
 import pb from "./lib/pocketbase";
 import Drawer from "./components/Drawer";
 import ModalMyInvitations from "./components/Table/ModalMyInvitations";
+import { Invitations, invitationState } from "./atoms/invitationAtoms";
+import { useEffect, useState } from "react";
+import useInvitations from "./hooks/useInvitations";
+import { set } from "react-hook-form";
 
 export default function App() {
+    const [listId, setListId] = useState<string>("");
     const { isLogin, userId } = useRecoilValue(userState);
-    const { data } = useGetLastListAndRealTime();
+    const acceptInvitations = useInvitations("accept");
+    const setInvitations = useSetRecoilState(invitationState);
+    const { invitations } = useRecoilValue(invitationState);
+
+
+    useEffect(() => {
+        setListId(acceptInvitations[0]?.list);
+    }, [acceptInvitations]);
+
+    // subscribe realtime pocketbase lists
+    useEffect(() => {
+        // Subscribe to changes only in the specified record
+        const realTime = async () => {
+            await pb.collection("lists").subscribe(listId, async function  (changes) {
+                console.log(changes)
+                // get last invitation
+                const lastInvitation = await pb
+                    .collection("invitations")
+                    .getList(1, 1, {
+                        filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
+                        expand: "user,list.articles,by",
+                    });
+                
+                // replace invitation matching with listId by lastInvitation in invitationState
+                const index = invitations.findIndex(
+                    (invitation) => invitation.list === listId
+                );
+                const newInvitations = [...invitations];
+                newInvitations[index] = lastInvitation.items[0] as Invitations;
+                setInvitations({ invitations: newInvitations });
+
+            });
+        };
+        listId?.length && realTime();
+        return () => {
+            pb.collection("lists").unsubscribe(listId);
+        }; // remove all 'RECORD_ID' subscriptions
+    }, [invitations, listId, setInvitations]);
+
+    // const { data } = useGetLastListAndRealTime();
+    // const { invitations } = useRecoilValue(invitationState);
+
+    // const [acceptInvitations, setAcceptInvitations] = useState<Invitations[]>(
+    //     []
+    // );
+    // useEffect(() => {
+    //     console.log("invitaion filter", invitations);
+    //     setAcceptInvitations([
+    //         ...invitations.filter(
+    //             (invitation) => invitation.status === "accept"
+    //         ),
+    //     ]);
+    // }, [ invitations]);
 
     // console.log(data)
 
@@ -34,7 +91,6 @@ export default function App() {
     };
 
     const createList = async (articleId: string) => {
-        console.log("createFirstList");
         // example create data
         const data = {
             name: "testali",
@@ -50,7 +106,6 @@ export default function App() {
     };
 
     const createFirstList = async () => {
-        console.log("createFirstList");
         const article = await addNewArticle();
         await createList(article.id);
     };
@@ -65,8 +120,8 @@ export default function App() {
                 {isLogin && (
                     <div>
                         <div className="overflow-x-auto w-full">
-                            {data ? (
-                                <Table {...data} />
+                            {acceptInvitations.length ? (
+                                <Table {...acceptInvitations[0].expand.list} />
                             ) : (
                                 <label
                                     htmlFor="articleModal"
@@ -79,9 +134,7 @@ export default function App() {
                                 </label>
                             )}
                         </div>
-                        <ModalMyInvitations
-
-                        />
+                        <ModalMyInvitations />
                     </div>
                 )}
             </Drawer>

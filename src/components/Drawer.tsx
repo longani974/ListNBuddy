@@ -4,6 +4,8 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import pb from "../lib/pocketbase";
 import { Invitations, invitationState } from "../atoms/invitationAtoms";
 import { useEffectOnce } from "../hooks/useEffectOnce";
+import useInvitations from "../hooks/useInvitations";
+
 
 type DrawerProps = {
     children: React.ReactNode;
@@ -18,8 +20,10 @@ const clickModal = (modalId: string) => {
 
 const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const { userId, isLogin } = useRecoilValue(userState);
-    const { invitations } = useRecoilValue(invitationState);
     const setInvitations = useSetRecoilState(invitationState);
+
+    const waitingInvitations = useInvitations('waiting');
+
 
     const getInvitedLists = async () => {
         {
@@ -29,10 +33,10 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                     .getFullList(200, {
                         sort: "created",
                         filter: `user.id = "${userId}"`,
-                        expand: "user, list, by",
+                        expand: "user, list.articles, by",
+                        $autoCancel: false, // TODO: Try to find a way to not autoCancel (we make 2 requests instead of 1 the other request is in useGetLastListAndRealTime.tsx)
                     });
-                setInvitations({ invitations: resultList as Invitations[]  });
-                console.log(resultList)
+                setInvitations({ invitations: resultList as Invitations[] });
             } catch (e) {
                 console.log(e);
             }
@@ -81,9 +85,9 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                     {/* <!-- Sidebar content here --> */}
                     <li>
                         <div className="indicator">
-                            {invitations?.length > 0 && (
+                            {waitingInvitations?.length > 0 && (
                                 <span className="indicator-item indicator-middle text-gray-400 h-6">
-                                    {invitations?.length}
+                                    {waitingInvitations?.length}
                                 </span>
                             )}
 

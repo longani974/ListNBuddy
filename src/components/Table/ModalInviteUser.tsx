@@ -20,7 +20,6 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({
     const listModifier = useInvitateUser({ id: listId, invited: invitedList, email: email, participants: participants });
 
     const handleInviteUser = () => {
-        console.log("articlesList" + invitedList);
         listModifier.mutateAsync();
     };
 
