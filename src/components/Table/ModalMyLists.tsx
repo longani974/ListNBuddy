@@ -4,10 +4,10 @@
 // import { userState } from "../../atoms/userAtoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 // import pb from "../../lib/pocketbase";
-import { invitationState } from "../../atoms/invitationAtoms";
-import pb from "../../lib/pocketbase";
 import useInvitations from "../../hooks/useInvitations";
 import { listToShow } from "../../atoms/listToShow";
+import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
+import pb from "../../lib/pocketbase";
 // import { userState } from "../../atoms/userAtoms";
 
 type ModalMyListsProps = {
@@ -22,14 +22,16 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
 
     const setIndex = useSetRecoilState(listToShow);
 
-    const handleAcceptInvitation = async (listId: string) => {
+    const handleStatusInvitation = async (
+        listId: string,
+        status: InvitationStatus
+    ) => {
         const invitation = invitations.filter(
             (invitation) => invitation.list === listId
         )[0];
-        console.log(invitation);
 
         await pb.collection("invitations").update(invitation.id, {
-            status: "accept",
+            status: status,
         });
     };
 
@@ -47,17 +49,13 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                     >
                         ✕
                     </label>
-                    <h3 className="text-lg font-bold">Mes invitations</h3>
+                    <h3 className="text-lg font-bold">Mes Listes</h3>
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
                             {acceptedInvitations.map((invitation, index) => (
                                 <div
                                     key={invitation.id}
                                     className="flex flex-col mb-2"
-                                    onClick={() => {
-                                        setIndex({ indexListToShow: index });
-                                        console.log(index);
-                                    }}
                                 >
                                     {index > 0 && (
                                         <div className="divider"></div>
@@ -73,14 +71,14 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                                     invitation.expand.by.email}
                                             </span>
                                         </div>
-                                        {/* <div className="btn-group btn-group-horizontal">
+                                        <div className="btn-group btn-group-horizontal">
                                             <button
                                                 className="btn btn-square"
-                                                onClick={() =>
-                                                    handleAcceptInvitation(
-                                                        invitation.list
-                                                    )
-                                                }
+                                                onClick={() => {
+                                                    setIndex({
+                                                        indexListToShow: index,
+                                                    });
+                                                }}
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +94,15 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                                     ></path>
                                                 </svg>
                                             </button>
-                                            <button className="btn btn-square btn-ghost">
+                                            <button
+                                                className="btn btn-square btn-ghost"
+                                                onClick={() =>
+                                                    handleStatusInvitation(
+                                                        invitation.list,
+                                                        "waiting"
+                                                    )
+                                                }
+                                            >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 512 512"
@@ -119,7 +125,7 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                                     ></path>
                                                 </svg>
                                             </button>
-                                        </div> */}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
