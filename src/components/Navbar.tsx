@@ -13,8 +13,7 @@ const Navbar: React.FC<NavbarProps> = () => {
     const logout = useLogout();
     const { isLogin } = useRecoilValue(userState);
 
-    const waitingInvitations = useInvitations('waiting');
-
+    const waitingInvitations = useInvitations("waiting");
 
     useEffect(() => {
         setNotifications(waitingInvitations?.length);
@@ -22,33 +21,35 @@ const Navbar: React.FC<NavbarProps> = () => {
 
     return (
         <div className="navbar bg-base-100">
-            <div className="flex-none">
-                <label
-                    htmlFor="my-drawer-2"
-                    className="btn btn-square btn-ghost"
-                >
-                    <div className="indicator ">
-                        {notifications > 0 && (
-                            <span className="indicator-item text-gray-400">
-                                {notifications}
-                            </span>
-                        )}
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            className="inline-block w-5 h-5 stroke-current"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M4 6h16M4 12h16M4 18h16"
-                            ></path>
-                        </svg>
-                    </div>
-                </label>
-            </div>
+            {isLogin && (
+                <div className="flex-none">
+                    <label
+                        htmlFor="my-drawer-2"
+                        className="btn btn-square btn-ghost"
+                    >
+                        <div className="indicator ">
+                            {notifications > 0 && (
+                                <span className="indicator-item text-gray-400">
+                                    {notifications}
+                                </span>
+                            )}
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                className="inline-block w-5 h-5 stroke-current"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                ></path>
+                            </svg>
+                        </div>
+                    </label>
+                </div>
+            )}
             <div className="flex-1">
                 <a className="btn btn-ghost normal-case text-xl">ListMate</a>
             </div>

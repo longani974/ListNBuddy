@@ -4,16 +4,15 @@ import Auth from "./components/Auth";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "./atoms/userAtoms";
 import Table from "./components/Table/Table";
-import useGetLastListAndRealTime from "./hooks/useGetLastListAndRealTime";
 import pb from "./lib/pocketbase";
 import Drawer from "./components/Drawer";
 import ModalMyInvitations from "./components/Table/ModalMyInvitations";
 import { Invitations, invitationState } from "./atoms/invitationAtoms";
 import { useEffect, useState } from "react";
 import useInvitations from "./hooks/useInvitations";
-import { set } from "react-hook-form";
 import ModalMyLists from "./components/Table/ModalMyLists";
 import { listToShow } from "./atoms/listToShow";
+import ModalForgetPassword from "./components/ModalForgetPasword";
 
 export default function App() {
     const [listId, setListId] = useState<string>("");
@@ -124,6 +123,7 @@ export default function App() {
 
             {/* <h1>Logged In: {isLogin.toString()}</h1> */}
             {!isLogin && <Auth />}
+            {!isLogin && <ModalForgetPassword />}
             <Drawer>
                 {isLogin && (
                     <div>

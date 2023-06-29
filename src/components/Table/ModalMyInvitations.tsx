@@ -26,7 +26,6 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
         const invitation = invitations.filter(
             (invitation) => invitation.list === listId
         )[0];
-        console.log(invitation);
 
         await pb.collection("invitations").update(invitation.id, {
             status: status,

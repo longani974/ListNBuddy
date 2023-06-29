@@ -27,31 +27,41 @@ const SignIn: React.FC<SignInProps> = () => {
     };
 
     return (
-        <form
-            className="flex flex-col w-80 gap-4 m-auto mt-10"
-            onSubmit={handleSubmit(onSubmit)}
-        >
-            <input
-                type="email"
-                placeholder="Adresse e-mail"
-                className="input input-bordered w-full max-w-xs"
-                {...register("email")}
-            />
-            <input
-                type="password"
-                placeholder="Mot de passe"
-                className="input input-bordered w-full max-w-xs"
-                {...register("password")}
-            />
-            <button
-                type="submit"
-                className={`btn btn-primary ${
-                    isLoading && "loading disabled"
-                } `}
+        <>
+            <form
+                className="flex flex-col w-80 gap-4 m-auto mt-10"
+                onSubmit={handleSubmit(onSubmit)}
             >
-                Se connecter
-            </button>
-        </form>
+                <input
+                    type="email"
+                    placeholder="Adresse e-mail"
+                    className="input input-bordered w-full max-w-xs"
+                    {...register("email")}
+                />
+                <input
+                    type="password"
+                    placeholder="Mot de passe"
+                    className="input input-bordered w-full max-w-xs"
+                    {...register("password")}
+                />
+                <button
+                    type="submit"
+                    className={`btn btn-primary ${
+                        isLoading && "loading disabled"
+                    } `}
+                >
+                    Se connecter
+                </button>
+            </form>
+            <div className="mt-8">
+                <label
+                    className="link link-hover"
+                    htmlFor="modalForgetPassword"
+                >
+                    Mot de passe oublié
+                </label>
+            </div>
+        </>
     );
 };
 export default SignIn;
