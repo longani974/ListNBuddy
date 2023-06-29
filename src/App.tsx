@@ -12,6 +12,8 @@ import { Invitations, invitationState } from "./atoms/invitationAtoms";
 import { useEffect, useState } from "react";
 import useInvitations from "./hooks/useInvitations";
 import { set } from "react-hook-form";
+import ModalMyLists from "./components/Table/ModalMyLists";
+import { listToShow } from "./atoms/listToShow";
 
 export default function App() {
     const [listId, setListId] = useState<string>("");
@@ -19,24 +21,30 @@ export default function App() {
     const acceptInvitations = useInvitations("accept");
     const setInvitations = useSetRecoilState(invitationState);
     const { invitations } = useRecoilValue(invitationState);
+    const { indexListToShow } = useRecoilValue(listToShow);
 
 
     useEffect(() => {
-        setListId(acceptInvitations[0]?.list);
-    }, [acceptInvitations]);
+        setListId(acceptInvitations[indexListToShow]?.list);
+    }, [acceptInvitations, indexListToShow]);
+
+    useEffect(() => {
+        console.log("indexListToShow Changed : ", indexListToShow);
+    }, [indexListToShow]);
 
     // subscribe realtime pocketbase lists
     useEffect(() => {
         // Subscribe to changes only in the specified record
         const realTime = async () => {
             await pb.collection("lists").subscribe(listId, async function  (changes) {
-                console.log(changes)
+                console.log("CHANGES : ",changes)
                 // get last invitation
                 const lastInvitation = await pb
                     .collection("invitations")
-                    .getList(1, 1, {
+                    .getList(1, 5, {
                         filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
                         expand: "user,list.articles,by",
+                        sort: "created",
                     });
                 
                 // replace invitation matching with listId by lastInvitation in invitationState
@@ -44,7 +52,7 @@ export default function App() {
                     (invitation) => invitation.list === listId
                 );
                 const newInvitations = [...invitations];
-                newInvitations[index] = lastInvitation.items[0] as Invitations;
+                newInvitations[index] = lastInvitation.items[indexListToShow] as Invitations;
                 setInvitations({ invitations: newInvitations });
 
             });
@@ -53,7 +61,7 @@ export default function App() {
         return () => {
             pb.collection("lists").unsubscribe(listId);
         }; // remove all 'RECORD_ID' subscriptions
-    }, [invitations, listId, setInvitations]);
+    }, [indexListToShow, invitations, listId, setInvitations]);
 
     // const { data } = useGetLastListAndRealTime();
     // const { invitations } = useRecoilValue(invitationState);
@@ -121,7 +129,7 @@ export default function App() {
                     <div>
                         <div className="overflow-x-auto w-full">
                             {acceptInvitations.length ? (
-                                <Table {...acceptInvitations[0].expand.list} />
+                                <Table {...acceptInvitations[indexListToShow].expand.list} />
                             ) : (
                                 <label
                                     htmlFor="articleModal"
@@ -135,6 +143,7 @@ export default function App() {
                             )}
                         </div>
                         <ModalMyInvitations />
+                        <ModalMyLists />
                     </div>
                 )}
             </Drawer>

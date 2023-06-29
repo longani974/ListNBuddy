@@ -2,34 +2,34 @@
 // import { Article } from "../../types/dbPocketbasetypes";
 // import { useInvitateUser } from "../../hooks/useInvitateUser";
 // import { userState } from "../../atoms/userAtoms";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 // import pb from "../../lib/pocketbase";
-import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
+import { invitationState } from "../../atoms/invitationAtoms";
 import pb from "../../lib/pocketbase";
 import useInvitations from "../../hooks/useInvitations";
+import { listToShow } from "../../atoms/listToShow";
 // import { userState } from "../../atoms/userAtoms";
 
-type ModalInviteUserProps = {
+type ModalMyListsProps = {
     //
 };
 
-const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
+const ModalMyLists: React.FC<ModalMyListsProps> = () => {
     // const { userId, isLogin } = useRecoilValue(userState);
     const { invitations } = useRecoilValue(invitationState);
 
-    const waitingInvitations = useInvitations("waiting");
+    const acceptedInvitations = useInvitations("accept");
 
-    const handleStatusInvitation = async (
-        listId: string,
-        status: InvitationStatus
-    ) => {
+    const setIndex = useSetRecoilState(listToShow);
+
+    const handleAcceptInvitation = async (listId: string) => {
         const invitation = invitations.filter(
             (invitation) => invitation.list === listId
         )[0];
         console.log(invitation);
 
         await pb.collection("invitations").update(invitation.id, {
-            status: status,
+            status: "accept",
         });
     };
 
@@ -38,15 +38,11 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
     return (
         <>
             {/* Put this part before </body> tag */}
-            <input
-                type="checkbox"
-                id="myInvitationModal"
-                className="modal-toggle"
-            />
+            <input type="checkbox" id="myListsModal" className="modal-toggle" />
             <div className="modal">
                 <div className="modal-box relative">
                     <label
-                        htmlFor="myInvitationModal"
+                        htmlFor="myListsModal"
                         className="btn btn-sm btn-circle absolute right-2 top-2"
                     >
                         ✕
@@ -54,10 +50,14 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                     <h3 className="text-lg font-bold">Mes invitations</h3>
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
-                            {waitingInvitations.map((invitation, index) => (
+                            {acceptedInvitations.map((invitation, index) => (
                                 <div
                                     key={invitation.id}
                                     className="flex flex-col mb-2"
+                                    onClick={() => {
+                                        setIndex({ indexListToShow: index });
+                                        console.log(index);
+                                    }}
                                 >
                                     {index > 0 && (
                                         <div className="divider"></div>
@@ -73,13 +73,12 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                     invitation.expand.by.email}
                                             </span>
                                         </div>
-                                        <div className="btn-group btn-group-horizontal">
+                                        {/* <div className="btn-group btn-group-horizontal">
                                             <button
                                                 className="btn btn-square"
                                                 onClick={() =>
-                                                    handleStatusInvitation(
-                                                        invitation.list,
-                                                        "accept"
+                                                    handleAcceptInvitation(
+                                                        invitation.list
                                                     )
                                                 }
                                             >
@@ -97,15 +96,7 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                     ></path>
                                                 </svg>
                                             </button>
-                                            <button
-                                                className="btn btn-square btn-ghost"
-                                                onClick={() =>
-                                                    handleStatusInvitation(
-                                                        invitation.list,
-                                                        "reject"
-                                                    )
-                                                }
-                                            >
+                                            <button className="btn btn-square btn-ghost">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 512 512"
@@ -128,7 +119,7 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                     ></path>
                                                 </svg>
                                             </button>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             ))}
@@ -139,4 +130,4 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
         </>
     );
 };
-export default ModalMyInvitations;
+export default ModalMyLists;
