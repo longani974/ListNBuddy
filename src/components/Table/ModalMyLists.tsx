@@ -1,21 +1,14 @@
-// import React, { useEffect } from "react";
-// import { Article } from "../../types/dbPocketbasetypes";
-// import { useInvitateUser } from "../../hooks/useInvitateUser";
-// import { userState } from "../../atoms/userAtoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-// import pb from "../../lib/pocketbase";
 import useInvitations from "../../hooks/useInvitations";
 import { listToShow } from "../../atoms/listToShow";
 import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
 import pb from "../../lib/pocketbase";
-// import { userState } from "../../atoms/userAtoms";
 
 type ModalMyListsProps = {
     //
 };
 
 const ModalMyLists: React.FC<ModalMyListsProps> = () => {
-    // const { userId, isLogin } = useRecoilValue(userState);
     const { invitations } = useRecoilValue(invitationState);
 
     const acceptedInvitations = useInvitations("accept");
@@ -34,8 +27,6 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
             status: status,
         });
     };
-
-    // const listModifier = useInvitateUser({ id: listId, invited: invitedList, email: email, participants: participants });
 
     return (
         <>
@@ -64,11 +55,11 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                     <div className="flex flex-row justify-between text-left">
                                         <div className="flex flex-col">
                                             <span className="text-sm font-bold">
-                                                {invitation.expand.list.name}
+                                                {invitation.expand.list?.name}
                                             </span>
                                             <span className="text-xs">
                                                 {"Envoyé par: " +
-                                                    invitation.expand.by.email}
+                                                    invitation.expand.by?.email}
                                             </span>
                                         </div>
                                         <div className="btn-group btn-group-horizontal">

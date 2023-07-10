@@ -13,7 +13,10 @@ export default function useInvitations(filterStatus: InvitationStatus) {
     const { invitations } = useRecoilValue(invitationState);
 
     useEffect(() => {
-        // console.log("invitations", invitations);
+        if (filterStatus === "accept") {
+            console.log("useInvitations");
+            console.log(invitations);
+        }
         setFilteredInvitations([
             ...invitations.filter(
                 (invitation) => invitation.status === filterStatus

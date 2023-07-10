@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import pb from "../lib/pocketbase";
+import { useClickModal } from "../hooks/useClickModal";
 
 type ModalForgetPasswordProps = {
     // props
@@ -12,19 +13,15 @@ type Stape = "passwordForget" | "newPassword";
 //     password: string;
 // }
 
-// TODO: use hooks for this function
-const clickModal = (modalId: string) => {
-    const modal = document.getElementById(modalId);
-    // Code to open the modal
-    modal?.click();
-};
-
 const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
     const [email, setEmail] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [token, setToken] = useState("");
     const [stape, setStape] = useState<Stape>("passwordForget");
+
+    const { clickModal } = useClickModal();
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

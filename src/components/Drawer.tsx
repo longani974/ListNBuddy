@@ -5,24 +5,19 @@ import pb from "../lib/pocketbase";
 import { Invitations, invitationState } from "../atoms/invitationAtoms";
 import { useEffectOnce } from "../hooks/useEffectOnce";
 import useInvitations from "../hooks/useInvitations";
-
+import { useClickModal } from "../hooks/useClickModal";
 
 type DrawerProps = {
     children: React.ReactNode;
-};
-
-// TODO: Try to find a way to open the modal from the drawer without accessing the DOM
-const clickModal = (modalId: string) => {
-    const modal = document.getElementById(modalId);
-    // Code to open the modal
-    modal?.click();
 };
 
 const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const { userId, isLogin } = useRecoilValue(userState);
     const setInvitations = useSetRecoilState(invitationState);
 
-    const waitingInvitations = useInvitations('waiting');
+    const waitingInvitations = useInvitations("waiting");
+
+    const { clickModal } = useClickModal();
 
 
     const getInvitedLists = async () => {
@@ -33,10 +28,12 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                     .getFullList(200, {
                         sort: "created",
                         filter: `user.id = "${userId}"`,
-                        expand: "user, list.articles, by",
-                        $autoCancel: false, // TODO: Try to find a way to not autoCancel (we make 2 requests instead of 1 the other request is in useGetLastListAndRealTime.tsx)
+                        expand: "user, list, by",
+                        $autoCancel: false, // TODO: I don't know if it's useful
                     });
                 setInvitations({ invitations: resultList as Invitations[] });
+                console.log("drawer")
+                console.log(resultList)
             } catch (e) {
                 console.log(e);
             }
@@ -52,11 +49,14 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
 
     useEffectOnce(() => {
         const realTime = async () => {
+            console.log("subscribe invitations")
             try {
                 await pb.collection("invitations").subscribe("*", function () {
+                    console.log("inside subscribe invitations callback")
                     // laisser un laps de temps avant de recharger les invitations
                     // car il faut attendre que la base de données soit mise à jour
                     setTimeout(() => {
+                        console.log("inside subscribe invitations callback setTimeout")
                         getInvitedLists();
                     }, 1000);
                 });
@@ -103,15 +103,11 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         </div>
                     </li>
                     <li>
-                    <label htmlFor="my-drawer-2">
-                                <a
-                                    onClick={() =>
-                                        clickModal("myListsModal")
-                                    }
-                                >
-                                    Mes Listes
-                                </a>
-                            </label>
+                        <label htmlFor="my-drawer-2">
+                            <a onClick={() => clickModal("myListsModal")}>
+                                Mes Listes
+                            </a>
+                        </label>
                     </li>
                 </ul>
             </div>

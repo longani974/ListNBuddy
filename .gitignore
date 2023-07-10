@@ -26,3 +26,7 @@ dist-ssr
 # PocketBase
 pb_data
 pb_dataFirst
+
+# Fly.io
+fly.toml
+

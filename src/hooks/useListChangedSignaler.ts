@@ -10,7 +10,17 @@ export const useListChangedSignaler = (listId: string) => {
         return await pb.collection("lists").update(listId, data);
     };
 
-    const mutateSignalListChange = useMutation(signalListChange);
+    const mutateSignalListChange = useMutation(signalListChange,{
+        onSuccess: () => {
+            console.log("signal ok")
+        },
+        onError: () => {
+            console.log("error");
+        },
+        onSettled: () => {
+            console.log("sgnaling settled");
+        },
+    });
 
     const handleSignalListChange = (articles?: string[]) => {
         mutateSignalListChange.mutateAsync(articles);

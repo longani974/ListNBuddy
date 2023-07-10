@@ -1,13 +1,8 @@
-// import React, { useEffect } from "react";
-// import { Article } from "../../types/dbPocketbasetypes";
-// import { useInvitateUser } from "../../hooks/useInvitateUser";
-// import { userState } from "../../atoms/userAtoms";
+
 import { useRecoilValue } from "recoil";
-// import pb from "../../lib/pocketbase";
 import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
 import pb from "../../lib/pocketbase";
 import useInvitations from "../../hooks/useInvitations";
-// import { userState } from "../../atoms/userAtoms";
 
 type ModalInviteUserProps = {
     //
@@ -29,11 +24,9 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
 
         await pb.collection("invitations").update(invitation.id, {
             status: status,
-        });
+        })
     };
-
-    // const listModifier = useInvitateUser({ id: listId, invited: invitedList, email: email, participants: participants });
-
+    
     return (
         <>
             {/* Put this part before </body> tag */}
@@ -53,7 +46,7 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                     <h3 className="text-lg font-bold">Mes invitations</h3>
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
-                            {waitingInvitations.map((invitation, index) => (
+                            {waitingInvitations.length && waitingInvitations.map((invitation, index) => (
                                 <div
                                     key={invitation.id}
                                     className="flex flex-col mb-2"
@@ -65,11 +58,11 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                     <div className="flex flex-row justify-between text-left">
                                         <div className="flex flex-col">
                                             <span className="text-sm font-bold">
-                                                {invitation.expand.list.name}
+                                                {invitation.expand.list?.name}
                                             </span>
                                             <span className="text-xs">
                                                 {"Envoyé par: " +
-                                                    invitation.expand.by.email}
+                                                    invitation.expand.by?.email}
                                             </span>
                                         </div>
                                         <div className="btn-group btn-group-horizontal">

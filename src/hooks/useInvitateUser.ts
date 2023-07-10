@@ -2,13 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
 import { userState } from "../atoms/userAtoms";
 import { useRecoilValue } from "recoil";
-// import { useListChangedSignaler } from "./useListChangedSignaler";
-// import { Article } from "../types/dbPocketbasetypes";
 
-// type ArticleModifier = {
-//     article: Article | null;
-//     listId: string;
-// };
 interface List {
     id: string;
     invited: string[];
@@ -58,10 +52,6 @@ export const useInvitateUser = (list: List) => {
             return console.log("Utilisateur déjà dans la liste");
         }
 
-        // return await pb.collection("lists").update(list.id, {
-        //     ...list,
-        //     invited: [...list.invited, record.items[0].id],
-        // }).then(() => createInvitation(list.id, record.items[0].id ));
         await createInvitation(list.id, record.items[0].id );
     }
 

@@ -12,7 +12,7 @@ export default function useSignIn() {
             .collection("users")
             .authWithPassword(email, password)
             .then(() => {
-                pb.authStore.isValid && setUserState({ isLogin: true });
+                pb.authStore.isValid && setUserState({ isLogin: pb.authStore.isValid, userId: pb.authStore?.model?.id });
             });
     }
 

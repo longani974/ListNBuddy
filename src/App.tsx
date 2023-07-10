@@ -7,77 +7,87 @@ import Table from "./components/Table/Table";
 import pb from "./lib/pocketbase";
 import Drawer from "./components/Drawer";
 import ModalMyInvitations from "./components/Table/ModalMyInvitations";
-import { Invitations, invitationState } from "./atoms/invitationAtoms";
+import { invitationState } from "./atoms/invitationAtoms";
 import { useEffect, useState } from "react";
 import useInvitations from "./hooks/useInvitations";
 import ModalMyLists from "./components/Table/ModalMyLists";
 import { listToShow } from "./atoms/listToShow";
 import ModalForgetPassword from "./components/ModalForgetPasword";
+import { Article, Lists } from "./types/dbPocketbasetypes";
+import { articlesState } from "./atoms/articlesAtoms";
 
 export default function App() {
     const [listId, setListId] = useState<string>("");
-    const { isLogin, userId } = useRecoilValue(userState);
+
     const acceptInvitations = useInvitations("accept");
-    const setInvitations = useSetRecoilState(invitationState);
+
+    const { isLogin, userId } = useRecoilValue(userState);
     const { invitations } = useRecoilValue(invitationState);
     const { indexListToShow } = useRecoilValue(listToShow);
+    const {articles} = useRecoilValue(articlesState);
+    const setArticles = useSetRecoilState(articlesState)
+
+    const setInvitations = useSetRecoilState(invitationState);
 
 
     useEffect(() => {
         setListId(acceptInvitations[indexListToShow]?.list);
     }, [acceptInvitations, indexListToShow]);
 
-    useEffect(() => {
-        console.log("indexListToShow Changed : ", indexListToShow);
-    }, [indexListToShow]);
-
-    // subscribe realtime pocketbase lists
+    // realtime: subscribe to changes in the articles collection
     useEffect(() => {
         // Subscribe to changes only in the specified record
         const realTime = async () => {
-            await pb.collection("lists").subscribe(listId, async function  (changes) {
-                console.log("CHANGES : ",changes)
-                // get last invitation
-                const lastInvitation = await pb
-                    .collection("invitations")
-                    .getList(1, 5, {
-                        filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
-                        expand: "user,list.articles,by",
-                        sort: "created",
-                    });
-                
-                // replace invitation matching with listId by lastInvitation in invitationState
-                const index = invitations.findIndex(
-                    (invitation) => invitation.list === listId
-                );
-                const newInvitations = [...invitations];
-                newInvitations[index] = lastInvitation.items[indexListToShow] as Invitations;
-                setInvitations({ invitations: newInvitations });
+            await pb.collection("articles").subscribe("*", async function ({ action, record }) {
 
+                if (action === "update") {
+                    const newArticlesCopy = JSON.parse(JSON.stringify([...articles]));
+
+                    const index = newArticlesCopy.findIndex(
+                        (article: { id: string; }) => article.id === record.id
+                    );
+
+                    newArticlesCopy[index] = record as Article;
+
+                    setArticles({ articles: newArticlesCopy })
+
+                }
+
+                if (action === "create") {
+                    const newArticlesCopy = JSON.parse(JSON.stringify([...articles]));
+
+                    newArticlesCopy.push(record as Article);
+
+                    setArticles({ articles: newArticlesCopy })
+
+                }
+
+                if (action === "delete") {
+                    const newArticlesCopy = JSON.parse(JSON.stringify([...articles]));
+
+                    console.log(record.id)
+
+                    const index = newArticlesCopy.findIndex(
+                        (article: { id: string; }) => article.id === record.id
+                    );
+                    console.log(index)
+                    
+                    newArticlesCopy.splice(index, 1);
+
+                    setArticles({ articles: newArticlesCopy })
+                }
+            
             });
         };
+
+        // Check if listId has a length before subscribing to changes
         listId?.length && realTime();
+
+        // Unsubscribe from the record subscription when the component unmounts
         return () => {
-            pb.collection("lists").unsubscribe(listId);
-        }; // remove all 'RECORD_ID' subscriptions
-    }, [indexListToShow, invitations, listId, setInvitations]);
-
-    // const { data } = useGetLastListAndRealTime();
-    // const { invitations } = useRecoilValue(invitationState);
-
-    // const [acceptInvitations, setAcceptInvitations] = useState<Invitations[]>(
-    //     []
-    // );
-    // useEffect(() => {
-    //     console.log("invitaion filter", invitations);
-    //     setAcceptInvitations([
-    //         ...invitations.filter(
-    //             (invitation) => invitation.status === "accept"
-    //         ),
-    //     ]);
-    // }, [ invitations]);
-
-    // console.log(data)
+            pb.collection("articles").unsubscribe("*");
+        };
+    }, [articles, indexListToShow, invitations, listId, setArticles, setInvitations]);
 
     const addNewArticle = async () => {
         const recordArticle = await pb.collection("articles").create({
@@ -87,13 +97,7 @@ export default function App() {
             addBy: userId,
             isBuyedBy: "",
         });
-        // .then(
-        //     async (res) =>
-        //         await pb.collection("lists").update(listId, {
-        //             modifiedArticle: Date.now(),
-        //             articles: [...articlesList, res.id],
-        //         })
-        // );
+
         return recordArticle;
     };
 
@@ -109,7 +113,6 @@ export default function App() {
 
         const recordList = await pb.collection("lists").create(data);
         return recordList;
-        // await addNewArticle(recordList.id);
     };
 
     const createFirstList = async () => {
@@ -121,15 +124,21 @@ export default function App() {
         <>
             <Navbar />
 
-            {/* <h1>Logged In: {isLogin.toString()}</h1> */}
             {!isLogin && <Auth />}
             {!isLogin && <ModalForgetPassword />}
+
             <Drawer>
                 {isLogin && (
                     <div>
                         <div className="overflow-x-auto w-full">
                             {acceptInvitations.length ? (
-                                <Table {...acceptInvitations[indexListToShow].expand.list} />
+                                // TODO: fix this
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                //@ts-ignore
+                                <Table
+                                    {...acceptInvitations[indexListToShow]
+                                        .expand.list as Lists}
+                                />
                             ) : (
                                 <label
                                     htmlFor="articleModal"

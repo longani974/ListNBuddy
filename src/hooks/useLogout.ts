@@ -7,7 +7,7 @@ export default function useLogout() {
 
     function logout() {
         pb.authStore.clear();
-        setUserState({ isLogin: false });
+        setUserState({ isLogin: false, userId: "" });
     }
 
     return logout;

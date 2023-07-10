@@ -1,34 +1,19 @@
 import { Record } from "pocketbase";
+import { Users } from "../atoms/invitationAtoms";
 
 export interface Lists extends Record {
     articles: string[];
-    // collectionId: string;
-    // collectionName: string;
-    // createBy: string;
-    // created: Date;
-    // expand: ListsExpand;
-    // id: string;
     invited: string[];
     name: string;
-    participants: string[];
-    // updated: Date;
-    // modifiedArticle: string;
+    // participants: string[];
+    expand: { articles: Article[] };
 }
 
-export interface ListsExpand {
-    articles: Article[];
-}
-
-export interface Article {
+export interface Article extends Record {
     addBy: string;
-    collectionId: string;
-    collectionName: string;
-    created: Date;
-    id: string;
     isBuyed: boolean;
     isBuyedBy: string;
     name: string;
     quantity: string;
-    updated: Date;
-    expand: Article[];
+    expand: { isBuyedBy: Users; addBy: Users };
 }

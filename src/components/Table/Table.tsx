@@ -1,38 +1,41 @@
 import { Lists, Article } from "../../types/dbPocketbasetypes";
-// import pb from "../../lib/pocketbase";
 import ModalToModifieArticle from "./ModalToModifieArticle";
 import { useEffect, useState } from "react";
 import { useArticleModifier } from "../../hooks/useArticleModifier";
-import { userState } from "../../atoms/userAtoms";
-import { useRecoilValue } from "recoil";
+import { articlesState } from "../../atoms/articlesAtoms";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import ModalInviteUser from "./ModalInviteUser";
-// import ModalMyInvitations from "./ModalMyInvitations";
+import pb from "../../lib/pocketbase";
+import { useEffectOnce } from "../../hooks/useEffectOnce";
 
-// type TableProps = {
-//     data: Lists;
-// }
 
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
     const [articleLeft, setArticleLeft] = useState<number>(0);
     const [mode, setMode] = useState<"update" | "create">("update");
+    // const [articles, setArticles] = useState<Article[]>([]);
+    const {articles} = useRecoilValue(articlesState);
+    const setArticles = useSetRecoilState(articlesState);
 
-    const { userId } = useRecoilValue(userState);
-// console.log("data", data)
     const articleModifier = useArticleModifier(
         {
-            id: articleData?.id || "",
+            id: articleData?.id as string,
             isBuyed: articleData?.isBuyed,
-            isBuyedBy: articleData?.isBuyed ? userId : "",
+            isBuyedBy: articleData?.isBuyedBy,
+            quantity: articleData?.quantity,
+            name: articleData?.name,
+            
         },
-        data.id
     );
 
     const updateIsBuyed = () => {
+        console.log(articleData)
         articleModifier.mutateAsync();
     };
 
     const checkArticleLeft = (articles: Article[]) => {
+        console.log("checkArticleLeft")
+
         let articleLeft = 0;
         articles.forEach((article) => {
             if (!article.isBuyed) {
@@ -43,19 +46,33 @@ const Table: React.FC<Lists> = (data) => {
     };
 
     useEffect(() => {
-        data.articles.length && checkArticleLeft(data?.expand.articles);
-    }, [data]);
+        articles.length && checkArticleLeft(articles);
+    }, [articles]);
+
+    useEffect(() => {
+        console.log(articleData)
+    }, [articleData]);
+    
+
+    // if we use useEffect instead of useEffectOnce, we will have an infinite loop if we use argument in the function
+    useEffectOnce(() => {
+        console.log(data)
+        // Get records from the collection "articles" filtered  list = data.id
+        pb.collection("articles").getFullList({filter: `list = "${data.id}"`}).then((res) => {
+            setArticles({articles: res as Article[]})
+        })
+    });
     return (
         <div>
             <div className="w-full relative">
                 <h1>{data?.name}</h1>
-                {!!data.articles.length && (
+                {!!articles?.length && (
                     <progress
                         className={`progress w-56 ${
                             articleLeft === 0 ? "progress-success" : ""
                         }`}
-                        value={data?.expand.articles?.length - articleLeft}
-                        max={data?.expand.articles?.length}
+                        value={articles?.length - articleLeft}
+                        max={articles?.length}
                     ></progress>
                 )}
                 <div className="w-full absolute z-10 top-0 flex justify-end">
@@ -90,19 +107,18 @@ const Table: React.FC<Lists> = (data) => {
                             <th>Qté</th>
                             <th>
                                 <span className="countdown">
+                                    
                                     {/* eslint-disable-next-line */}
                                     {/* @ts-ignore */}
-                                    <span
-                                        style={{ "--value": articleLeft }}
-                                    ></span>
+                                    <span style={{ "--value": articleLeft }}></span>{/* prettier-ignore */}
                                 </span>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {/* rows */}
-                        {!!data.articles.length &&
-                            data?.expand.articles?.map((article) => {
+                        {!!articles?.length &&
+                            articles?.map((article) => {
                                 return (
                                     <tr key={article.id} className="hover">
                                         <th className="w-0">
@@ -111,9 +127,7 @@ const Table: React.FC<Lists> = (data) => {
                                                     htmlFor="articleModal"
                                                     onClick={() => {
                                                         setMode("update");
-                                                        setArticleData({
-                                                            ...article,
-                                                        });
+                                                        setArticleData(article);
                                                     }}
                                                     className="btn btn-square btn-ghost w-6 "
                                                 >
@@ -146,11 +160,14 @@ const Table: React.FC<Lists> = (data) => {
                                                     className="checkbox"
                                                     checked={article.isBuyed}
                                                     onChange={() => {
-                                                        setArticleData({
+                                                        const articleChange = {
                                                             ...article,
-                                                            isBuyed:
-                                                                !article.isBuyed,
-                                                        });
+                                                        } as Article;
+                                                        articleChange.isBuyed =
+                                                            !article.isBuyed;
+                                                        setArticleData(
+                                                            articleChange
+                                                        );
                                                         updateIsBuyed();
                                                     }}
                                                 />

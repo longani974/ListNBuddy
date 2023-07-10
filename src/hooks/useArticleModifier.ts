@@ -1,12 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
-import { useListChangedSignaler } from "./useListChangedSignaler";
-// import { Article } from "../types/dbPocketbasetypes";
-
-// type ArticleModifier = {
-//     article: Article | null;
-//     listId: string;
-// };
 interface Article {
     id: string;
     name?: string;
@@ -15,19 +8,17 @@ interface Article {
     isBuyedBy?: string;
 }
 
-export const useArticleModifier = (article: Article, listId: string) => {
+export const useArticleModifier = (article: Article) => {
     const updateArticle = async () => {
         return await pb.collection("articles").update(article.id, {
             ...article,
         });
     };
 
-    const signalListChanged = useListChangedSignaler(listId);
-
     const mutateArticle = useMutation(updateArticle, {
         onSuccess: () => {
-            console.log("updateArticle");
-            signalListChanged();
+            console.log("article updated");
+            // signalListChanged();
         },
         onError: () => {
             console.log("error");
