@@ -15,5 +15,6 @@ export interface Article extends Record {
     isBuyedBy: string;
     name: string;
     quantity: string;
-    expand: { isBuyedBy: Users; addBy: Users };
+    list: string;
+    expand: { isBuyedBy: Users; addBy: Users; list: Lists };
 }

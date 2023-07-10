@@ -6,6 +6,7 @@ interface Article {
     quantity?: string;
     isBuyed?: boolean;
     isBuyedBy?: string;
+    list?: string;
 }
 
 export const useArticleModifier = (article: Article) => {
