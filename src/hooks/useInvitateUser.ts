@@ -3,35 +3,41 @@ import pb from "../lib/pocketbase";
 import { userState } from "../atoms/userAtoms";
 import { useRecoilValue } from "recoil";
 
-interface List {
+interface NewInvitation {
     id: string;
-    invited: string[];
-    participants: string[];
     email: string;
+    status: "waiting" | "accept";
 }
 
-export const useInvitateUser = (list: List) => {
+export const useInvitateUser = () => {
     const { userId } = useRecoilValue(userState);
 
-    const createInvitation = async ( listId:string, invitateId:string ) => {
+    const createInvitation = async (
+        listId: string,
+        invitateId: string,
+        status?: "waiting" | "accept"
+    ) => {
         const data = {
-            "user": invitateId,
-            "list": listId,
-            "by": userId,
-            "status": "waiting",
+            user: invitateId,
+            list: listId,
+            by: userId,
+            status: status,
         };
         {
             try {
-                await pb.collection('invitations').create(data)
+                await pb.collection("invitations").create(data);
             } catch (e) {
                 console.log(e);
             }
         }
     };
 
-    const updateList = async () => {
+    const updateList = async (
+        newInvitation: NewInvitation,
+    ) => {
         const record = await pb.collection("users").getList(1, 20, {
-            filter: `email = "${list.email}"`,
+            filter: `email = "${newInvitation.email}"`,
+            fields: "id",
         });
 
         if (record.items.length === 0) {
@@ -42,9 +48,10 @@ export const useInvitateUser = (list: List) => {
         //     return console.log("Utilisateur déjà invité");
         // }
 
-        if (record.items[0].id === userId) {
-            return console.log("Vous ne pouvez pas vous inviter vous même");
-        }
+        // TODO: change the way to check if user is already in the list because on create list we need to autoinvite the user
+        // if (record.items[0].id === userId) {
+        //     return console.log("Vous ne pouvez pas vous inviter vous même");
+        // }
 
         // TODO: change the way to check if user is already in the list
         // because particpants in list doesn't exist anymore
@@ -52,9 +59,8 @@ export const useInvitateUser = (list: List) => {
         //     return console.log("Utilisateur déjà dans la liste");
         // }
 
-
-        await createInvitation(list.id, record.items[0].id );
-    }
+        await createInvitation(newInvitation.id, record.items[0].id, newInvitation.status || "waiting");
+    };
 
     const mutateList = useMutation(updateList, {
         onSuccess: () => {

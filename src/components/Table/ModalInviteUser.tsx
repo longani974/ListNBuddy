@@ -4,23 +4,19 @@ import { useInvitateUser } from "../../hooks/useInvitateUser";
 
 type ModalInviteUserProps = {
     listId: string;
-    invitedList: string[];
-    participants: string[];
 };
 
 const ModalInviteUser: React.FC<ModalInviteUserProps> = ({
     listId,
-    invitedList,
-    participants,
 }) => {
     // const { userId } = useRecoilValue(userState);
 
     const [email, setEmail] = useState<string>("");
 
-    const listModifier = useInvitateUser({ id: listId, invited: invitedList, email: email, participants: participants });
+    const listModifier = useInvitateUser();
 
     const handleInviteUser = () => {
-        listModifier.mutateAsync();
+        listModifier.mutateAsync({ id: listId, email: email, status: "waiting" });
     };
 
     return (

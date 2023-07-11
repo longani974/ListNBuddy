@@ -15,6 +15,7 @@ import { listToShow } from "./atoms/listToShow";
 import ModalForgetPassword from "./components/ModalForgetPasword";
 import { Article, Lists } from "./types/dbPocketbasetypes";
 import { articlesState } from "./atoms/articlesAtoms";
+import { useInvitateUser } from "./hooks/useInvitateUser";
 
 export default function App() {
     const [listId, setListId] = useState<string>("");
@@ -24,11 +25,12 @@ export default function App() {
     const { isLogin, userId } = useRecoilValue(userState);
     const { invitations } = useRecoilValue(invitationState);
     const { indexListToShow } = useRecoilValue(listToShow);
-    const {articles} = useRecoilValue(articlesState);
-    const setArticles = useSetRecoilState(articlesState)
+    const { articles } = useRecoilValue(articlesState);
+    const setArticles = useSetRecoilState(articlesState);
 
     const setInvitations = useSetRecoilState(invitationState);
 
+    const inviteUser = useInvitateUser();
 
     useEffect(() => {
         setListId(acceptInvitations[indexListToShow]?.list);
@@ -38,46 +40,52 @@ export default function App() {
     useEffect(() => {
         // Subscribe to changes only in the specified record
         const realTime = async () => {
-            await pb.collection("articles").subscribe("*", async function ({ action, record }) {
+            await pb
+                .collection("articles")
+                .subscribe("*", async function ({ action, record }) {
+                    if (action === "update") {
+                        const newArticlesCopy = JSON.parse(
+                            JSON.stringify([...articles])
+                        );
 
-                if (action === "update") {
-                    const newArticlesCopy = JSON.parse(JSON.stringify([...articles]));
+                        const index = newArticlesCopy.findIndex(
+                            (article: { id: string }) =>
+                                article.id === record.id
+                        );
 
-                    const index = newArticlesCopy.findIndex(
-                        (article: { id: string; }) => article.id === record.id
-                    );
+                        newArticlesCopy[index] = record as Article;
 
-                    newArticlesCopy[index] = record as Article;
+                        setArticles({ articles: newArticlesCopy });
+                    }
 
-                    setArticles({ articles: newArticlesCopy })
+                    if (action === "create") {
+                        const newArticlesCopy = JSON.parse(
+                            JSON.stringify([...articles])
+                        );
 
-                }
+                        newArticlesCopy.push(record as Article);
 
-                if (action === "create") {
-                    const newArticlesCopy = JSON.parse(JSON.stringify([...articles]));
+                        setArticles({ articles: newArticlesCopy });
+                    }
 
-                    newArticlesCopy.push(record as Article);
+                    if (action === "delete") {
+                        const newArticlesCopy = JSON.parse(
+                            JSON.stringify([...articles])
+                        );
 
-                    setArticles({ articles: newArticlesCopy })
+                        console.log(record.id);
 
-                }
+                        const index = newArticlesCopy.findIndex(
+                            (article: { id: string }) =>
+                                article.id === record.id
+                        );
+                        console.log(index);
 
-                if (action === "delete") {
-                    const newArticlesCopy = JSON.parse(JSON.stringify([...articles]));
+                        newArticlesCopy.splice(index, 1);
 
-                    console.log(record.id)
-
-                    const index = newArticlesCopy.findIndex(
-                        (article: { id: string; }) => article.id === record.id
-                    );
-                    console.log(index)
-                    
-                    newArticlesCopy.splice(index, 1);
-
-                    setArticles({ articles: newArticlesCopy })
-                }
-            
-            });
+                        setArticles({ articles: newArticlesCopy });
+                    }
+                });
         };
 
         // Check if listId has a length before subscribing to changes
@@ -87,7 +95,14 @@ export default function App() {
         return () => {
             pb.collection("articles").unsubscribe("*");
         };
-    }, [articles, indexListToShow, invitations, listId, setArticles, setInvitations]);
+    }, [
+        articles,
+        indexListToShow,
+        invitations,
+        listId,
+        setArticles,
+        setInvitations,
+    ]);
 
     const addNewArticle = async () => {
         const recordArticle = await pb.collection("articles").create({
@@ -101,23 +116,24 @@ export default function App() {
         return recordArticle;
     };
 
-    const createList = async (articleId: string) => {
+    const createList = async () => {
         // example create data
         const data = {
             name: "testali",
             createBy: userId,
-            participants: [userId],
-            articles: [articleId],
-            modifiedArticle: "test",
         };
 
         const recordList = await pb.collection("lists").create(data);
-        return recordList;
+        return recordList as Lists;
     };
 
     const createFirstList = async () => {
-        const article = await addNewArticle();
-        await createList(article.id);
+        const list = await createList();
+        inviteUser.mutateAsync({
+            id: list.id,
+            email: pb.authStore?.model?.email,
+            status: "accept",
+        });
     };
 
     return (
@@ -136,8 +152,8 @@ export default function App() {
                                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                 //@ts-ignore
                                 <Table
-                                    {...acceptInvitations[indexListToShow]
-                                        .expand.list as Lists}
+                                    {...(acceptInvitations[indexListToShow]
+                                        .expand.list as Lists)}
                                 />
                             ) : (
                                 <label
