@@ -35,7 +35,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     }, [articleData]);
 
     const articleModifier = useArticleModifier(
-        { name: articleName, quantity: articleQuantity, id: articleId, list: listId }
+        { name: articleName, quantity: articleQuantity, id: articleId, list: listId },
     );
 
     const articleDeleter = useArticleDeleter(

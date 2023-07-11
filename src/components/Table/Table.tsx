@@ -6,30 +6,25 @@ import { articlesState } from "../../atoms/articlesAtoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import ModalInviteUser from "./ModalInviteUser";
 import pb from "../../lib/pocketbase";
-import { useEffectOnce } from "../../hooks/useEffectOnce";
-
 
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
     const [articleLeft, setArticleLeft] = useState<number>(0);
     const [mode, setMode] = useState<"update" | "create">("update");
     // const [articles, setArticles] = useState<Article[]>([]);
-    const {articles} = useRecoilValue(articlesState);
+    const { articles } = useRecoilValue(articlesState);
     const setArticles = useSetRecoilState(articlesState);
 
-    const articleModifier = useArticleModifier(
-        {
-            id: articleData?.id as string,
-            isBuyed: articleData?.isBuyed,
-            isBuyedBy: articleData?.isBuyedBy,
-            quantity: articleData?.quantity,
-            name: articleData?.name,
-            
-        },
-    );
+    const articleModifier = useArticleModifier({
+        id: articleData?.id as string,
+        isBuyed: articleData?.isBuyed,
+        isBuyedBy: articleData?.isBuyedBy,
+        quantity: articleData?.quantity,
+        name: articleData?.name,
+    });
 
     const updateIsBuyed = () => {
-        console.log(articleData)
+        console.log(articleData);
         articleModifier.mutateAsync();
     };
 
@@ -48,15 +43,21 @@ const Table: React.FC<Lists> = (data) => {
     useEffect(() => {
         articles.length && checkArticleLeft(articles);
     }, [articles]);
-    
 
-    // if we use useEffect instead of useEffectOnce, we will have an infinite loop if we use argument in the function
-    useEffectOnce(() => {
+    useEffect(() => {
         // Get records from the collection "articles" filtered  list = data.id
-        pb.collection("articles").getFullList({filter: `list = "${data.id}"`}).then((res) => {
-            setArticles({articles: res as Article[]})
-        })
-    });
+        // TODO: use react-query
+        pb.collection("articles")
+            .getFullList({ filter: `list = "${data.id}"` })
+            .then((res) => {
+                setArticles({ articles: res as Article[] });
+            });
+        // !!!! WARNING !!!! we desactivate the eslint rule because eslint want to put setArticles in the dependency array
+        // but it's not a good idea because it will create an infinite loop
+        // https://github.com/facebookexperimental/Recoil/issues/661
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.id]);
+
     return (
         <div>
             <div className="w-full relative">
@@ -102,10 +103,12 @@ const Table: React.FC<Lists> = (data) => {
                             <th>Qté</th>
                             <th>
                                 <span className="countdown">
-                                    
-                                    {/* eslint-disable-next-line */}
-                                    {/* @ts-ignore */}
-                                    <span style={{ "--value": articleLeft }}></span>{/* prettier-ignore */}
+                                    <span
+                                    /* eslint-disable-next-line */
+                                    /* @ts-ignore */
+                                        style={{ "--value": articleLeft }}
+                                    ></span>
+                                    {/* prettier-ignore */}
                                 </span>
                             </th>
                         </tr>

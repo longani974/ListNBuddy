@@ -40,7 +40,7 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                     >
                         ✕
                     </label>
-                    <h3 className="text-lg font-bold">Mes Listes</h3>
+                    <h3 className="text-lg font-bold">Mes listes</h3>
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
                             {acceptedInvitations.map((invitation, index) => (
