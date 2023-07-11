@@ -8,7 +8,7 @@ export default function useSignUP() {
     async function signUp({ username, email, password }: SignUpFormInput) {
         await pb
             .collection("users")
-            .create({ username, email, password, passwordConfirm: password })
+            .create({ username, email, password, passwordConfirm: password,"emailVisibility": true, })
             .then(() => {
                 signIn({ email, password });
             });
