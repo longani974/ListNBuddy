@@ -122,6 +122,14 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                     </div>
                                 </div>
                             ))}
+
+                            {acceptedInvitations.length === 0 && (
+                                <div className="flex flex-col items-center justify-center">
+                                    <span className="text-sm">
+                                        Vous n'avez pas encore de listes
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
