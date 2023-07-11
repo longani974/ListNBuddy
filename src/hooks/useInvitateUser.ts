@@ -22,7 +22,7 @@ export const useInvitateUser = (list: List) => {
         };
         {
             try {
-                await pb.collection('invitations').create(data);
+                await pb.collection('invitations').create(data)
             } catch (e) {
                 console.log(e);
             }
@@ -38,9 +38,9 @@ export const useInvitateUser = (list: List) => {
             return console.log("Pas d'utilisateur avec cette email");
         }
 
-        if (list.invited.includes(record.items[0].id)) {
-            return console.log("Utilisateur déjà invité");
-        }
+        // if (list.invited.includes(record.items[0].id)) {
+        //     return console.log("Utilisateur déjà invité");
+        // }
 
         if (record.items[0].id === userId) {
             return console.log("Vous ne pouvez pas vous inviter vous même");
@@ -48,9 +48,10 @@ export const useInvitateUser = (list: List) => {
 
         // TODO: change the way to check if user is already in the list
         // because particpants in list doesn't exist anymore
-        if (list.participants.includes(record.items[0].id)) {
-            return console.log("Utilisateur déjà dans la liste");
-        }
+        // if (list.participants.includes(record.items[0].id)) {
+        //     return console.log("Utilisateur déjà dans la liste");
+        // }
+
 
         await createInvitation(list.id, record.items[0].id );
     }
