@@ -34,29 +34,24 @@ const Table: React.FC<Lists> = (data) => {
     };
 
     const checkArticleLeft = (articles: Article[]) => {
-        console.log("checkArticleLeft")
-
         let articleLeft = 0;
+
         articles.forEach((article) => {
             if (!article.isBuyed) {
                 articleLeft++;
             }
         });
+
         setArticleLeft(articleLeft);
     };
 
     useEffect(() => {
         articles.length && checkArticleLeft(articles);
     }, [articles]);
-
-    useEffect(() => {
-        console.log(articleData)
-    }, [articleData]);
     
 
     // if we use useEffect instead of useEffectOnce, we will have an infinite loop if we use argument in the function
     useEffectOnce(() => {
-        console.log(data)
         // Get records from the collection "articles" filtered  list = data.id
         pb.collection("articles").getFullList({filter: `list = "${data.id}"`}).then((res) => {
             setArticles({articles: res as Article[]})

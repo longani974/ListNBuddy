@@ -1,4 +1,3 @@
-
 import { useRecoilValue } from "recoil";
 import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
 import pb from "../../lib/pocketbase";
@@ -24,9 +23,9 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
 
         await pb.collection("invitations").update(invitation.id, {
             status: status,
-        })
+        });
     };
-    
+
     return (
         <>
             {/* Put this part before </body> tag */}
@@ -46,84 +45,96 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                     <h3 className="text-lg font-bold">Mes invitations</h3>
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
-                            {waitingInvitations.length && waitingInvitations.map((invitation, index) => (
-                                <div
-                                    key={invitation.id}
-                                    className="flex flex-col mb-2"
-                                >
-                                    {index > 0 && (
-                                        <div className="divider"></div>
-                                    )}
+                            {waitingInvitations.length > 0 &&
+                                waitingInvitations.map((invitation, index) => (
+                                    <div
+                                        key={invitation.id}
+                                        className="flex flex-col mb-2"
+                                    >
+                                        {index > 0 && (
+                                            <div className="divider"></div>
+                                        )}
 
-                                    <div className="flex flex-row justify-between text-left">
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold">
-                                                {invitation.expand.list?.name}
-                                            </span>
-                                            <span className="text-xs">
-                                                {"Envoyé par: " +
-                                                    invitation.expand.by?.email}
-                                            </span>
-                                        </div>
-                                        <div className="btn-group btn-group-horizontal">
-                                            <button
-                                                className="btn btn-square"
-                                                onClick={() =>
-                                                    handleStatusInvitation(
-                                                        invitation.list,
-                                                        "accept"
-                                                    )
-                                                }
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 512 512"
+                                        <div className="flex flex-row justify-between text-left">
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold">
+                                                    {
+                                                        invitation.expand.list
+                                                            ?.name
+                                                    }
+                                                </span>
+                                                <span className="text-xs">
+                                                    {"Envoyé par: " +
+                                                        invitation.expand.by
+                                                            ?.email}
+                                                </span>
+                                            </div>
+                                            <div className="btn-group btn-group-horizontal">
+                                                <button
+                                                    className="btn btn-square"
+                                                    onClick={() =>
+                                                        handleStatusInvitation(
+                                                            invitation.list,
+                                                            "accept"
+                                                        )
+                                                    }
                                                 >
-                                                    <path
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="32"
-                                                        d="M416 128L192 384l-96-96"
-                                                    ></path>
-                                                </svg>
-                                            </button>
-                                            <button
-                                                className="btn btn-square btn-ghost"
-                                                onClick={() =>
-                                                    handleStatusInvitation(
-                                                        invitation.list,
-                                                        "reject"
-                                                    )
-                                                }
-                                            >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 512 512"
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 512 512"
+                                                    >
+                                                        <path
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="32"
+                                                            d="M416 128L192 384l-96-96"
+                                                        ></path>
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    className="btn btn-square btn-ghost"
+                                                    onClick={() =>
+                                                        handleStatusInvitation(
+                                                            invitation.list,
+                                                            "reject"
+                                                        )
+                                                    }
                                                 >
-                                                    <path
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="32"
-                                                        d="M368 368L144 144"
-                                                    ></path>
-                                                    <path
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth="32"
-                                                        d="M368 144L144 368"
-                                                    ></path>
-                                                </svg>
-                                            </button>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 512 512"
+                                                    >
+                                                        <path
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="32"
+                                                            d="M368 368L144 144"
+                                                        ></path>
+                                                        <path
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="32"
+                                                            d="M368 144L144 368"
+                                                        ></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
+                                ))}
+                            {!waitingInvitations.length && (
+                                <div className="flex flex-col items-center justify-center">
+                                    <span className="text-sm">
+                                        Vous n'avez pas d'invitation
+                                    </span>
                                 </div>
-                            ))}
+                            )}
                         </div>
                     </div>
                 </div>

@@ -32,8 +32,6 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         $autoCancel: false, // TODO: I don't know if it's useful
                     });
                 setInvitations({ invitations: resultList as Invitations[] });
-                console.log("drawer")
-                console.log(resultList)
             } catch (e) {
                 console.log(e);
             }
@@ -49,14 +47,11 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
 
     useEffectOnce(() => {
         const realTime = async () => {
-            console.log("subscribe invitations")
             try {
                 await pb.collection("invitations").subscribe("*", function () {
-                    console.log("inside subscribe invitations callback")
                     // laisser un laps de temps avant de recharger les invitations
                     // car il faut attendre que la base de données soit mise à jour
                     setTimeout(() => {
-                        console.log("inside subscribe invitations callback setTimeout")
                         getInvitedLists();
                     }, 1000);
                 });
