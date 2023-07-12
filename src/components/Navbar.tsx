@@ -22,7 +22,7 @@ const Navbar: React.FC<NavbarProps> = () => {
     return (
         <div className="navbar bg-base-100">
             {isLogin && (
-                <div className="flex-none">
+                <div className="flex-none lg:hidden">
                     <label
                         htmlFor="my-drawer-2"
                         className="btn btn-square btn-ghost"
@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = () => {
                 </div>
             )}
             <div className="flex-1">
-                <a className="btn btn-ghost normal-case text-xl">ListMate</a>
+                <h1>ListMate</h1>
             </div>
             <div className="flex-none">
                 {isLogin && (

@@ -19,7 +19,6 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
 
     const { clickModal } = useClickModal();
 
-
     const getInvitedLists = async () => {
         {
             try {
@@ -68,52 +67,71 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
     });
 
     return (
-        <div className="drawer drawer-mobile">
-            <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content">
-                {/* <!-- Page content here --> */}
-                {children}
-            </div>
-            <div className="drawer-side">
-                <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
-                <ul className="menu p-4 w-80 bg-base-100 text-base-content">
-                    {/* <!-- Sidebar content here --> */}
-                    <li>
-                        <div className="indicator">
-                            {waitingInvitations?.length > 0 && (
-                                <span className="indicator-item indicator-middle text-gray-400 h-6">
-                                    {waitingInvitations?.length}
-                                </span>
-                            )}
+        <>
+            {isLogin && (
+                <div className="drawer drawer-mobile">
+                    <input
+                        id="my-drawer-2"
+                        type="checkbox"
+                        className="drawer-toggle"
+                    />
+                    <div className="drawer-content">
+                        {/* <!-- Page content here --> */}
+                        {children}
+                    </div>
+                    <div className="drawer-side">
+                        <label
+                            htmlFor="my-drawer-2"
+                            className="drawer-overlay"
+                        ></label>
+                        <ul className="menu p-4 w-80 bg-base-100 text-base-content">
+                            {/* <!-- Sidebar content here --> */}
+                            <li>
+                                <div className="indicator">
+                                    {waitingInvitations?.length > 0 && (
+                                        <span className="indicator-item indicator-middle text-gray-400 h-6">
+                                            {waitingInvitations?.length}
+                                        </span>
+                                    )}
 
-                            <label htmlFor="my-drawer-2">
-                                <a
-                                    onClick={() =>
-                                        clickModal("myInvitationModal")
-                                    }
-                                >
-                                    Mes invitations
-                                </a>
-                            </label>
-                        </div>
-                    </li>
-                    <li>
-                        <label htmlFor="my-drawer-2">
-                            <a onClick={() => clickModal("myListsModal")}>
-                                Mes listes
-                            </a>
-                        </label>
-                    </li>
-                    <li>
-                        <label htmlFor="my-drawer-2">
-                            <a onClick={() => clickModal("myNewListModal")}>
-                                Ajouter une liste
-                            </a>
-                        </label>
-                    </li>
-                </ul>
-            </div>
-        </div>
+                                    <label htmlFor="my-drawer-2">
+                                        <a
+                                            onClick={() =>
+                                                clickModal("myInvitationModal")
+                                            }
+                                        >
+                                            Mes invitations
+                                        </a>
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <label htmlFor="my-drawer-2">
+                                    <a
+                                        onClick={() =>
+                                            clickModal("myListsModal")
+                                        }
+                                    >
+                                        Mes listes
+                                    </a>
+                                </label>
+                            </li>
+                            <li>
+                                <label htmlFor="my-drawer-2">
+                                    <a
+                                        onClick={() =>
+                                            clickModal("myNewListModal")
+                                        }
+                                    >
+                                        Ajouter une liste
+                                    </a>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            )}
+        </>
     );
 };
 export default Drawer;
