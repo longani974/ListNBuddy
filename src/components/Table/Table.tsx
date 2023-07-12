@@ -106,7 +106,7 @@ const Table: React.FC<Lists> = (data) => {
                                     <span
                                     /* eslint-disable-next-line */
                                     /* @ts-ignore */
-                                        style={{ "--value": articleLeft }}
+                                        style={{ "--value": articles?.length ? articleLeft : 0 }}
                                     ></span>
                                     {/* prettier-ignore */}
                                 </span>
