@@ -15,7 +15,6 @@ import { listToShow } from "./atoms/listToShow";
 import ModalForgetPassword from "./components/ModalForgetPasword";
 import { Article, Lists } from "./types/dbPocketbasetypes";
 import { articlesState } from "./atoms/articlesAtoms";
-import { useInvitateUser } from "./hooks/useInvitateUser";
 import ModalMyNewList from "./components/Table/ModalMyNewList";
 import { useClickModal } from "./hooks/useClickModal";
 
@@ -24,15 +23,13 @@ export default function App() {
 
     const acceptInvitations = useInvitations("accept");
 
-    const { isLogin, userId } = useRecoilValue(userState);
+    const { isLogin } = useRecoilValue(userState);
     const { invitations } = useRecoilValue(invitationState);
     const { indexListToShow } = useRecoilValue(listToShow);
     const { articles } = useRecoilValue(articlesState);
     const setArticles = useSetRecoilState(articlesState);
 
     const setInvitations = useSetRecoilState(invitationState);
-
-    const inviteUser = useInvitateUser();
 
     const { clickModal } = useClickModal();
 
@@ -107,26 +104,6 @@ export default function App() {
         setArticles,
         setInvitations,
     ]);
-
-    const createList = async () => {
-        // example create data
-        const data = {
-            name: "testali",
-            createBy: userId,
-        };
-
-        const recordList = await pb.collection("lists").create(data);
-        return recordList as Lists;
-    };
-
-    const createFirstList = async () => {
-        const list = await createList();
-        inviteUser.mutateAsync({
-            id: list.id,
-            email: pb.authStore?.model?.email,
-            status: "accept",
-        });
-    };
 
     return (
         <>
