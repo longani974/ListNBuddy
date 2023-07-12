@@ -100,7 +100,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                     <li>
                         <label htmlFor="my-drawer-2">
                             <a onClick={() => clickModal("myListsModal")}>
-                                Mes Listes
+                                Mes listes
                             </a>
                         </label>
                     </li>
