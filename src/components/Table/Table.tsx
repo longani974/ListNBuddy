@@ -104,9 +104,13 @@ const Table: React.FC<Lists> = (data) => {
                             <th>
                                 <span className="countdown">
                                     <span
-                                    /* eslint-disable-next-line */
-                                    /* @ts-ignore */
-                                        style={{ "--value": articles?.length ? articleLeft : 0 }}
+                                        style={{
+                                            /* eslint-disable-next-line */
+                                            /* @ts-ignore */
+                                            "--value": articles?.length
+                                                ? articleLeft
+                                                : 0,
+                                        }}
                                     ></span>
                                     {/* prettier-ignore */}
                                 </span>
@@ -215,9 +219,7 @@ const Table: React.FC<Lists> = (data) => {
                 mode={mode}
             />
 
-            <ModalInviteUser
-                listId={data.id}
-            />
+            <ModalInviteUser listId={data.id} />
         </div>
     );
 };
