@@ -16,6 +16,8 @@ import ModalForgetPassword from "./components/ModalForgetPasword";
 import { Article, Lists } from "./types/dbPocketbasetypes";
 import { articlesState } from "./atoms/articlesAtoms";
 import { useInvitateUser } from "./hooks/useInvitateUser";
+import ModalMyNewList from "./components/Table/ModalMyNewList";
+import { useClickModal } from "./hooks/useClickModal";
 
 export default function App() {
     const [listId, setListId] = useState<string>("");
@@ -31,6 +33,8 @@ export default function App() {
     const setInvitations = useSetRecoilState(invitationState);
 
     const inviteUser = useInvitateUser();
+
+    const { clickModal } = useClickModal();
 
     useEffect(() => {
         setListId(acceptInvitations[indexListToShow]?.list);
@@ -104,18 +108,6 @@ export default function App() {
         setInvitations,
     ]);
 
-    const addNewArticle = async () => {
-        const recordArticle = await pb.collection("articles").create({
-            name: "lait",
-            quantity: "1l",
-            isBuyed: false,
-            addBy: userId,
-            isBuyedBy: "",
-        });
-
-        return recordArticle;
-    };
-
     const createList = async () => {
         // example create data
         const data = {
@@ -159,7 +151,7 @@ export default function App() {
                                 <label
                                     htmlFor="articleModal"
                                     onClick={() => {
-                                        createFirstList();
+                                        clickModal("myNewListModal");
                                     }}
                                     className="btn"
                                 >
@@ -169,6 +161,7 @@ export default function App() {
                         </div>
                         <ModalMyInvitations />
                         <ModalMyLists />
+                        <ModalMyNewList />
                     </div>
                 )}
             </Drawer>
