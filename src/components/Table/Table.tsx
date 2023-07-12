@@ -217,8 +217,6 @@ const Table: React.FC<Lists> = (data) => {
 
             <ModalInviteUser
                 listId={data.id}
-                invitedList={data.invited}
-                participants={data.participants}
             />
         </div>
     );
