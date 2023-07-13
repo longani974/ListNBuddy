@@ -6,6 +6,7 @@ import { Invitations, invitationState } from "../atoms/invitationAtoms";
 import { useEffectOnce } from "../hooks/useEffectOnce";
 import useInvitations from "../hooks/useInvitations";
 import { useClickModal } from "../hooks/useClickModal";
+import InstallPWA from "./InstallPWA";
 
 type DrawerProps = {
     children: React.ReactNode;
@@ -126,6 +127,9 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                         Ajouter une liste
                                     </a>
                                 </label>
+                            </li>
+                            <li>
+                                <InstallPWA />
                             </li>
                         </ul>
                     </div>
