@@ -12,11 +12,15 @@ interface NewInvitation {
 export const useInvitateUser = () => {
     const { userId } = useRecoilValue(userState);
 
-    const createInvitation = async (
-        listId: string,
-        invitateId: string,
-        status?: "waiting" | "accept"
-    ) => {
+    const createInvitation = async ({
+        listId,
+        invitateId,
+        status,
+    }: {
+        listId: string;
+        invitateId: string;
+        status?: "waiting" | "accept";
+    }) => {
         const data = {
             user: invitateId,
             list: listId,
@@ -32,9 +36,19 @@ export const useInvitateUser = () => {
         }
     };
 
-    const updateList = async (
-        newInvitation: NewInvitation,
-    ) => {
+    const mutateCreateInvitation = useMutation(createInvitation, {
+        onSuccess: () => {
+            console.log("invitation created");
+        },
+        onError: () => {
+            console.log("error invitation created");
+        },
+        onSettled: () => {
+            console.log("onSettled invitation created");
+        },
+    });
+
+    const updateList = async (newInvitation: NewInvitation) => {
         const record = await pb.collection("users").getList(1, 20, {
             filter: `email = "${newInvitation.email}"`,
             fields: "id",
@@ -59,7 +73,13 @@ export const useInvitateUser = () => {
         //     return console.log("Utilisateur déjà dans la liste");
         // }
 
-        await createInvitation(newInvitation.id, record.items[0].id, newInvitation.status || "waiting");
+        await mutateCreateInvitation.mutateAsync({
+            listId: newInvitation.id,
+            invitateId: record.items[0].id,
+            status: newInvitation.status || "waiting",
+        });
+
+        // await createInvitation(newInvitation.id, record.items[0].id, newInvitation.status || "waiting");
     };
 
     const mutateList = useMutation(updateList, {
