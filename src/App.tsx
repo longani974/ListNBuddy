@@ -74,13 +74,10 @@ export default function App() {
                             JSON.stringify([...articles])
                         );
 
-                        console.log(record.id);
-
                         const index = newArticlesCopy.findIndex(
                             (article: { id: string }) =>
                                 article.id === record.id
                         );
-                        console.log(index);
 
                         newArticlesCopy.splice(index, 1);
 

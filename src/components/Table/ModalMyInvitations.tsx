@@ -1,30 +1,15 @@
-import { useRecoilValue } from "recoil";
-import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
-import pb from "../../lib/pocketbase";
 import useInvitations from "../../hooks/useInvitations";
+import { useHandleStatusInvitation } from "../../hooks/useHandleStatusInvitation";
 
 type ModalInviteUserProps = {
     //
 };
 
 const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
-    // const { userId, isLogin } = useRecoilValue(userState);
-    const { invitations } = useRecoilValue(invitationState);
 
     const waitingInvitations = useInvitations("waiting");
 
-    const handleStatusInvitation = async (
-        listId: string,
-        status: InvitationStatus
-    ) => {
-        const invitation = invitations.filter(
-            (invitation) => invitation.list === listId
-        )[0];
-
-        await pb.collection("invitations").update(invitation.id, {
-            status: status,
-        });
-    };
+    const { mutateAsync } = useHandleStatusInvitation();
 
     return (
         <>
@@ -73,10 +58,10 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                 <button
                                                     className="btn btn-square"
                                                     onClick={() =>
-                                                        handleStatusInvitation(
-                                                            invitation.list,
-                                                            "accept"
-                                                        )
+                                                        mutateAsync({
+                                                            listId: invitation.list,
+                                                            status: "accept",
+                                                        })
                                                     }
                                                 >
                                                     <svg
@@ -96,10 +81,10 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                 <button
                                                     className="btn btn-square btn-ghost"
                                                     onClick={() =>
-                                                        handleStatusInvitation(
-                                                            invitation.list,
-                                                            "reject"
-                                                        )
+                                                        mutateAsync({
+                                                            listId: invitation.list,
+                                                            status: "reject",
+                                                        })
                                                     }
                                                 >
                                                     <svg

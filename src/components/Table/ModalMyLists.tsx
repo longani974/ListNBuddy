@@ -1,32 +1,18 @@
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import useInvitations from "../../hooks/useInvitations";
 import { listToShow } from "../../atoms/listToShow";
-import { InvitationStatus, invitationState } from "../../atoms/invitationAtoms";
-import pb from "../../lib/pocketbase";
+import { useHandleStatusInvitation } from "../../hooks/useHandleStatusInvitation";
 
 type ModalMyListsProps = {
     //
 };
 
 const ModalMyLists: React.FC<ModalMyListsProps> = () => {
-    const { invitations } = useRecoilValue(invitationState);
-
     const acceptedInvitations = useInvitations("accept");
 
     const setIndex = useSetRecoilState(listToShow);
 
-    const handleStatusInvitation = async (
-        listId: string,
-        status: InvitationStatus
-    ) => {
-        const invitation = invitations.filter(
-            (invitation) => invitation.list === listId
-        )[0];
-
-        await pb.collection("invitations").update(invitation.id, {
-            status: status,
-        });
-    };
+    const { mutateAsync } = useHandleStatusInvitation();
 
     return (
         <>
@@ -90,9 +76,9 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                             <button
                                                 className="btn btn-square btn-ghost"
                                                 onClick={() =>
-                                                    handleStatusInvitation(
-                                                        invitation.list,
-                                                        "waiting"
+                                                    mutateAsync(
+                                                        {listId:invitation.list,
+                                                        status:"waiting"}
                                                     )
                                                 }
                                             >

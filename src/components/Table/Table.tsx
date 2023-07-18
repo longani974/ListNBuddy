@@ -24,7 +24,6 @@ const Table: React.FC<Lists> = (data) => {
     });
 
     const updateIsBuyed = () => {
-        console.log(articleData);
         articleModifier.mutateAsync();
     };
 
