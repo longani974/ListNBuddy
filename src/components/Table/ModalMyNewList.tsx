@@ -6,9 +6,27 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "../../atoms/userAtoms";
 import { listToShow } from "../../atoms/listToShow";
 import useInvitations from "../../hooks/useInvitations";
+import { useMutation } from "@tanstack/react-query";
 
 type ModalMyNewListProps = {
     //
+};
+
+const createList = async ({
+    listName,
+    userId,
+}: {
+    listName: string;
+    userId: string | undefined;
+}) => {
+    // example create data
+    const data = {
+        name: listName,
+        createBy: userId,
+    };
+
+    const recordList = await pb.collection("lists").create(data);
+    return recordList as Lists;
 };
 
 const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
@@ -33,21 +51,20 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         }
     }, [acceptInvitations, idList, setIndexListToShow]);
 
-    const createList = async () => {
-        // example create data
-        const data = {
-            name: listName,
-            createBy: userId,
-        };
-
-        const recordList = await pb.collection("lists").create(data);
-        return recordList as Lists;
-    };
+    const mutation = useMutation(createList, {
+        onSuccess: () => {
+            console.log("success mutation createList");
+        },
+        onError: () => {
+            console.log("error mutation createList");
+        },
+    });
 
     const handleAddNewList = async () => {
         // TODO: use react-query
-        const list = await createList();
-        inviteUser
+        // const list = await createList();
+        const list = await mutation.mutateAsync({listName, userId});
+        await inviteUser
             .mutateAsync({
                 id: list.id,
                 email: pb.authStore?.model?.email,
