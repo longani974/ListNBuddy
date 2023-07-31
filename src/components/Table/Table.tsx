@@ -11,10 +11,17 @@ import ErrorToast from "../ErrorToast";
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
     const [articleLeft, setArticleLeft] = useState<number>(0);
+    // const [isBlocked, setIsBlocked] = useState<boolean>(false);
+    // const [clickCount, setClickCount] = useState<number>(0);
+    const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
+    const [isBlocked, setIsBlocked] = useState<Record<string, boolean>>({});
+
     const [mode, setMode] = useState<"update" | "create">("update");
     // const [articles, setArticles] = useState<Article[]>([]);
     const { articles } = useRecoilValue(articlesState);
     const setArticles = useSetRecoilState(articlesState);
+    const [isGlobalBlocked, setIsGlobalBlocked] = useState<boolean>(false);
+    const [clickTimestamps, setClickTimestamps] = useState<number[]>([]);
 
     const articleModifier = useArticleModifier({
         id: articleData?.id as string,
@@ -26,8 +33,67 @@ const Table: React.FC<Lists> = (data) => {
 
     const { isError, isLoading } = articleModifier;
 
-    const updateIsBuyed = () => {
-        articleModifier.mutateAsync();
+    const updateIsBuyed = (id: string) => {
+        // We try to prevent multiple click on the same article in a shortter time
+        // and we prevent multiple click on different articles in a short time
+        if (!isGlobalBlocked && !isBlocked[id]) {
+            // Update click counts for checkbox
+            setClickCounts((prevCounts) => ({
+                ...prevCounts,
+                [id]: (prevCounts[id] || 0) + 1,
+            }));
+
+            // Update click timestamps
+            setClickTimestamps((prevTimestamps) => [
+                ...prevTimestamps,
+                Date.now(),
+            ]);
+
+            // Check if global blocking conditions are met
+            const timestamps = [...clickTimestamps, Date.now()];
+            if (
+                timestamps.length >= 4 &&
+                timestamps[timestamps.length - 1] -
+                    timestamps[timestamps.length - 4] <
+                    2000
+            ) {
+                setIsGlobalBlocked(true);
+
+                setTimeout(() => {
+                    setIsGlobalBlocked(false);
+                  }, 5000);
+            }
+
+            // Check if individual blocking conditions are met
+            if ((clickCounts[id] || 0) >= 2) {
+                setIsBlocked((prevBlocked) => ({
+                    ...prevBlocked,
+                    [id]: true,
+                }));
+
+                setTimeout(() => {
+                    setIsBlocked((prevBlocked) => ({
+                        ...prevBlocked,
+                        [id]: false,
+                    }));
+                    setClickCounts((prevCounts) => ({
+                        ...prevCounts,
+                        [id]: 0,
+                    }));
+                }, 5000);
+            } else {
+                setTimeout(() => {
+                    setClickCounts((prevCounts) => ({
+                        ...prevCounts,
+                        [id]: 0,
+                    }));
+                }, 2000);
+            }
+        }
+        // If no article is blocked we update the article
+        if (!Object.values(isBlocked).includes(true) && !isGlobalBlocked) {
+            articleModifier.mutate();
+        }
     };
 
     const checkArticleLeft = (articles: Article[]) => {
@@ -62,6 +128,12 @@ const Table: React.FC<Lists> = (data) => {
 
     return (
         <>
+            {(Object.values(isBlocked).includes(true) || isGlobalBlocked) && (
+                <ErrorToast
+                    message="Vous êtes un peu trop rapide, attendez 5 secondes avant de réessayer !"
+                    delay={5000}
+                />
+            )}
             {isError && (
                 <ErrorToast
                     message={
@@ -196,7 +268,9 @@ const Table: React.FC<Lists> = (data) => {
                                                                 setArticleData(
                                                                     articleChange
                                                                 );
-                                                                updateIsBuyed();
+                                                                updateIsBuyed(
+                                                                    article.id
+                                                                );
                                                             }}
                                                         />
                                                     </label>
