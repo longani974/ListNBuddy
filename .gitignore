@@ -26,6 +26,7 @@ dist-ssr
 # PocketBase
 pb_data
 pb_dataFirst
+pocketbase.exe.old
 
 # Fly.io
 fly.toml
