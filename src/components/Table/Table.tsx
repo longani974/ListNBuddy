@@ -134,7 +134,10 @@ const Table: React.FC<Lists> = (data) => {
                             {!!articles?.length &&
                                 articles?.map((article) => {
                                     return (
-                                        <tr key={article.id} className="hover:bg-base-200">
+                                        <tr
+                                            key={article.id}
+                                            className="hover:bg-base-200"
+                                        >
                                             <th className="w-0">
                                                 <div className="flex-none">
                                                     <label
@@ -173,7 +176,7 @@ const Table: React.FC<Lists> = (data) => {
                                                 {isLoading &&
                                                 article.id ===
                                                     articleData?.id ? (
-                                                    <span>"loading"</span>
+                                                    <span className="loading loading-ring loading-xs ml-1"></span>
                                                 ) : (
                                                     <label>
                                                         <input
