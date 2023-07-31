@@ -11,7 +11,7 @@ interface Article {
 
 export const useArticleModifier = (article: Article) => {
     const updateArticle = async () => {
-        return await pb.collection("articles").update(article.id, {
+        return await pb.collection("articl").update(article.id, {
             ...article,
         });
     };
