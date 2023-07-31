@@ -29,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = () => {
                     >
                         <div className="indicator ">
                             {notifications > 0 && (
-                                <span className="indicator-item text-gray-400">
+                                <span className="indicator-item text-gray-400 z-0">
                                     {notifications}
                                 </span>
                             )}

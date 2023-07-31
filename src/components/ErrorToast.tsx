@@ -8,7 +8,6 @@ const ErrorToast: React.FC<ErrorToastProps> = ({message}) => {
     return (
         <div className="toast z-50">
             <div className="alert alert-warning shadow-lg">
-                <div>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         className="stroke-current flex-shrink-0 h-6 w-6"
@@ -23,7 +22,6 @@ const ErrorToast: React.FC<ErrorToastProps> = ({message}) => {
                         />
                     </svg>
                     <span className="whitespace-pre-line">{message}</span>
-                </div>
             </div>
         </div>
     );

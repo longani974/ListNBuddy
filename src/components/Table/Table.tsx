@@ -106,7 +106,7 @@ const Table: React.FC<Lists> = (data) => {
                         </label>
                     </div>
 
-                    <table className="table table-compact w-full">
+                    <table className="table table-sm w-full">
                         {/* head */}
                         <thead>
                             <tr>
@@ -134,7 +134,7 @@ const Table: React.FC<Lists> = (data) => {
                             {!!articles?.length &&
                                 articles?.map((article) => {
                                     return (
-                                        <tr key={article.id} className="hover">
+                                        <tr key={article.id} className="hover:bg-base-200">
                                             <th className="w-0">
                                                 <div className="flex-none">
                                                     <label
