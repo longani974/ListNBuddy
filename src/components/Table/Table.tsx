@@ -66,9 +66,10 @@ const Table: React.FC<Lists> = (data) => {
                 <ErrorToast
                     message={
                         articleData?.isBuyed
-                            ? `Impossible de passer ${articleData.name} comme acheté(e).\nVérifiez votre connexion internet.`
-                            : `Impossible de passer ${articleData?.name} comme non acheté(e).\nVérifiez votre connexion internet.`
+                            ? `Impossible de passer ${articleData.name} comme acheté(e).\nRaffraichir l'application ou réesseyez plus tard.`
+                            : `Impossible de passer ${articleData?.name} comme non acheté(e).\nRaffraichir l'application ou réesseyez plus tard.`
                     }
+                    delay={3000}
                 />
             )}
             <div>
