@@ -7,6 +7,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import ModalInviteUser from "./ModalInviteUser";
 import pb from "../../lib/pocketbase";
 import ErrorToast from "../ErrorToast";
+import RealtimeListener from "../RealtimeListener";
 
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
@@ -322,6 +323,7 @@ const Table: React.FC<Lists> = (data) => {
 
                 <ModalInviteUser listId={data.id} />
             </div>
+            <RealtimeListener />
         </>
     );
 };

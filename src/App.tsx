@@ -1,106 +1,25 @@
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Auth from "./components/Auth";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { userState } from "./atoms/userAtoms";
 import Table from "./components/Table/Table";
-import pb from "./lib/pocketbase";
 import Drawer from "./components/Drawer";
 import ModalMyInvitations from "./components/Table/ModalMyInvitations";
-import { invitationState } from "./atoms/invitationAtoms";
-import { useEffect, useState } from "react";
 import useInvitations from "./hooks/useInvitations";
 import ModalMyLists from "./components/Table/ModalMyLists";
 import { listToShow } from "./atoms/listToShow";
 import ModalForgetPassword from "./components/ModalForgetPasword";
-import { Article, Lists } from "./types/dbPocketbasetypes";
-import { articlesState } from "./atoms/articlesAtoms";
+import { Lists } from "./types/dbPocketbasetypes";
 import ModalMyNewList from "./components/Table/ModalMyNewList";
 import { useClickModal } from "./hooks/useClickModal";
 
 export default function App() {
-    const [listId, setListId] = useState<string>("");
-
     const acceptInvitations = useInvitations("accept");
 
     const { isLogin } = useRecoilValue(userState);
-    const { invitations } = useRecoilValue(invitationState);
     const { indexListToShow } = useRecoilValue(listToShow);
-    const { articles } = useRecoilValue(articlesState);
-    const setArticles = useSetRecoilState(articlesState);
-
-    const setInvitations = useSetRecoilState(invitationState);
-
     const { clickModal } = useClickModal();
-
-    useEffect(() => {
-        setListId(acceptInvitations[indexListToShow]?.list);
-    }, [acceptInvitations, indexListToShow]);
-
-    // realtime: subscribe to changes in the articles collection
-    useEffect(() => {
-        // Subscribe to changes only in the specified record
-        const realTime = async () => {
-            await pb
-                .collection("articles")
-                .subscribe("*", async function ({ action, record }) {
-                    if (action === "update") {
-                        const newArticlesCopy = JSON.parse(
-                            JSON.stringify([...articles])
-                        );
-
-                        const index = newArticlesCopy.findIndex(
-                            (article: { id: string }) =>
-                                article.id === record.id
-                        );
-
-                        newArticlesCopy[index] = record as Article;
-
-                        setArticles({ articles: newArticlesCopy });
-                    }
-
-                    if (action === "create") {
-                        const newArticlesCopy = JSON.parse(
-                            JSON.stringify([...articles])
-                        );
-
-                        newArticlesCopy.push(record as Article);
-
-                        setArticles({ articles: newArticlesCopy });
-                    }
-
-                    if (action === "delete") {
-                        const newArticlesCopy = JSON.parse(
-                            JSON.stringify([...articles])
-                        );
-
-                        const index = newArticlesCopy.findIndex(
-                            (article: { id: string }) =>
-                                article.id === record.id
-                        );
-
-                        newArticlesCopy.splice(index, 1);
-
-                        setArticles({ articles: newArticlesCopy });
-                    }
-                });
-        };
-
-        // Check if listId has a length before subscribing to changes
-        listId?.length && realTime();
-
-        // Unsubscribe from the record subscription when the component unmounts
-        return () => {
-            pb.collection("articles").unsubscribe("*");
-        };
-    }, [
-        articles,
-        indexListToShow,
-        invitations,
-        listId,
-        setArticles,
-        setInvitations,
-    ]);
 
     return (
         <>
