@@ -3,14 +3,17 @@ import pb from "../lib/pocketbase";
 
 export const useArticleDeleter = (articleId: string) => {
     const deleteArticle = async () => {
-        return await pb.collection("articles").delete(articleId);
+        return await pb.collection("articlesdz").delete(articleId);
     };
 
 
     const mutateArticle = useMutation(deleteArticle, {
-        onSuccess: () => {
-            console.log("article deleted")
+        onSuccess: (data) => {
+            console.log(data)
         },
+        onError: (error) => {
+            console.log(error)
+        }
     });
     return mutateArticle;
 };
