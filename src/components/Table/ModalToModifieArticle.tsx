@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Article } from "../../types/dbPocketbasetypes";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "../../atoms/userAtoms";
 import { useArticleModifier } from "../../hooks/useArticleModifier";
 import { useArticleDeleter } from "../../hooks/useArticleDeleter";
 import { useNewArticleAdder } from "../../hooks/useNewArticleAdder";
+import { isArticleFetchingState } from "../../atoms/isArticleLoading";
+import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
 
 type ModalToModifieArticleProps = {
     articleData: Article | null;
@@ -27,6 +29,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     const [articleId, setArticleId] = useState<string>(articleData?.id || "");
 
     const { userId } = useRecoilValue(userState);
+    const setIsLoading = useSetRecoilState(isArticleFetchingState);
 
     useEffect(() => {
         setArticleName(articleData?.name || "");
@@ -34,13 +37,24 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         setArticleId(articleData?.id || "");
     }, [articleData]);
 
-    const articleModifier = useArticleModifier(
-        { name: articleName, quantity: articleQuantity, id: articleId, list: listId },
-    );
+    const articleModifier = useArticleModifier({
+        name: articleName,
+        quantity: articleQuantity,
+        id: articleId,
+        list: listId,
+    });
+    const { isLoading } = articleModifier;
+    const isOnline = useRecoilValue(onlineStatusState);
 
-    const articleDeleter = useArticleDeleter(
-        articleId,
-    );
+    useEffect(() => {
+        isLoading !== undefined && setIsLoading({ isLoadingState: isLoading });
+    }, [isLoading, setIsLoading]);
+
+    // useEffect(() => {
+    //     isError && console.log("error$$$$$$$ : " + error);
+    // },[isError, error])
+
+    const articleDeleter = useArticleDeleter(articleId);
 
     const newArticleAdder = useNewArticleAdder({
         name: articleName,
@@ -76,6 +90,11 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                     <h3 className="text-lg font-bold">
                         Fenêtre de modification
                     </h3>
+                    {!isOnline && (
+                        <div className="alert alert-error">
+                            Vous êtes hors ligne, vous ne pouvez pas apporter de modifications.
+                        </div>
+                    )}
                     <div className="py-4">
                         <form className="flex flex-col">
                             <label className="label">
@@ -105,7 +124,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                             <>
                                 <label
                                     htmlFor="articleModal"
-                                    className="btn btn-primary mt-4 w-full"
+                                    className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
                                     onClick={handleModifieArticle}
                                 >
                                     Modifier
@@ -113,7 +132,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 <div className="divider"></div>
                                 <label
                                     htmlFor="articleModal"
-                                    className="btn btn-primary mt-4 w-full"
+                                    className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
                                     onClick={handleDeleteArticle}
                                 >
                                     Supprimer

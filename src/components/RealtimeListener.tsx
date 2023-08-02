@@ -77,10 +77,8 @@ const RealtimeListener: React.FC<RealtimeListenerProps> = () => {
     // The isSubscribed ref is used to ensure that the subscription only happens once, even if the component is unmounted and remounted.
     useEffect(() => {
         const realTime = async () => {
-            console.log(isSubscribed.current);
             if (!isSubscribed.current) {
                 isSubscribed.current = true;
-                console.log("subscribing to articles");
                 await pb.collection("articles").subscribe("*", updateArticles);
             }
         };
@@ -95,7 +93,6 @@ const RealtimeListener: React.FC<RealtimeListenerProps> = () => {
     // And when we click on the checkbox isBuyed, we unsubscribe and the ui is not updated
     useEffect(() => {
         return () => {
-            console.log("unsubscribing from articles");
             pb.collection("articles").unsubscribe("*");
         };
     }, []);

@@ -8,6 +8,8 @@ import ModalInviteUser from "./ModalInviteUser";
 import pb from "../../lib/pocketbase";
 import ErrorToast from "../ErrorToast";
 import RealtimeListener from "../RealtimeListener";
+import { isArticleFetchingState } from "../../atoms/isArticleLoading";
+import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
 
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
@@ -23,6 +25,7 @@ const Table: React.FC<Lists> = (data) => {
     const setArticles = useSetRecoilState(articlesState);
     const [isGlobalBlocked, setIsGlobalBlocked] = useState<boolean>(false);
     const [clickTimestamps, setClickTimestamps] = useState<number[]>([]);
+    const { isLoadingState } = useRecoilValue(isArticleFetchingState);
 
     const articleModifier = useArticleModifier({
         id: articleData?.id as string,
@@ -33,6 +36,7 @@ const Table: React.FC<Lists> = (data) => {
     });
 
     const { isError, isLoading } = articleModifier;
+    const isOnline = useRecoilValue(onlineStatusState);
 
     const updateIsBuyed = (id: string) => {
         // We try to prevent multiple click on the same article in a shortter time
@@ -62,7 +66,7 @@ const Table: React.FC<Lists> = (data) => {
 
                 setTimeout(() => {
                     setIsGlobalBlocked(false);
-                  }, 5000);
+                }, 5000);
             }
 
             // Check if individual blocking conditions are met
@@ -146,6 +150,7 @@ const Table: React.FC<Lists> = (data) => {
                 />
             )}
             <div>
+                <span className="text-sm text-gray-500"></span>
                 <div className="w-full relative">
                     <h1>{data?.name}</h1>
                     {!!articles?.length && (
@@ -214,28 +219,36 @@ const Table: React.FC<Lists> = (data) => {
                                         >
                                             <th className="w-0">
                                                 <div className="flex-none">
-                                                    <label
-                                                        htmlFor="articleModal"
-                                                        onClick={() => {
-                                                            setMode("update");
-                                                            setArticleData(
-                                                                article
-                                                            );
-                                                        }}
-                                                        className="btn btn-square btn-ghost w-6 "
-                                                    >
-                                                        <svg
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            viewBox="0 0 48 48"
+                                                    {isLoadingState &&
+                                                    article.id ===
+                                                        articleData?.id ? (
+                                                        <span className="loading loading-ball loading-xs ml-1 mt-4 mb-3"></span>
+                                                    ) : (
+                                                        <label
+                                                            htmlFor="articleModal"
+                                                            onClick={() => {
+                                                                setMode(
+                                                                    "update"
+                                                                );
+                                                                setArticleData(
+                                                                    article
+                                                                );
+                                                            }}
+                                                            className="btn btn-square btn-ghost w-6 "
                                                         >
-                                                            <g fill="none">
-                                                                <path
-                                                                    d="M24 16a3.5 3.5 0 1 1 0-7a3.5 3.5 0 0 1 0 7zm0 11.5a3.5 3.5 0 1 1 0-7a3.5 3.5 0 0 1 0 7zm-3.5 8a3.5 3.5 0 1 0 7 0a3.5 3.5 0 0 0-7 0z"
-                                                                    fill="currentColor"
-                                                                ></path>
-                                                            </g>
-                                                        </svg>
-                                                    </label>
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                viewBox="0 0 48 48"
+                                                            >
+                                                                <g fill="none">
+                                                                    <path
+                                                                        d="M24 16a3.5 3.5 0 1 1 0-7a3.5 3.5 0 0 1 0 7zm0 11.5a3.5 3.5 0 1 1 0-7a3.5 3.5 0 0 1 0 7zm-3.5 8a3.5 3.5 0 1 0 7 0a3.5 3.5 0 0 0-7 0z"
+                                                                        fill="currentColor"
+                                                                    ></path>
+                                                                </g>
+                                                            </svg>
+                                                        </label>
+                                                    )}
                                                 </div>
                                             </th>
                                             <td>
@@ -252,13 +265,20 @@ const Table: React.FC<Lists> = (data) => {
                                                     articleData?.id ? (
                                                     <span className="loading loading-ring loading-xs ml-1"></span>
                                                 ) : (
-                                                    <label>
+                                                    <label
+                                                        className={`${
+                                                            !isOnline &&
+                                                            "tooltip tooltip-left"
+                                                        }`}
+                                                        data-tip="Vous avez perdu votre connection internet. Impossible de cocher ou décocher la case."
+                                                    >
                                                         <input
                                                             type="checkbox"
                                                             className="checkbox"
                                                             checked={
                                                                 article.isBuyed
                                                             }
+                                                            disabled={!isOnline}
                                                             onChange={() => {
                                                                 const articleChange =
                                                                     {
