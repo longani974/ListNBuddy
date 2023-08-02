@@ -11,10 +11,11 @@ export default function useSignIn() {
         await pb
             .collection("users")
             .authWithPassword(email, password)
-            .then(() => {
-                pb.authStore.isValid && setUserState({ isLogin: pb.authStore.isValid, userId: pb.authStore?.model?.id });
-            });
     }
 
-    return useMutation(signIn);
+    return useMutation(signIn, {
+        onSuccess: () => {
+            pb.authStore.isValid && setUserState({ isLogin: pb.authStore.isValid, userId: pb.authStore?.model?.id });
+        }
+    });
 }

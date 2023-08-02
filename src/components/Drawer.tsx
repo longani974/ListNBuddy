@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { userState } from "../atoms/userAtoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import pb from "../lib/pocketbase";
@@ -20,7 +20,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
 
     const { clickModal } = useClickModal();
 
-    const getInvitedLists = async () => {
+    const getInvitedLists = useCallback(async () => {
         {
             try {
                 const resultList = await pb
@@ -36,11 +36,11 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                 console.log(e);
             }
         }
-    };
+    },[setInvitations, userId]);
 
-    useEffectOnce(() => {
+    useEffect(() => {
         userId?.length && getInvitedLists();
-    });
+    }, [getInvitedLists, userId]);
     // utiliser useEffectOnce pour ne pas recharger les invitations à chaque fois que le composant est monté
     // car en dirait que unsubscribe ne fonctionne pas correctement ou pas assez rapidement
     // ClientResponseError 0: Something went wrong while processing your request.
