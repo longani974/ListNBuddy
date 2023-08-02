@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 // import { Article } from "../../types/dbPocketbasetypes";
 import { useInvitateUser } from "../../hooks/useInvitateUser";
+import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
+import { useRecoilValue } from "recoil";
 
 type ModalInviteUserProps = {
     listId: string;
@@ -19,6 +21,8 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({
         listModifier.mutateAsync({ id: listId, email: email, status: "waiting" });
     };
 
+    const isOnline = useRecoilValue(onlineStatusState);
+
     return (
         <>
             {/* Put this part before </body> tag */}
@@ -36,6 +40,11 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Inviter une personne</h3>
+                    {!isOnline && (
+                        <div className="alert alert-error">
+                            Vous êtes hors ligne, vous ne pouvez pas inviter une personne.
+                        </div>
+                    )}
                     <div className="py-4">
                         <form className="flex flex-col">
                             <label className="label">
@@ -54,7 +63,7 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({
 
                         <label
                             htmlFor="inviteUserModal"
-                            className="btn btn-primary mt-4 w-full"
+                            className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
                             onClick={handleInviteUser}
                         >
                             Inviter

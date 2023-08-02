@@ -1,5 +1,7 @@
 import useInvitations from "../../hooks/useInvitations";
 import { useHandleStatusInvitation } from "../../hooks/useHandleStatusInvitation";
+import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
+import { useRecoilValue } from "recoil";
 
 type ModalInviteUserProps = {
     //
@@ -10,6 +12,8 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
     const waitingInvitations = useInvitations("waiting");
 
     const { mutateAsync } = useHandleStatusInvitation();
+
+    const isOnline = useRecoilValue(onlineStatusState);
 
     return (
         <>
@@ -28,6 +32,11 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Mes invitations</h3>
+                    {!isOnline && (
+                        <div className="alert alert-error">
+                            Vous êtes hors ligne, vous ne pouvez pas changer le status de vos invitations.
+                        </div>
+                    )}
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
                             {waitingInvitations.length > 0 &&
@@ -54,7 +63,7 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                             ?.email}
                                                 </span>
                                             </div>
-                                            <div className="btn-group btn-group-horizontal">
+                                            <div className={`btn-group btn-group-horizontal ${!isOnline && "btn-disabled"}`}>
                                                 <button
                                                     className="btn btn-square"
                                                     onClick={() =>

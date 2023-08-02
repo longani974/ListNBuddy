@@ -7,6 +7,7 @@ import { userState } from "../../atoms/userAtoms";
 import { listToShow } from "../../atoms/listToShow";
 import useInvitations from "../../hooks/useInvitations";
 import { useMutation } from "@tanstack/react-query";
+import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
 
 type ModalMyNewListProps = {
     //
@@ -39,6 +40,8 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     const inviteUser = useInvitateUser();
 
     const acceptInvitations = useInvitations("accept");
+
+    const isOnline = useRecoilValue(onlineStatusState);
 
     useEffect(() => {
         const index = acceptInvitations.findIndex(
@@ -92,6 +95,11 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Ma nouvelle liste</h3>
+                    {!isOnline && (
+                        <div className="alert alert-error">
+                            Vous êtes hors ligne, vous ne pouvez pas ajouter une nouvelle liste.
+                        </div>
+                    )}
                     <div className="py-4">
                         <form className="flex flex-col">
                             <label className="label">
@@ -109,7 +117,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                         </form>
                         <label
                             htmlFor="myNewListModal"
-                            className="btn btn-primary mt-4 w-full"
+                            className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
                             onClick={handleAddNewList}
                         >
                             Ajouter

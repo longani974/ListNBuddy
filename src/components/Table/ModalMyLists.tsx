@@ -32,7 +32,7 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                     <h3 className="text-lg font-bold">Mes listes</h3>
                     {!isOnline && (
                         <div className="alert alert-error">
-                            Vous êtes hors ligne, vous ne pouvez pas apporter de modifications.
+                            Vous êtes hors ligne, vous ne pouvez pas changer ou supprimer une liste.
                         </div>
                     )}
                     <div className="py-4">
