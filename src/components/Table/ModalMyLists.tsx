@@ -1,7 +1,8 @@
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import useInvitations from "../../hooks/useInvitations";
 import { listToShow } from "../../atoms/listToShow";
 import { useHandleStatusInvitation } from "../../hooks/useHandleStatusInvitation";
+import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
 
 type ModalMyListsProps = {
     //
@@ -13,6 +14,8 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
     const setIndex = useSetRecoilState(listToShow);
 
     const { mutateAsync } = useHandleStatusInvitation();
+
+    const isOnline = useRecoilValue(onlineStatusState);
 
     return (
         <>
@@ -27,6 +30,11 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Mes listes</h3>
+                    {!isOnline && (
+                        <div className="alert alert-error">
+                            Vous êtes hors ligne, vous ne pouvez pas apporter de modifications.
+                        </div>
+                    )}
                     <div className="py-4">
                         <div className="overflow-y-auto max-h-96">
                             {acceptedInvitations.map((invitation, index) => (
@@ -50,7 +58,7 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                         </div>
                                         <div className="btn-group btn-group-horizontal">
                                             <button
-                                                className="btn btn-square"
+                                                className={`btn btn-square ${!isOnline && "btn-disabled"}`}
                                                 onClick={() => {
                                                     setIndex({
                                                         indexListToShow: index,
@@ -74,7 +82,7 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                                 </svg>
                                             </button>
                                             <button
-                                                className="btn btn-square btn-ghost"
+                                                className={`btn btn-square btn-ghost ${!isOnline && "btn-disabled"}`}
                                                 onClick={() =>
                                                     mutateAsync(
                                                         {listId:invitation.list,
