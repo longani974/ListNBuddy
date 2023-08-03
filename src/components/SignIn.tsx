@@ -4,7 +4,7 @@ import useSignIn from "../hooks/useSignIn";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 // import { fr } from "yup-locales";
-import { mixed, string, number, date, boolean, object, array } from "../utils"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
+import { mixed, string, number, date, boolean, object, array } from "../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 
 yup.setLocale({
   mixed: mixed,
