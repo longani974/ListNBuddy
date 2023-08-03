@@ -2,17 +2,31 @@ import { useMutation } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
 import { SignUpFormInput } from "../components/SignUp";
 import useSignIn from "./useSignIn";
+import { ClientResponseError } from "pocketbase";
+import { Users } from "../atoms/invitationAtoms";
 
 export default function useSignUP() {
     const { mutate: signIn } = useSignIn();
-    async function signUp({ username, email, password }: SignUpFormInput) {
-        await pb
-            .collection("users")
-            .create({ username, email, password, passwordConfirm: password,"emailVisibility": true, })
-            .then(() => {
-                signIn({ email, password });
-            });
+    async function signUp({
+        username,
+        email,
+        password,
+    }: SignUpFormInput): Promise<Users> {
+        const userData = await pb.collection("users").create({
+            username,
+            email,
+            password,
+            passwordConfirm: password,
+            emailVisibility: true,
+        });
+        await signIn({ email, password }); // Sign in the user after successful signup
+        return userData as Users;
     }
 
-    return useMutation(signUp);
+    return useMutation<Users, ClientResponseError, SignUpFormInput>(signUp, {
+        onError: (err) => {
+            console.log(err.response.data);
+            return err
+        },
+    });
 }

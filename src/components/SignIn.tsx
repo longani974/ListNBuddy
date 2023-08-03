@@ -3,7 +3,6 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import useSignIn from "../hooks/useSignIn";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-// import { fr } from "yup-locales";
 import { mixed, string, number, date, boolean, object, array } from "../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 import FormErrorMsg from "./FormErrorMsg";
 
@@ -48,6 +47,7 @@ const SignIn: React.FC<SignInProps> = () => {
         reset,
         formState: { errors },
     } = useForm<FormData>({ resolver: yupResolver(schema) });
+    
     const onSubmit: SubmitHandler<FormData> = (data) => {
         signIn(data);
         isSuccess && reset();
