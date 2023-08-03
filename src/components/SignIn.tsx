@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 // import { fr } from "yup-locales";
 import { mixed, string, number, date, boolean, object, array } from "../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
+import FormErrorMsg from "./FormErrorMsg";
 
 yup.setLocale({
   mixed: mixed,
@@ -65,16 +66,14 @@ const SignIn: React.FC<SignInProps> = () => {
                     className="input input-bordered w-full max-w-xs"
                     {...register("email", { required: true })}
                 />
-                <span className="text-red-500"> {errors.email?.message}</span>
+                <FormErrorMsg messageError={errors.email?.message} />
                 <input
                     type="password"
                     placeholder="Mot de passe"
                     className="input input-bordered w-full max-w-xs"
                     {...register("password", { required: true })}
                 />
-                <span className="text-red-500">
-                    {errors.password?.message}
-                </span>
+                <FormErrorMsg messageError={errors.password?.message} />
 
                 <button
                     type="submit"
