@@ -7,7 +7,44 @@ import { useArticleDeleter } from "../../hooks/useArticleDeleter";
 import { useNewArticleAdder } from "../../hooks/useNewArticleAdder";
 import { isArticleFetchingState } from "../../atoms/isArticleLoading";
 import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+    mixed,
+    string,
+    number,
+    date,
+    boolean,
+    object,
+    array,
+} from "../../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
+import FormErrorMsg from "../FormErrorMsg";
 
+// Set yup locale for validation error messages
+// We use the yupTranslate file to translate the error messages
+yup.setLocale({
+    mixed: mixed,
+    string: string,
+    number: number,
+    date: date,
+    boolean: boolean,
+    object: object,
+    array: array,
+});
+
+// Define the yup schema for form validation
+const schema = yup
+    .object({
+        name: yup.string().min(2).max(50).required().label("L'article"),
+        quantity: yup.string().max(50).label("Quantité de l'article à ajouter"),
+    })
+    .required();
+
+// Define the type of the form data (used by react-hook-form) from the yup schema
+type FormData = yup.InferType<typeof schema>;
+
+// Define the props for the react component
 type ModalToModifieArticleProps = {
     articleData: Article | null;
     listId: string;
@@ -20,29 +57,25 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     listId,
     mode,
 }) => {
-    const [articleName, setArticleName] = useState<string>(
-        articleData?.name || ""
-    );
-    const [articleQuantity, setArticleQuantity] = useState<string>(
-        articleData?.quantity || ""
-    );
     const [articleId, setArticleId] = useState<string>(articleData?.id || "");
 
     const { userId } = useRecoilValue(userState);
+    // This state is used to display the loading state in the Table component
     const setIsLoading = useSetRecoilState(isArticleFetchingState);
 
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<FormData>({ resolver: yupResolver<FormData>(schema) });
+ 
     useEffect(() => {
-        setArticleName(articleData?.name || "");
-        setArticleQuantity(articleData?.quantity || "");
         setArticleId(articleData?.id || "");
-    }, [articleData]);
+    }, [articleData?.id]);
 
-    const articleModifier = useArticleModifier({
-        name: articleName,
-        quantity: articleQuantity,
-        id: articleId,
-        list: listId,
-    });
+    const articleModifier = useArticleModifier();
+ 
     const { isLoading } = articleModifier;
     const isOnline = useRecoilValue(onlineStatusState);
 
@@ -50,29 +83,26 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         isLoading !== undefined && setIsLoading({ isLoadingState: isLoading });
     }, [isLoading, setIsLoading]);
 
-    // useEffect(() => {
-    //     isError && console.log("error$$$$$$$ : " + error);
-    // },[isError, error])
+    const articleDeleter = useArticleDeleter();
 
-    const articleDeleter = useArticleDeleter(articleId);
+    const newArticleAdder = useNewArticleAdder();
 
-    const newArticleAdder = useNewArticleAdder({
-        name: articleName,
-        quantity: articleQuantity,
-        isBuyed: false,
-        addBy: userId,
-        list: listId,
-    });
-
-    const handleModifieArticle = () => {
-        articleModifier.mutateAsync();
+    const handleModifieArticle: SubmitHandler<FormData> = (data) => {
+        const { mutateAsync, isSuccess } = articleModifier;
+        mutateAsync({ ...data, id: articleId });
+        isSuccess && reset();
     };
 
     const handleDeleteArticle = () => {
-        articleDeleter.mutateAsync();
+        const { mutateAsync, isSuccess } = articleDeleter;
+        mutateAsync(articleId);
+        isSuccess && reset();
     };
-    const handleAddNewArticle = () => {
-        newArticleAdder.mutateAsync();
+
+    const handleAddNewArticle: SubmitHandler<FormData>  = (data) => {
+        const { mutateAsync, isSuccess } = newArticleAdder;
+        mutateAsync( {...data, list: listId, addBy: userId, isBuyed: false  });
+        isSuccess && reset();
     };
 
     return (
@@ -92,7 +122,8 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                     </h3>
                     {!isOnline && (
                         <div className="alert alert-error">
-                            Vous êtes hors ligne, vous ne pouvez pas apporter de modifications.
+                            Vous êtes hors ligne, vous ne pouvez pas apporter de
+                            modifications.
                         </div>
                     )}
                     <div className="py-4">
@@ -104,9 +135,10 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 type="text"
                                 placeholder="Article"
                                 className="input input-bordered w-100%"
-                                value={articleName}
-                                onChange={(e) => setArticleName(e.target.value)}
+                                {...register("name")}
                             />
+                            <FormErrorMsg messageError={errors.name?.message} />
+
                             <label className="label">
                                 <span className="label-text">Qté</span>
                             </label>
@@ -114,25 +146,27 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 type="text"
                                 placeholder="Quantitée"
                                 className="input input-bordered w-full"
-                                value={articleQuantity}
-                                onChange={(e) =>
-                                    setArticleQuantity(e.target.value)
-                                }
+                                {...register("quantity")}
                             />
+                            <FormErrorMsg messageError={errors.quantity?.message} />
                         </form>
                         {mode === "update" && (
                             <>
                                 <label
                                     htmlFor="articleModal"
-                                    className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
-                                    onClick={handleModifieArticle}
+                                    className={`btn btn-primary mt-4 w-full ${
+                                        !isOnline && "btn-disabled"
+                                    }`}
+                                    onClick={handleSubmit(handleModifieArticle)}
                                 >
                                     Modifier
                                 </label>
                                 <div className="divider"></div>
                                 <label
                                     htmlFor="articleModal"
-                                    className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
+                                    className={`btn btn-primary mt-4 w-full ${
+                                        !isOnline && "btn-disabled"
+                                    }`}
                                     onClick={handleDeleteArticle}
                                 >
                                     Supprimer
@@ -144,7 +178,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 <label
                                     htmlFor="articleModal"
                                     className="btn btn-primary mt-4 w-full"
-                                    onClick={handleAddNewArticle}
+                                    onClick={handleSubmit(handleAddNewArticle)}
                                 >
                                     Ajouter
                                 </label>

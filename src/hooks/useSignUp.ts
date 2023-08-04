@@ -25,7 +25,6 @@ export default function useSignUP() {
 
     return useMutation<Users, ClientResponseError, SignUpFormInput>(signUp, {
         onError: (err) => {
-            console.log(err.response.data);
             return err
         },
     });

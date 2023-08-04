@@ -28,10 +28,10 @@ const schema = yup
     .required();
 type FormData = yup.InferType<typeof schema>;
 
-// export interface signInFormInput {
-//     email: string;
-//     password: string;
-// }
+export interface signInFormInput {
+    email: string;
+    password: string;
+}
 
 const SignIn: React.FC<SignInProps> = () => {
     const {
@@ -47,7 +47,7 @@ const SignIn: React.FC<SignInProps> = () => {
         reset,
         formState: { errors },
     } = useForm<FormData>({ resolver: yupResolver(schema) });
-    
+
     const onSubmit: SubmitHandler<FormData> = (data) => {
         signIn(data);
         isSuccess && reset();

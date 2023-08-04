@@ -27,74 +27,60 @@ export const useInvitateUser = () => {
             by: userId,
             status: status,
         };
-        {
-            try {
-                await pb.collection("invitations").create(data);
-            } catch (e) {
-                console.log(e);
-            }
-        }
+
+        const invitateCreateResponse = await pb
+            .collection("invitations")
+            .create(data);
+
+        return invitateCreateResponse;
     };
 
-    const mutateCreateInvitation = useMutation(createInvitation, {
-        onSuccess: () => {
-            console.log("invitation created");
-        },
-        onError: () => {
-            console.log("error invitation created");
-        },
-        onSettled: () => {
-            console.log("onSettled invitation created");
-        },
-    });
+    const mutateCreateInvitation = useMutation(createInvitation);
 
-    const updateList = async (newInvitation: NewInvitation) => {
-        const record = await pb.collection("users").getList(1, 20, {
+    const getUserId = async (newInvitation: NewInvitation) => {
+        const userId = await pb.collection("users").getList(1, 20, {
             filter: `email = "${newInvitation.email}"`,
             fields: "id",
         });
 
-        if (record.items.length === 0) {
-            return console.log("Pas d'utilisateur avec cette email");
+        // Check if user exist
+        if (userId.items.length === 0) {
+            throw new Error("Pas d'utilisateur avec cette email");
         }
 
-        // if (list.invited.includes(record.items[0].id)) {
-        //     return console.log("Utilisateur déjà invité");
-        // }
-
-        // TODO: change the way to check if user is already in the list because on create list we need to autoinvite the user
-        // if (record.items[0].id === userId) {
-        //     return console.log("Vous ne pouvez pas vous inviter vous même");
-        // }
-
-        // TODO: change the way to check if user is already in the list
-        // because particpants in list doesn't exist anymore
-        // if (list.participants.includes(record.items[0].id)) {
-        //     return console.log("Utilisateur déjà dans la liste");
-        // }
-
-        await mutateCreateInvitation.mutateAsync({
-            listId: newInvitation.id,
-            invitateId: record.items[0].id,
-            status: newInvitation.status || "waiting",
+        // Check if user is already invited
+        // get invitation by user and list
+        const invitations = await pb.collection("invitations").getList(1, 20, {
+            filter: `user = "${userId.items[0].id}" && list = "${newInvitation.id}"`,
+            fields: "id, user, list,by",
         });
 
-        // await createInvitation(newInvitation.id, record.items[0].id, newInvitation.status || "waiting");
+        // Check if user is the user who invite
+        if (invitations.items.length > 0 && invitations.items[0].by === userId.items[0].id) {
+            throw new Error("Vous ne pouvez pas vous inviter vous même");
+        }
+
+        // Check if user is already invited
+        if (invitations.items.length > 0) {
+            throw new Error("Utilisateur déjà invité");
+        }
+        
+
+        const isAlreadyInvited = invitations.items.length > 0;
+
+        return { userId, isAlreadyInvited };
     };
 
-    const mutateList = useMutation(updateList, {
-        onSuccess: () => {
-            console.log("updateList");
-        },
-
-        onError: (e) => {
-            console.log("error");
-            console.log(e);
-        },
-        onSettled: () => {
-            console.log("onSettled");
+    const mutateList = useMutation(getUserId, {
+        onSuccess: (data, newInvitation) => {
+            const { userId: user } = data;
+            
+            mutateCreateInvitation.mutateAsync({
+                listId: newInvitation.id,
+                invitateId: user.items[0].id,
+                status: newInvitation.status || "waiting",
+            });
         },
     });
-
     return mutateList;
 };

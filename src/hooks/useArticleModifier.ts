@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
 import { useRecoilValue } from "recoil";
 import { onlineStatusState } from "../atoms/onlineStatusAtoms";
+import { ClientResponseError } from "pocketbase";
 interface Article {
     id: string;
     name?: string;
@@ -12,21 +13,22 @@ interface Article {
 }
 
 // define a custom hook that will update the article
-export const useArticleModifier = (article: Article) => {
+export const useArticleModifier = () => {
     // get the online status
     const isOnline = useRecoilValue(onlineStatusState);
 
     // define the function that will update the article
-    const updateArticle = async () => {
-        return await pb
+    const updateArticle = async (article: Article) => {
+        const aricleData = await pb
             .collection("articles")
             .update(article.id, {
                 ...article,
             })
+            return aricleData as Article;
     };
 
     // use the react-query mutation hook to update the article
-    const mutateArticle = useMutation(updateArticle, {
+    const mutateArticle = useMutation<Article, ClientResponseError, Article>(updateArticle, {
         onMutate: () => {
             // if the user is offline, throw an error
             if (!isOnline) {
@@ -34,13 +36,10 @@ export const useArticleModifier = (article: Article) => {
             }
         },
         onSuccess: () => {
-            console.log("article updated");
+            console.log("success")
         },
-        onError: (error) => {
-            console.log(error)
-        },
-        onSettled: () => {
-            console.log("onSettled");
+        onError: (err) => {
+            return err
         },
     });
 

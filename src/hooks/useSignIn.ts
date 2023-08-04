@@ -8,9 +8,11 @@ export default function useSignIn() {
     const setUserState = useSetRecoilState(userState);
 
     async function signIn({ email, password }: signInFormInput) {
-        await pb
+        const userData = await pb
             .collection("users")
             .authWithPassword(email, password)
+
+        return userData;
     }
 
     return useMutation(signIn, {

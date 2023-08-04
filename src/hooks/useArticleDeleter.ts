@@ -1,19 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
 
-export const useArticleDeleter = (articleId: string) => {
-    const deleteArticle = async () => {
-        return await pb.collection("articlesdz").delete(articleId);
+export const useArticleDeleter = () => {
+    const deleteArticle = async (articleId: string) => {
+        return await pb.collection("articles").delete(articleId);
     };
 
 
-    const mutateArticle = useMutation(deleteArticle, {
-        onSuccess: (data) => {
-            console.log(data)
-        },
-        onError: (error) => {
-            console.log(error)
-        }
-    });
+    const mutateArticle = useMutation(deleteArticle);
+
     return mutateArticle;
 };
