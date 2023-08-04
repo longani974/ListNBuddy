@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import useSignUp from "../hooks/useSignUp";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -57,7 +57,7 @@ const SignUp: React.FC<SignUpProps> = () => {
         handleSubmit,
         reset,
         formState: { errors },
-        
+        setError,
     } = useForm<FormData>({ resolver: yupResolver(schema) });
 
     const {
@@ -76,6 +76,21 @@ const SignUp: React.FC<SignUpProps> = () => {
                 error.response.data.email.code === "validation_is_email"
             );
     };
+    useEffect(() => {
+        if (isSuccess) {
+            reset();
+        }
+        if (
+            isError &&
+            error?.response.data.email.code === "validation_is_email"
+        ) {
+            setError("email", { message: "Email non valide." });
+        } else if (
+            isError
+        ) {
+            setError("email", { message: "Oops... Un problème est survenue." });
+        }
+    }, [error?.response.data.email.code, isError, isSuccess, reset, setError]);
 
     return (
         <form
@@ -96,14 +111,7 @@ const SignUp: React.FC<SignUpProps> = () => {
                 {...register("email")}
             />
             {/* TODO: errase the msg after error?.response.data.email.code . It is confuse when typing a valid email and the msg still here */}
-            <FormErrorMsg
-                messageError={
-                    errors.email?.message ||
-                    (error?.response.data.email.code === "validation_is_email"
-                        ? "email non valide"
-                        : undefined)
-                }
-            />
+            <FormErrorMsg messageError={errors.email?.message} />
             <input
                 type="password"
                 placeholder="Mot de passe"
