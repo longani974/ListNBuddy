@@ -8,6 +8,47 @@ import { listToShow } from "../../atoms/listToShow";
 import useInvitations from "../../hooks/useInvitations";
 import { useMutation } from "@tanstack/react-query";
 import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import {
+    mixed,
+    string,
+    number,
+    date,
+    boolean,
+    object,
+    array,
+} from "../../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
+import FormErrorMsg from "../FormErrorMsg";
+import { useClickModal } from "../../hooks/useClickModal";
+
+// Set yup locale for validation error messages
+// We use the yupTranslate file to translate the error messages
+yup.setLocale({
+    mixed: mixed,
+    string: string,
+    number: number,
+    date: date,
+    boolean: boolean,
+    object: object,
+    array: array,
+});
+
+// Define the yup schema for form validation
+const schema = yup
+    .object({
+        listName: yup
+            .string()
+            .min(2)
+            .max(50)
+            .required()
+            .label("Le nom de la liste"),
+    })
+    .required();
+
+// Define the type of the form data (used by react-hook-form) from the yup schema
+type FormData = yup.InferType<typeof schema>;
 
 type ModalMyNewListProps = {
     //
@@ -31,9 +72,17 @@ const createList = async ({
 };
 
 const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
-    const [listName, setListName] = useState<string>("");
     const [idList, setIdList] = useState<string>("");
     const { userId } = useRecoilValue(userState);
+
+    const { clickModal } = useClickModal();
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<FormData>({ resolver: yupResolver<FormData>(schema) });
 
     const setIndexListToShow = useSetRecoilState(listToShow);
 
@@ -63,10 +112,13 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         },
     });
 
-    const handleAddNewList = async () => {
+    const { isLoading } = mutation;
+
+    const handleAddNewList: SubmitHandler<FormData> = async (data) => {
         // TODO: use react-query
         // const list = await createList();
-        const list = await mutation.mutateAsync({listName, userId});
+        const { listName } = data;
+        const list = await mutation.mutateAsync({ listName, userId });
         await inviteUser
             .mutateAsync({
                 id: list.id,
@@ -75,8 +127,14 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
             })
             .then(() => {
                 setIdList(list.id);
+                reset();
+                clickModal("myNewListModal")
             });
     };
+
+    useEffect(() => {
+        console.log(isLoading);
+    }, [isLoading]);
 
     return (
         <>
@@ -97,7 +155,8 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                     <h3 className="text-lg font-bold">Ma nouvelle liste</h3>
                     {!isOnline && (
                         <div className="alert alert-error">
-                            Vous êtes hors ligne, vous ne pouvez pas ajouter une nouvelle liste.
+                            Vous êtes hors ligne, vous ne pouvez pas ajouter une
+                            nouvelle liste.
                         </div>
                     )}
                     <div className="py-4">
@@ -111,15 +170,22 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                                 type="text"
                                 placeholder="Liste"
                                 className="input input-bordered w-100%"
-                                value={listName}
-                                onChange={(e) => setListName(e.target.value)}
+                                {...register("listName")}
+                            />
+                            <FormErrorMsg
+                                messageError={errors.listName?.message}
                             />
                         </form>
                         <label
                             htmlFor="myNewListModal"
-                            className={`btn btn-primary mt-4 w-full ${!isOnline && "btn-disabled"}`}
-                            onClick={handleAddNewList}
+                            className={`btn btn-primary mt-4 w-full ${
+                                (!isOnline || isLoading) && "btn-disabled"
+                            } `}
+                            onClick={handleSubmit(handleAddNewList)}
                         >
+                            {isLoading && (
+                                <span className="loading loading-ring loading-xs ml-1"></span>
+                            )}
                             Ajouter
                         </label>
                     </div>

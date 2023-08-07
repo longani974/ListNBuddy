@@ -27,13 +27,7 @@ const Table: React.FC<Lists> = (data) => {
     const [clickTimestamps, setClickTimestamps] = useState<number[]>([]);
     const { isLoadingState } = useRecoilValue(isArticleFetchingState);
 
-    const articleModifier = useArticleModifier({
-        id: articleData?.id as string,
-        isBuyed: articleData?.isBuyed,
-        isBuyedBy: articleData?.isBuyedBy,
-        quantity: articleData?.quantity,
-        name: articleData?.name,
-    });
+    const articleModifier = useArticleModifier();
 
     const { isError, isLoading } = articleModifier;
     const isOnline = useRecoilValue(onlineStatusState);
@@ -97,7 +91,13 @@ const Table: React.FC<Lists> = (data) => {
         }
         // If no article is blocked we update the article
         if (!Object.values(isBlocked).includes(true) && !isGlobalBlocked) {
-            articleModifier.mutate();
+            articleModifier.mutate({
+                id: articleData?.id as string,
+                isBuyed: articleData?.isBuyed,
+                isBuyedBy: articleData?.isBuyedBy,
+                quantity: articleData?.quantity,
+                name: articleData?.name,
+            });
         }
     };
 
