@@ -36,7 +36,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                 console.log(e);
             }
         }
-    },[setInvitations, userId]);
+    }, [setInvitations, userId]);
 
     useEffect(() => {
         userId?.length && getInvitedLists();
@@ -87,45 +87,37 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         ></label>
                         <ul className="menu p-4 w-80 bg-base-100 text-base-content">
                             {/* <!-- Sidebar content here --> */}
-                            <li>
-                                <div className="indicator">
+                            <li onClick={() => clickModal("myInvitationModal")}>
+                                {/* <div className="indicator">
                                     {waitingInvitations?.length > 0 && (
-                                        <span className="indicator-item indicator-middle text-gray-400 h-6">
+                                        <span className="indicator-item indicator-middle text-gray-400 h-6 absolute">
                                             {waitingInvitations?.length}
                                         </span>
-                                    )}
+                                    )} */}
 
-                                    <label htmlFor="my-drawer-2">
-                                        <a
-                                            onClick={() =>
-                                                clickModal("myInvitationModal")
-                                            }
-                                        >
-                                            Mes invitations
-                                        </a>
-                                    </label>
-                                </div>
-                            </li>
-                            <li>
                                 <label htmlFor="my-drawer-2">
                                     <a
-                                        onClick={() =>
-                                            clickModal("myListsModal")
-                                        }
+                                    // onClick={() =>
+                                    //     clickModal("myInvitationModal")
+                                    // }
                                     >
-                                        Mes listes
+                                        Mes invitations{" "}
+                                        <span className="relative bottom-2 right-2">
+                                            {waitingInvitations?.length}
+                                        </span>
                                     </a>
                                 </label>
+                                {/* </div> */}
                             </li>
-                            <li>
+                            <li onClick={() => clickModal("myInvitationModal")}>
                                 <label htmlFor="my-drawer-2">
-                                    <a
-                                        onClick={() =>
-                                            clickModal("myNewListModal")
-                                        }
-                                    >
+                                    
+                                        Mes listes
+                                </label>
+                            </li>
+                            <li onClick={() => clickModal("myInvitationModal")}>
+                                <label htmlFor="my-drawer-2">
                                         Ajouter une liste
-                                    </a>
                                 </label>
                             </li>
                             <li>
