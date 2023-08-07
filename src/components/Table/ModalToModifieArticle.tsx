@@ -20,6 +20,7 @@ import {
     array,
 } from "../../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 import FormErrorMsg from "../FormErrorMsg";
+import { useClickModal } from "../../hooks/useClickModal";
 
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
@@ -59,6 +60,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
 }) => {
     const [articleId, setArticleId] = useState<string>(articleData?.id || "");
 
+
     const { userId } = useRecoilValue(userState);
     // This state is used to display the loading state in the Table component
     const setIsLoading = useSetRecoilState(isArticleFetchingState);
@@ -68,16 +70,23 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<FormData>({ resolver: yupResolver<FormData>(schema) });
- 
+        setValue
+    } = useForm<FormData>({
+        resolver: yupResolver<FormData>(schema),
+    });
+
     useEffect(() => {
         setArticleId(articleData?.id || "");
-    }, [articleData?.id]);
+        setValue("name", articleData?.name || "");
+        setValue("quantity", articleData?.quantity || "");
+    }, [articleData?.id, articleData?.name, articleData?.quantity, setValue]);
 
     const articleModifier = useArticleModifier();
- 
+
     const { isLoading } = articleModifier;
     const isOnline = useRecoilValue(onlineStatusState);
+
+    const { clickModal } = useClickModal();
 
     useEffect(() => {
         isLoading !== undefined && setIsLoading({ isLoadingState: isLoading });
@@ -87,22 +96,34 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
 
     const newArticleAdder = useNewArticleAdder();
 
-    const handleModifieArticle: SubmitHandler<FormData> = (data) => {
+    const handleModifieArticle: SubmitHandler<FormData> = async (data) => {
+        clickModal("articleModal");
+
         const { mutateAsync, isSuccess } = articleModifier;
-        mutateAsync({ ...data, id: articleId });
-        isSuccess && reset();
+        await mutateAsync({ ...data, id: articleId });
+        if (isSuccess) {
+            reset();
+        }
     };
 
-    const handleDeleteArticle = () => {
+    const handleDeleteArticle = async () => {
+        clickModal("articleModal");
+
         const { mutateAsync, isSuccess } = articleDeleter;
-        mutateAsync(articleId);
-        isSuccess && reset();
+        await mutateAsync(articleId);
+        if (isSuccess) {
+            reset();
+        }
     };
 
-    const handleAddNewArticle: SubmitHandler<FormData>  = (data) => {
+    const handleAddNewArticle: SubmitHandler<FormData> = async (data) => {
+        clickModal("articleModal");
+
         const { mutateAsync, isSuccess } = newArticleAdder;
-        mutateAsync( {...data, list: listId, addBy: userId, isBuyed: false  });
-        isSuccess && reset();
+        await mutateAsync({ ...data, list: listId, addBy: userId, isBuyed: false });
+        if (isSuccess) {
+            reset();
+        }
     };
 
     return (
@@ -148,7 +169,9 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 className="input input-bordered w-full"
                                 {...register("quantity")}
                             />
-                            <FormErrorMsg messageError={errors.quantity?.message} />
+                            <FormErrorMsg
+                                messageError={errors.quantity?.message}
+                            />
                         </form>
                         {mode === "update" && (
                             <>
