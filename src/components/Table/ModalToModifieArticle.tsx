@@ -107,6 +107,12 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     };
 
     const handleDeleteArticle = async () => {
+        // TODO: find a way to close the modal after the article is deleted
+        // We invoke the clickModal function twice to close the modal
+        // Apparently the first clickModal call is not enough to close the modal
+        // It's seem when we close the modal the first time, something reopen it
+        // It's a hack, but it works
+        clickModal("articleModal");
         clickModal("articleModal");
 
         const { mutateAsync, isSuccess } = articleDeleter;
