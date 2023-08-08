@@ -29,7 +29,9 @@ export const useArticleModifier = () => {
 
     // use the react-query mutation hook to update the article
     const mutateArticle = useMutation<Article, ClientResponseError, Article>(updateArticle, {
-        onMutate: () => {
+        onMutate: (data) => {
+            console.log("onMutate")
+            console.log(data)
             // if the user is offline, throw an error
             if (!isOnline) {
                 throw new Error('Internet Disconnected');

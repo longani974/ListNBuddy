@@ -32,7 +32,8 @@ const Table: React.FC<Lists> = (data) => {
     const { isError, isLoading } = articleModifier;
     const isOnline = useRecoilValue(onlineStatusState);
 
-    const updateIsBuyed = (id: string) => {
+    const updateIsBuyed = (updatedArticle: Article) => {
+        const { id } = updatedArticle;
         // We try to prevent multiple click on the same article in a shortter time
         // and we prevent multiple click on different articles in a short time
         if (!isGlobalBlocked && !isBlocked[id]) {
@@ -90,13 +91,16 @@ const Table: React.FC<Lists> = (data) => {
             }
         }
         // If no article is blocked we update the article
+        // TODO: try to trigger the rest after setArticleData (not with updatedArticle bu articleData)
+        // in a useffect
+        // last time it was not working, we entered in an infinite loop
         if (!Object.values(isBlocked).includes(true) && !isGlobalBlocked) {
             articleModifier.mutate({
-                id: articleData?.id as string,
-                isBuyed: articleData?.isBuyed,
-                isBuyedBy: articleData?.isBuyedBy,
-                quantity: articleData?.quantity,
-                name: articleData?.name,
+                id: updatedArticle.id as string,
+                isBuyed: updatedArticle.isBuyed,
+                isBuyedBy: updatedArticle.isBuyedBy,
+                quantity: updatedArticle.quantity,
+                name: updatedArticle.name,
             });
         }
     };
@@ -280,17 +284,20 @@ const Table: React.FC<Lists> = (data) => {
                                                             }
                                                             disabled={!isOnline}
                                                             onChange={() => {
-                                                                const articleChange =
+                                                                const updatedArticle =
                                                                     {
                                                                         ...article,
+                                                                        isBuyed:
+                                                                            !article.isBuyed,
                                                                     } as Article;
-                                                                articleChange.isBuyed =
-                                                                    !article.isBuyed;
                                                                 setArticleData(
-                                                                    articleChange
+                                                                    updatedArticle
                                                                 );
+                                                                // TODO: try to updateIsBuyed after setArticleData
+                                                                // in a useffect
+                                                                // last time it was not working, we entered in an infinite loop
                                                                 updateIsBuyed(
-                                                                    article.id
+                                                                    updatedArticle
                                                                 );
                                                             }}
                                                         />
