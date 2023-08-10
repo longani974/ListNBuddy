@@ -2,14 +2,17 @@ import useInvitations from "../../hooks/useInvitations";
 import { useHandleStatusInvitation } from "../../hooks/useHandleStatusInvitation";
 import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
 import { useRecoilValue } from "recoil";
+import { useState } from "react";
 
 type ModalInviteUserProps = {
     //
 };
 
 const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
-
+    const [showErrorAcceptInvitation, setShowErrorAcceptInvitation] =
+        useState(false);
     const waitingInvitations = useInvitations("waiting");
+    const acceptInvitations = useInvitations("accept");
 
     const { mutateAsync } = useHandleStatusInvitation();
 
@@ -34,7 +37,15 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                     <h3 className="text-lg font-bold">Mes invitations</h3>
                     {!isOnline && (
                         <div className="alert alert-error">
-                            Vous êtes hors ligne, vous ne pouvez pas changer le status de vos invitations.
+                            Vous êtes hors ligne, vous ne pouvez pas changer le
+                            status de vos invitations.
+                        </div>
+                    )}
+                    {showErrorAcceptInvitation && (
+                        <div className="alert alert-warning">
+                            Désolé vous ne pouvez pas être sur plus de 5 listes
+                            à la fois. Pour en intégrer une nouvelle liste, vous
+                            devez d'abord quitter une liste.
                         </div>
                     )}
                     <div className="py-4">
@@ -63,14 +74,23 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                                                             ?.email}
                                                 </span>
                                             </div>
-                                            <div className={`btn-group btn-group-horizontal ${!isOnline && "btn-disabled"}`}>
+                                            <div
+                                                className={`btn-group btn-group-horizontal ${
+                                                    !isOnline && "btn-disabled"
+                                                }`}
+                                            >
                                                 <button
                                                     className="btn btn-square"
                                                     onClick={() =>
-                                                        mutateAsync({
-                                                            listId: invitation.list,
-                                                            status: "accept",
-                                                        })
+                                                        acceptInvitations.length <
+                                                        5
+                                                            ? mutateAsync({
+                                                                  listId: invitation.list,
+                                                                  status: "accept",
+                                                              })
+                                                            : setShowErrorAcceptInvitation(
+                                                                  true
+                                                              )
                                                     }
                                                 >
                                                     <svg

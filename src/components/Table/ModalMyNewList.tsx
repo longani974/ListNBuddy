@@ -128,7 +128,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
             .then(() => {
                 setIdList(list.id);
                 reset();
-                clickModal("myNewListModal")
+                clickModal("myNewListModal");
             });
     };
 
@@ -159,6 +159,13 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                             nouvelle liste.
                         </div>
                     )}
+                    {acceptInvitations.length >= 5 && (
+                        <div className="alert alert-warning">
+                            Désolé vous ne pouvez pas être sur plus de 5 listes
+                            à la fois. Pour en créer une nouvelle, vous devez
+                            d'abord quitter une liste.
+                        </div>
+                    )}
                     <div className="py-4">
                         <form className="flex flex-col">
                             <label className="label">
@@ -179,7 +186,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                         <label
                             htmlFor="myNewListModal"
                             className={`btn btn-primary mt-4 w-full ${
-                                (!isOnline || isLoading) && "btn-disabled"
+                                (!isOnline || isLoading || acceptInvitations.length >= 5) && "btn-disabled"
                             } `}
                             onClick={handleSubmit(handleAddNewList)}
                         >

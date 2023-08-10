@@ -109,13 +109,13 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                 </label>
                                 {/* </div> */}
                             </li>
-                            <li onClick={() => clickModal("myInvitationModal")}>
+                            <li onClick={() => clickModal("myListsModal")}>
                                 <label htmlFor="my-drawer-2">
                                     
                                         Mes listes
                                 </label>
                             </li>
-                            <li onClick={() => clickModal("myInvitationModal")}>
+                            <li onClick={() => clickModal("myNewListModal")}>
                                 <label htmlFor="my-drawer-2">
                                         Ajouter une liste
                                 </label>
