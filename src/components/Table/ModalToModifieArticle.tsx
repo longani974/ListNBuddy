@@ -50,16 +50,18 @@ type ModalToModifieArticleProps = {
     articleData: Article | null;
     listId: string;
     mode: "update" | "create";
-    articlesList: string[];
+    articlesLength: number;
 };
+
+const maxArticles = 100;
 
 const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     articleData,
     listId,
     mode,
+    articlesLength,
 }) => {
     const [articleId, setArticleId] = useState<string>(articleData?.id || "");
-
 
     const { userId } = useRecoilValue(userState);
     // This state is used to display the loading state in the Table component
@@ -70,7 +72,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         handleSubmit,
         reset,
         formState: { errors },
-        setValue
+        setValue,
     } = useForm<FormData>({
         resolver: yupResolver<FormData>(schema),
     });
@@ -126,7 +128,12 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         clickModal("articleModal");
 
         const { mutateAsync, isSuccess } = newArticleAdder;
-        await mutateAsync({ ...data, list: listId, addBy: userId, isBuyed: false });
+        await mutateAsync({
+            ...data,
+            list: listId,
+            addBy: userId,
+            isBuyed: false,
+        });
         if (isSuccess) {
             reset();
         }
@@ -145,12 +152,20 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">
-                        Fenêtre de modification
+                        {mode === "create"
+                            ? "Ajouter une  article"
+                            : "Fenêtre de modification"}
                     </h3>
                     {!isOnline && (
                         <div className="alert alert-error">
                             Vous êtes hors ligne, vous ne pouvez pas apporter de
                             modifications.
+                        </div>
+                    )}
+                    {articlesLength >= maxArticles && mode === "create" && (
+                        <div className="alert alert-warning">
+                            Désolé, vous avez déjà 100 articles dans cette
+                            liste. Vous ne pouvez pas en ajouter plus.
                         </div>
                     )}
                     <div className="py-4">
@@ -206,7 +221,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                             <>
                                 <label
                                     htmlFor="articleModal"
-                                    className="btn btn-primary mt-4 w-full"
+                                    className={`btn btn-primary mt-4 w-full ${articlesLength >= maxArticles &&"btn-disabled"}`}
                                     onClick={handleSubmit(handleAddNewArticle)}
                                 >
                                     Ajouter

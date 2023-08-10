@@ -18,7 +18,6 @@ const Table: React.FC<Lists> = (data) => {
     // const [clickCount, setClickCount] = useState<number>(0);
     const [clickCounts, setClickCounts] = useState<Record<string, number>>({});
     const [isBlocked, setIsBlocked] = useState<Record<string, boolean>>({});
-
     const [mode, setMode] = useState<"update" | "create">("update");
     // const [articles, setArticles] = useState<Article[]>([]);
     const { articles } = useRecoilValue(articlesState);
@@ -344,7 +343,7 @@ const Table: React.FC<Lists> = (data) => {
                 <ModalToModifieArticle
                     articleData={articleData}
                     listId={data.id}
-                    articlesList={data.articles}
+                    articlesLength={articles?.length}
                     mode={mode}
                 />
 
