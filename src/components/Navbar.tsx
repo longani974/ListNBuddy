@@ -51,7 +51,7 @@ const Navbar: React.FC<NavbarProps> = () => {
                 </div>
             )}
             <div className="flex-1">
-                <h1>List N Buddy</h1>
+                <h1>ListnBuddy</h1>
             </div>
             <div className="flex-none">
                 {isLogin && (
