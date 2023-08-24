@@ -87,7 +87,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         ></label>
                         <ul className="menu p-4 w-80 bg-base-100 text-base-content">
                             {/* <!-- Sidebar content here --> */}
-                            <li onClick={() => clickModal("myInvitationModal")}>
+                            <li className="bg-transparent pt-1 pb-1"  onClick={() => clickModal("myInvitationModal")}>
                                 {/* <div className="indicator">
                                     {waitingInvitations?.length > 0 && (
                                         <span className="indicator-item indicator-middle text-gray-400 h-6 absolute">
@@ -109,18 +109,15 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                 </label>
                                 {/* </div> */}
                             </li>
-                            <li onClick={() => clickModal("myListsModal")}>
+                            <li className="bg-transparent pt-1 pb-1" onClick={() => clickModal("myListsModal")}>
+                                <label htmlFor="my-drawer-2">Mes listes</label>
+                            </li>
+                            <li className="bg-transparent pt-1 pb-1"  onClick={() => clickModal("myNewListModal")}>
                                 <label htmlFor="my-drawer-2">
-                                    
-                                        Mes listes
+                                    Ajouter une liste
                                 </label>
                             </li>
-                            <li onClick={() => clickModal("myNewListModal")}>
-                                <label htmlFor="my-drawer-2">
-                                        Ajouter une liste
-                                </label>
-                            </li>
-                            <li>
+                            <li className="mt-2">
                                 <InstallPWA />
                             </li>
                         </ul>

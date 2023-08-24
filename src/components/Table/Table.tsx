@@ -165,7 +165,7 @@ const Table: React.FC<Lists> = (data) => {
                             max={articles?.length}
                         ></progress>
                     )}
-                    <div className="w-full absolute z-10 top-0 flex justify-end">
+                    <div className="w-full absolute top-0 flex justify-end">
                         <label
                             htmlFor="inviteUserModal"
                             onClick={() => {
