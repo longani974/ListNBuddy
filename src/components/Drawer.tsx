@@ -4,15 +4,19 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import pb from "../lib/pocketbase";
 import { Invitations, invitationState } from "../atoms/invitationAtoms";
 import { useEffectOnce } from "../hooks/useEffectOnce";
+// import { themeChange } from "theme-change";
 import useInvitations from "../hooks/useInvitations";
 import { useClickModal } from "../hooks/useClickModal";
 import InstallPWA from "./InstallPWA";
+import useTheme from "../hooks/useTheme";
 
 type DrawerProps = {
     children: React.ReactNode;
 };
 
 const Drawer: React.FC<DrawerProps> = ({ children }) => {
+    const {toggleTheme, isChecked } = useTheme();
+
     const { userId, isLogin } = useRecoilValue(userState);
     const setInvitations = useSetRecoilState(invitationState);
 
@@ -87,7 +91,10 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         ></label>
                         <ul className="menu p-4 w-80 bg-base-100 text-base-content">
                             {/* <!-- Sidebar content here --> */}
-                            <li className="bg-transparent pt-1 pb-1"  onClick={() => clickModal("myInvitationModal")}>
+                            <li
+                                className="bg-transparent pt-1 pb-1"
+                                onClick={() => clickModal("myInvitationModal")}
+                            >
                                 {/* <div className="indicator">
                                     {waitingInvitations?.length > 0 && (
                                         <span className="indicator-item indicator-middle text-gray-400 h-6 absolute">
@@ -109,14 +116,34 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                 </label>
                                 {/* </div> */}
                             </li>
-                            <li className="bg-transparent pt-1 pb-1" onClick={() => clickModal("myListsModal")}>
+                            <li
+                                className="bg-transparent pt-1 pb-1"
+                                onClick={() => clickModal("myListsModal")}
+                            >
                                 <label htmlFor="my-drawer-2">Mes listes</label>
                             </li>
-                            <li className="bg-transparent pt-1 pb-1"  onClick={() => clickModal("myNewListModal")}>
+                            <li
+                                className="bg-transparent pt-1 pb-1"
+                                onClick={() => clickModal("myNewListModal")}
+                            >
                                 <label htmlFor="my-drawer-2">
                                     Ajouter une liste
                                 </label>
                             </li>
+
+                            <div className="form-control">
+                                <label className="label cursor-pointer">
+                                    <span className="label-text">Light</span>
+                                    <input
+                                        type="checkbox"
+                                        className="toggle"
+                                        checked={isChecked}
+                                        onChange={toggleTheme}
+                                    />
+                                    <span className="label-text">Dark</span>
+                                </label>
+                            </div>
+
                             <li className="mt-2">
                                 <InstallPWA />
                             </li>
