@@ -21,7 +21,7 @@ const Navbar: React.FC<NavbarProps> = () => {
 
     return (
         <div className="navbar bg-base-100">
-            {isLogin && (
+            {/* {isLogin && ( */}
                 <div className="flex-none lg:hidden">
                     <label
                         htmlFor="my-drawer-2"
@@ -49,7 +49,7 @@ const Navbar: React.FC<NavbarProps> = () => {
                         </div>
                     </label>
                 </div>
-            )}
+            {/* )} */}
             <div className="flex-1">
                 <h1>ListnBuddy</h1>
             </div>

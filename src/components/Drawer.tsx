@@ -73,7 +73,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
 
     return (
         <>
-            {isLogin && (
+            {/* {isLogin && ( */}
                 <div className="drawer lg:drawer-open">
                     <input
                         id="my-drawer-2"
@@ -150,7 +150,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         </ul>
                     </div>
                 </div>
-            )}
+            {/* )} */}
         </>
     );
 };

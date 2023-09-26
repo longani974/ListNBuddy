@@ -22,6 +22,7 @@ import {
 } from "../../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 import FormErrorMsg from "../FormErrorMsg";
 import { useClickModal } from "../../hooks/useClickModal";
+import { useLocalStorage } from "usehooks-ts";
 
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
@@ -73,7 +74,7 @@ const createList = async ({
 
 const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     const [idList, setIdList] = useState<string>("");
-    const { userId } = useRecoilValue(userState);
+    const { userId, isLogin } = useRecoilValue(userState);
 
     const { clickModal } = useClickModal();
 
@@ -91,6 +92,11 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     const acceptInvitations = useInvitations("accept");
 
     const isOnline = useRecoilValue(onlineStatusState);
+
+    const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>(
+        "listnbuddy_lists",
+        []
+    );
 
     useEffect(() => {
         const index = acceptInvitations.findIndex(
@@ -118,6 +124,14 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         // TODO: use react-query
         // const list = await createList();
         const { listName } = data;
+
+        // Create a list in the local storage if the user is offline
+        if (!isLogin || (!isLogin && !isOnline)) {
+            createListLocalStorage(listName);
+            reset();
+            clickModal("myNewListModal");
+            return;
+        }
         const list = await mutation.mutateAsync({ listName, userId });
         await inviteUser
             .mutateAsync({
@@ -135,6 +149,24 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     useEffect(() => {
         console.log(isLoading);
     }, [isLoading]);
+
+    // Create a list in the lodal storage if the user is offline
+    const createListLocalStorage = (listName: string) => {
+        // Create a list in the local storage
+        const list = {
+            id: Date.now().toString(),
+            name: listName,
+            createBy: "local",
+            expand: { articles: [] },
+        } as unknown as Lists;
+        // const lists = JSON.parse(localStorage.getItem("lists") || "[]");
+        const lists = localStorageLists || "[]";
+        // TODO: fix the type of lists is unknown
+        lists.push(list);
+
+        setLocalStorageLists(lists);
+
+    };
 
     return (
         <>
@@ -186,7 +218,10 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                         <label
                             htmlFor="myNewListModal"
                             className={`btn btn-primary mt-4 w-full ${
-                                (!isOnline || isLoading || acceptInvitations.length >= 5) && "btn-disabled"
+                                (!isOnline ||
+                                    isLoading ||
+                                    acceptInvitations.length >= 5) &&
+                                "btn-disabled"
                             } `}
                             onClick={handleSubmit(handleAddNewList)}
                         >

@@ -10,6 +10,8 @@ import ErrorToast from "../ErrorToast";
 import RealtimeListener from "../RealtimeListener";
 import { isArticleFetchingState } from "../../atoms/isArticleLoading";
 import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
+import { userState } from "../../atoms/userAtoms";
+import { useLocalStorage } from "usehooks-ts";
 
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
@@ -30,9 +32,37 @@ const Table: React.FC<Lists> = (data) => {
 
     const { isError, isLoading } = articleModifier;
     const isOnline = useRecoilValue(onlineStatusState);
+    const { isLogin } = useRecoilValue(userState);
+
+    const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>(
+        "listnbuddy_lists",
+        []
+    );
 
     const updateIsBuyed = (updatedArticle: Article) => {
         const { id } = updatedArticle;
+
+        // If the user is offline and not signed up we update the article in the local storage using useHook
+        if (!isLogin || (!isLogin && !isOnline)) {
+            const indexList = localStorageLists.findIndex(
+                (list) => list.id === data.id
+            );
+            const indexArticle = localStorageLists[indexList].expand.articles.findIndex(
+                (article) => article.id === id
+            );
+
+            const updatedList = localStorageLists[indexList];
+            updatedList.expand.articles[indexArticle] = updatedArticle;
+
+            const updatedLocalStorageLists = localStorageLists;
+            updatedLocalStorageLists[indexList] = updatedList;
+
+            setLocalStorageLists(updatedLocalStorageLists);
+
+            return;
+
+        }
+
         // We try to prevent multiple click on the same article in a shortter time
         // and we prevent multiple click on different articles in a short time
         if (!isGlobalBlocked && !isBlocked[id]) {
@@ -121,6 +151,13 @@ const Table: React.FC<Lists> = (data) => {
     }, [articles]);
 
     useEffect(() => {
+        // If the user offline or not identified we get the articles from data.expand.articles
+        if (!isLogin || (!isLogin && !isOnline)) {
+            data.expand?.articles &&
+                setArticles({ articles: data.expand.articles });
+            return;
+        }
+
         // Get records from the collection "articles" filtered  list = data.id
         // TODO: use react-query
         pb.collection("articles")
@@ -128,11 +165,12 @@ const Table: React.FC<Lists> = (data) => {
             .then((res) => {
                 setArticles({ articles: res as Article[] });
             });
+        // FIXME:
         // !!!! WARNING !!!! we desactivate the eslint rule because eslint want to put setArticles in the dependency array
         // but it's not a good idea because it will create an infinite loop
         // https://github.com/facebookexperimental/Recoil/issues/661
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data.id]);
+    }, [data.id, data.expand?.articles ]);
 
     return (
         <>

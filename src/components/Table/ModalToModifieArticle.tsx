@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Article } from "../../types/dbPocketbasetypes";
+import { Article, Lists } from "../../types/dbPocketbasetypes";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "../../atoms/userAtoms";
 import { useArticleModifier } from "../../hooks/useArticleModifier";
@@ -21,6 +21,7 @@ import {
 } from "../../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 import FormErrorMsg from "../FormErrorMsg";
 import { useClickModal } from "../../hooks/useClickModal";
+import { useLocalStorage } from "usehooks-ts";
 
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
@@ -63,9 +64,14 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
 }) => {
     const [articleId, setArticleId] = useState<string>(articleData?.id || "");
 
-    const { userId } = useRecoilValue(userState);
+    const { userId, isLogin } = useRecoilValue(userState);
     // This state is used to display the loading state in the Table component
     const setIsLoading = useSetRecoilState(isArticleFetchingState);
+
+    const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>(
+        "listnbuddy_lists",
+        []
+    );
 
     const {
         register,
@@ -101,6 +107,28 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
     const handleModifieArticle: SubmitHandler<FormData> = async (data) => {
         clickModal("articleModal");
 
+        // If the user is offline and not signed up we update the article in the local storage using useHook
+        if (!isLogin || (!isLogin && !isOnline)) {
+            // Find the article in the local storage that match the articleId
+            console.log(data);
+            const lists = localStorageLists;
+            lists.forEach((list) => {
+                list.expand.articles.forEach((article, index) => {
+                    if (article.id === articleId) {
+                        list.expand.articles[index] = {
+                            ...data,
+                            isBuyed: article.isBuyed,
+                            id: articleId,
+                        } as unknown as Article;
+                    }
+                });
+            });
+
+            setLocalStorageLists(lists);
+
+            return;
+        }
+
         const { mutateAsync, isSuccess } = articleModifier;
         await mutateAsync({ ...data, id: articleId });
         if (isSuccess) {
@@ -117,6 +145,23 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         clickModal("articleModal");
         clickModal("articleModal");
 
+        // If the user is offline and not signed up we delete the article in the local storage using useHook
+        if (!isLogin || (!isLogin && !isOnline)) {
+            // Find the article in the local storage that match the articleId
+            const lists = localStorageLists;
+            lists.forEach((list) => {
+                list.expand.articles.forEach((article, index) => {
+                    if (article.id === articleId) {
+                        list.expand.articles.splice(index, 1);
+                    }
+                });
+            });
+
+            setLocalStorageLists(lists);
+
+            return;
+        }
+
         const { mutateAsync, isSuccess } = articleDeleter;
         await mutateAsync(articleId);
         if (isSuccess) {
@@ -124,8 +169,46 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
         }
     };
 
+    // Create a list in the lodal storage if the user is offline
+    const createArticleLocalStorage = (data: {
+        quantity?: string | undefined;
+        name: string;
+    }) => {
+        // Create a list in the local storage
+        const article = {
+            ...data,
+            list: listId,
+            addBy: userId,
+            isBuyed: false,
+            id: Date.now().toString(),
+        } as unknown as Article;
+        // const lists = JSON.parse(localStorage.getItem("lists") || "[]");
+        const lists = localStorageLists;
+        // TODO: fix the type of lists is unknown
+        lists?.forEach((list) => {
+            if (list.id === listId) {
+                list.expand.articles.push(article);
+            }
+        });
+
+        setLocalStorageLists(lists);
+
+        // localStorage.setItem("lists", JSON.stringify(lists));
+        // Reload the page to update the lists
+        // TODO: find a better way to update the lists
+        // window.location.reload();
+    };
+
     const handleAddNewArticle: SubmitHandler<FormData> = async (data) => {
         clickModal("articleModal");
+
+        // Create a list in the local storage if the user is offline
+        if (!isLogin || (!isLogin && !isOnline)) {
+            // createListLocalStorage(listName);
+            createArticleLocalStorage(data);
+            reset();
+            return;
+        }
 
         const { mutateAsync, isSuccess } = newArticleAdder;
         await mutateAsync({
@@ -153,7 +236,7 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                     </label>
                     <h3 className="text-lg font-bold">
                         {mode === "create"
-                            ? "Ajouter une  article"
+                            ? "Ajouter un article"
                             : "Fenêtre de modification"}
                     </h3>
                     {!isOnline && (
@@ -221,7 +304,10 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                             <>
                                 <label
                                     htmlFor="articleModal"
-                                    className={`btn btn-primary mt-4 w-full ${articlesLength >= maxArticles &&"btn-disabled"}`}
+                                    className={`btn btn-primary mt-4 w-full ${
+                                        articlesLength >= maxArticles &&
+                                        "btn-disabled"
+                                    }`}
                                     onClick={handleSubmit(handleAddNewArticle)}
                                 >
                                     Ajouter
