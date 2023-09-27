@@ -21,7 +21,10 @@ import { useLocalStorage } from "usehooks-ts";
 export default function App() {
     // const [localStorageLists, setLocalStorageLists] = useState<Lists []>([])
     // const localStorageLists = useReadLocalStorage<Lists[]>("lists");
-    const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>("listnbuddy_lists", []);
+    const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>(
+        "listnbuddy_lists",
+        []
+    );
 
     const acceptInvitations = useInvitations("accept");
 
@@ -35,7 +38,7 @@ export default function App() {
     // if localStorageLists is null, set it to an empty array in a useEffect
     useEffect(() => {
         if (localStorageLists === null) {
-            setLocalStorageLists([])
+            setLocalStorageLists([]);
         }
     }, [localStorageLists, setLocalStorageLists]);
 
@@ -68,44 +71,48 @@ export default function App() {
             {showAuthForm && <Auth />}
             {showAuthForm && <ModalForgetPassword />}
 
-            <Drawer>
-                {/* {isLogin && ( */}
-                <div>
-                    <div className="overflow-x-auto w-full">
-                        {!isLogin && localStorageLists !== null && (
-                            // FIXME:
-                            <Table {...localStorageLists[indexListToShow]} />
-                        )}
-
-                        {acceptInvitations.length > 0 && (
-                            // TODO: fix this
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            //@ts-ignore
-                            <Table
-                                {...(acceptInvitations[indexListToShow].expand
-                                    .list as Lists)}
-                            />
-                        )}
-
-                        {!acceptInvitations.length &&
-                            !localStorageLists?.length && (
-                                <label
-                                    htmlFor="myNewListModal"
-                                    // onClick={() => {
-                                    //     clickModal("myNewListModal");
-                                    // }}
-                                    className="btn"
-                                >
-                                    Créer votre première liste
-                                </label>
+            {!showAuthForm && (
+                <Drawer>
+                    {/* {isLogin && ( */}
+                    <div>
+                        <div className="overflow-x-auto w-full">
+                            {!isLogin && localStorageLists !== null && (
+                                // FIXME:
+                                <Table
+                                    {...localStorageLists[indexListToShow]}
+                                />
                             )}
+
+                            {acceptInvitations.length > 0 && (
+                                // TODO: fix this
+                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                //@ts-ignore
+                                <Table
+                                    {...(acceptInvitations[indexListToShow]
+                                        .expand.list as Lists)}
+                                />
+                            )}
+
+                            {!acceptInvitations.length &&
+                                !localStorageLists?.length && (
+                                    <label
+                                        htmlFor="myNewListModal"
+                                        // onClick={() => {
+                                        //     clickModal("myNewListModal");
+                                        // }}
+                                        className="btn"
+                                    >
+                                        Créer votre première liste
+                                    </label>
+                                )}
+                        </div>
+                        <ModalMyInvitations />
+                        <ModalMyLists />
+                        <ModalMyNewList />
                     </div>
-                    <ModalMyInvitations />
-                    <ModalMyLists />
-                    <ModalMyNewList />
-                </div>
-                {/* )} */}
-            </Drawer>
+                    {/* )} */}
+                </Drawer>
+            )}
             {!onlineStatus && (
                 <ErrorToast message="Vous avez perdu votre connection internet.Les fonctionnalitées habituelles ne sont plus disponibles" />
             )}

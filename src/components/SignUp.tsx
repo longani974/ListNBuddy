@@ -13,6 +13,8 @@ import {
     array,
 } from "../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 import FormErrorMsg from "./FormErrorMsg";
+import { useRecoilState } from "recoil";
+import { authFormState } from "../atoms/showAuthFormAtoms";
 
 yup.setLocale({
     mixed: mixed,
@@ -68,6 +70,8 @@ const SignUp: React.FC<SignUpProps> = () => {
         error,
     } = useSignUp();
 
+    const [{ authMode }, setAuthFormState] = useRecoilState(authFormState);
+
     const onSubmit: SubmitHandler<FormData> = (data) => {
         signUp(data);
         isSuccess && reset();
@@ -78,6 +82,7 @@ const SignUp: React.FC<SignUpProps> = () => {
     };
     useEffect(() => {
         if (isSuccess) {
+            setAuthFormState({ showAuthForm: false, authMode });
             reset();
         }
         if (
@@ -90,13 +95,20 @@ const SignUp: React.FC<SignUpProps> = () => {
         ) {
             setError("email", { message: "Oops... Un problème est survenue." });
         }
-    }, [error?.response.data.email.code, isError, isSuccess, reset, setError]);
+    }, [authMode, error?.response.data.email.code, isError, isSuccess, reset, setAuthFormState, setError]);
 
     return (
         <form
-            className="flex flex-col w-80 gap-4 m-auto mt-10"
+            className="flex flex-col w-80 gap-4 m-auto mt-10 relative"
             onSubmit={handleSubmit(onSubmit)}
         >
+            <label
+                    onClick={() => setAuthFormState({ showAuthForm: false, authMode })}
+                    className="btn btn-sm btn-circle btn-primary absolute -right-0 -top-10
+                "
+                >
+                    ✕
+                </label>
             <input
                 type="text"
                 placeholder="Nom d'utilisateur"

@@ -9,16 +9,18 @@ import useInvitations from "../hooks/useInvitations";
 import { useClickModal } from "../hooks/useClickModal";
 import InstallPWA from "./InstallPWA";
 import useTheme from "../hooks/useTheme";
+import { authFormState } from "../atoms/showAuthFormAtoms";
 
 type DrawerProps = {
     children: React.ReactNode;
 };
 
 const Drawer: React.FC<DrawerProps> = ({ children }) => {
-    const {toggleTheme, isChecked } = useTheme();
+    const { toggleTheme, isChecked } = useTheme();
 
     const { userId, isLogin } = useRecoilValue(userState);
     const setInvitations = useSetRecoilState(invitationState);
+    const setAuthFormState = useSetRecoilState(authFormState);
 
     const waitingInvitations = useInvitations("waiting");
 
@@ -74,82 +76,113 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
     return (
         <>
             {/* {isLogin && ( */}
-                <div className="drawer lg:drawer-open">
-                    <input
-                        id="my-drawer-2"
-                        type="checkbox"
-                        className="drawer-toggle"
-                    />
-                    <div className="drawer-content">
-                        {/* <!-- Page content here --> */}
-                        {children}
-                    </div>
-                    <div className="drawer-side">
-                        <label
-                            htmlFor="my-drawer-2"
-                            className="drawer-overlay"
-                        ></label>
-                        <ul className="menu p-4 w-80 bg-base-100 text-base-content">
-                            {/* <!-- Sidebar content here --> */}
-                            <li
-                                className="bg-transparent pt-1 pb-1"
-                                onClick={() => clickModal("myInvitationModal")}
-                            >
-                                {/* <div className="indicator">
+            <div className="drawer lg:drawer-open">
+                <input
+                    id="my-drawer-2"
+                    type="checkbox"
+                    className="drawer-toggle"
+                />
+                <div className="drawer-content">
+                    {/* <!-- Page content here --> */}
+                    {children}
+                </div>
+                <div className="drawer-side">
+                    <label
+                        htmlFor="my-drawer-2"
+                        className="drawer-overlay"
+                    ></label>
+                    <ul className="menu p-4 w-80 bg-base-100 text-base-content">
+                        {/* <!-- Sidebar content here --> */}
+                        <li
+                            className="bg-transparent pt-1 pb-1"
+                            onClick={() => clickModal("myInvitationModal")}
+                        >
+                            {/* <div className="indicator">
                                     {waitingInvitations?.length > 0 && (
                                         <span className="indicator-item indicator-middle text-gray-400 h-6 absolute">
                                             {waitingInvitations?.length}
                                         </span>
                                     )} */}
 
-                                <label htmlFor="my-drawer-2">
-                                    <a
-                                    // onClick={() =>
-                                    //     clickModal("myInvitationModal")
-                                    // }
-                                    >
-                                        Mes invitations{" "}
-                                        <span className="relative bottom-2 right-2">
-                                            {waitingInvitations?.length}
-                                        </span>
-                                    </a>
-                                </label>
-                                {/* </div> */}
-                            </li>
-                            <li
-                                className="bg-transparent pt-1 pb-1"
-                                onClick={() => clickModal("myListsModal")}
-                            >
-                                <label htmlFor="my-drawer-2">Mes listes</label>
-                            </li>
-                            <li
-                                className="bg-transparent pt-1 pb-1"
-                                onClick={() => clickModal("myNewListModal")}
-                            >
-                                <label htmlFor="my-drawer-2">
-                                    Ajouter une liste
-                                </label>
-                            </li>
+                            <label htmlFor="my-drawer-2">
+                                <a
+                                // onClick={() =>
+                                //     clickModal("myInvitationModal")
+                                // }
+                                >
+                                    Mes invitations{" "}
+                                    <span className="relative bottom-2 right-2">
+                                        {waitingInvitations?.length}
+                                    </span>
+                                </a>
+                            </label>
+                            {/* </div> */}
+                        </li>
+                        <li
+                            className="bg-transparent pt-1 pb-1"
+                            onClick={() => clickModal("myListsModal")}
+                        >
+                            <label htmlFor="my-drawer-2">Mes listes</label>
+                        </li>
+                        <li
+                            className="bg-transparent pt-1 pb-1"
+                            onClick={() => clickModal("myNewListModal")}
+                        >
+                            <label htmlFor="my-drawer-2">
+                                Ajouter une liste
+                            </label>
+                        </li>
+                        {!isLogin && (
+                            <>
+                                <li
+                                    className="bg-transparent pt-1 pb-1"
+                                    onClick={() =>
+                                        setAuthFormState({
+                                            showAuthForm: true,
+                                            authMode : "signup",
+                                        })
 
-                            <div className="form-control">
-                                <label className="label cursor-pointer">
-                                    <span className="label-text">Light</span>
-                                    <input
-                                        type="checkbox"
-                                        className="toggle"
-                                        checked={isChecked}
-                                        onChange={toggleTheme}
-                                    />
-                                    <span className="label-text">Dark</span>
-                                </label>
-                            </div>
+                                    }
+                                >
+                                    <label htmlFor="my-drawer-2">
+                                        Créer un compte
+                                    </label>
+                                </li>
+                                <li
+                                    className="bg-transparent pt-1 pb-1"
+                                    onClick={() =>
+                                        setAuthFormState({
+                                            showAuthForm: true,
+                                            authMode : "login",
+                                        })
+                                    }
+                                >
+                                    <label htmlFor="my-drawer-2">
+                                        Se connecter
+                                    </label>
+                                </li>
+                            </>
+                        )}
 
-                            <li className="mt-2">
-                                <InstallPWA />
-                            </li>
-                        </ul>
-                    </div>
+                        <div className="form-control">
+                            <label className="label cursor-pointer">
+                                <span className="label-text">Light</span>
+                                <input
+                                    type="checkbox"
+                                    className="toggle"
+                                    checked={isChecked}
+                                    onChange={toggleTheme}
+                                />
+                                <span className="label-text">Dark</span>
+                            </label>
+                        </div>
+
+                        <li className="mt-2">
+                            <InstallPWA />
+                        </li>
+                    </ul>
                 </div>
+            </div>
             {/* )} */}
         </>
     );
