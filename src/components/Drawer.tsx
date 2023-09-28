@@ -112,7 +112,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                 >
                                     Mes invitations{" "}
                                     <span className="relative bottom-2 right-2">
-                                        {waitingInvitations?.length}
+                                        {!!waitingInvitations?.length}
                                     </span>
                                 </a>
                             </label>

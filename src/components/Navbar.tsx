@@ -55,7 +55,7 @@ const Navbar: React.FC<NavbarProps> = () => {
             <div className="flex-1">
                 <h1>ListnBuddy</h1>
             </div>
-            <div className="flex-none">
+            <div className="flex-none hidden md:block">
                 {isLogin && (
                     <button className="btn btn-ghost" onClick={logout}>
                         Se déconnecter

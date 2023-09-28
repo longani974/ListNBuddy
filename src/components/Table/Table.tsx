@@ -47,9 +47,9 @@ const Table: React.FC<Lists> = (data) => {
             const indexList = localStorageLists.findIndex(
                 (list) => list.id === data.id
             );
-            const indexArticle = localStorageLists[indexList].expand.articles.findIndex(
-                (article) => article.id === id
-            );
+            const indexArticle = localStorageLists[
+                indexList
+            ].expand.articles.findIndex((article) => article.id === id);
 
             const updatedList = localStorageLists[indexList];
             updatedList.expand.articles[indexArticle] = updatedArticle;
@@ -60,7 +60,6 @@ const Table: React.FC<Lists> = (data) => {
             setLocalStorageLists(updatedLocalStorageLists);
 
             return;
-
         }
 
         // We try to prevent multiple click on the same article in a shortter time
@@ -170,7 +169,7 @@ const Table: React.FC<Lists> = (data) => {
         // but it's not a good idea because it will create an infinite loop
         // https://github.com/facebookexperimental/Recoil/issues/661
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data.id, data.expand?.articles ]);
+    }, [data.id, data.expand?.articles]);
 
     return (
         <>
@@ -357,24 +356,29 @@ const Table: React.FC<Lists> = (data) => {
     </tfoot> */}
                     </table>
                     <div className="flex justify-end">
-                        <label
-                            htmlFor="articleModal"
-                            onClick={() => {
-                                setMode("create");
-                                setArticleData(null);
-                            }}
-                            className="btn btn-square btn-ghost p-2"
+                        <div
+                            className={` ${!articles?.length && "tooltip-open tooltip tooltip-left tooltip-primary z-0"}`}
+                            data-tip="Ajouter votre premier article ->"
                         >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
+                            <label
+                                htmlFor="articleModal"
+                                onClick={() => {
+                                    setMode("create");
+                                    setArticleData(null);
+                                }}
+                                className="btn btn-square btn-ghost p-2"
                             >
-                                <path
-                                    d="M14 10H3v2h11v-2zm0-4H3v2h11V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM3 16h7v-2H3v2z"
-                                    fill="currentColor"
-                                ></path>
-                            </svg>
-                        </label>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        d="M14 10H3v2h11v-2zm0-4H3v2h11V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM3 16h7v-2H3v2z"
+                                        fill="currentColor"
+                                    ></path>
+                                </svg>
+                            </label>
+                        </div>
                     </div>
                 </div>
 

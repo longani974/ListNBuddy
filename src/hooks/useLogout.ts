@@ -8,6 +8,9 @@ export default function useLogout() {
     function logout() {
         pb.authStore.clear();
         setUserState({ isLogin: false, userId: "" });
+        //TODO: Find a better way
+        // We reload the page to be sure that all the data is cleared (because we have two lists appearing when we log out again)
+        window.location.reload();
     }
 
     return logout;
