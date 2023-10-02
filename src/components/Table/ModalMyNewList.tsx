@@ -23,6 +23,11 @@ import {
 import FormErrorMsg from "../FormErrorMsg";
 import { useClickModal } from "../../hooks/useClickModal";
 import { useLocalStorage } from "usehooks-ts";
+import { authFormState } from "../../atoms/showAuthFormAtoms";
+
+interface MaxNumberList {
+    maxList: 1 | 5;
+}
 
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
@@ -74,7 +79,12 @@ const createList = async ({
 
 const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     const [idList, setIdList] = useState<string>("");
+    const [maxList, setMaxList] = useState<MaxNumberList["maxList"]>(1);
+    const [nbOfList, setNbOfList] = useState<number>(0);
     const { userId, isLogin } = useRecoilValue(userState);
+
+    const setAuthFormState = useSetRecoilState(authFormState);
+
 
     const { clickModal } = useClickModal();
 
@@ -97,6 +107,16 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         "listnbuddy_lists",
         []
     );
+
+    useEffect(() => {
+        if (isLogin) {
+            setMaxList(5);
+            setNbOfList(acceptInvitations.length);
+        } else {
+            setMaxList(1);
+            setNbOfList(localStorageLists.length);
+        }
+    }, [isLogin, acceptInvitations.length, localStorageLists.length]);
 
     useEffect(() => {
         const index = acceptInvitations.findIndex(
@@ -165,7 +185,6 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         lists.push(list);
 
         setLocalStorageLists(lists);
-
     };
 
     return (
@@ -185,52 +204,82 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Ma nouvelle liste</h3>
-                    {!isOnline && (
+                    {!isOnline && isLogin && (
                         <div className="alert alert-error">
                             Vous êtes hors ligne, vous ne pouvez pas ajouter une
                             nouvelle liste.
                         </div>
                     )}
-                    {acceptInvitations.length >= 5 && (
+                    {nbOfList >= maxList && (
                         <div className="alert alert-warning">
-                            Désolé vous ne pouvez pas être sur plus de 5 listes
-                            à la fois. Pour en créer une nouvelle, vous devez
-                            d'abord quitter une liste.
+                            {isLogin &&
+                                `Désolé vous ne pouvez pas être sur plus de ${maxList} listes
+                                à la fois. Pour en créer une nouvelle, vous devez
+                                d'abord supprimer une liste.`}
+                            {!isLogin && (
+                                <>
+                                    <span>
+                                        {`Désolé vous ne pouvez pas créer plus
+                                        de ${maxList} liste. Pour en
+                                        créer une nouvelle, vous devez d'abord
+                                        vous connecter.`}
+                                    </span>
+                                    <button
+                                        className="btn btn-primary mt-4 w-full"
+                                        onClick={() => setAuthFormState({ showAuthForm: true, authMode: "login" })}
+                                    >
+                                        Se connecter
+                                    </button>
+                                    <button
+                                        className="btn btn-primary mt-4 w-full"
+                                        onClick={() =>
+                                            setAuthFormState({
+                                                showAuthForm: true,
+                                                authMode: "signup",
+                                            })
+                                        }
+                                    >
+                                        S'inscrire
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
-                    <div className="py-4">
-                        <form className="flex flex-col">
-                            <label className="label">
-                                <span className="label-text">
-                                    Nom de la liste
-                                </span>
+                    {nbOfList < maxList && (
+                        <div className="py-4">
+                            <form className="flex flex-col">
+                                <label className="label">
+                                    <span className="label-text">
+                                        Nom de la liste
+                                    </span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Liste"
+                                    className="input input-bordered w-100%"
+                                    {...register("listName")}
+                                />
+                                <FormErrorMsg
+                                    messageError={errors.listName?.message}
+                                />
+                            </form>
+                            <label
+                                htmlFor="myNewListModal"
+                                className={`btn btn-primary mt-4 w-full ${
+                                    (!isOnline ||
+                                        isLoading ||
+                                        acceptInvitations.length >= 5) &&
+                                    "btn-disabled"
+                                } `}
+                                onClick={handleSubmit(handleAddNewList)}
+                            >
+                                {isLoading && (
+                                    <span className="loading loading-ring loading-xs ml-1"></span>
+                                )}
+                                Ajouter
                             </label>
-                            <input
-                                type="text"
-                                placeholder="Liste"
-                                className="input input-bordered w-100%"
-                                {...register("listName")}
-                            />
-                            <FormErrorMsg
-                                messageError={errors.listName?.message}
-                            />
-                        </form>
-                        <label
-                            htmlFor="myNewListModal"
-                            className={`btn btn-primary mt-4 w-full ${
-                                (!isOnline ||
-                                    isLoading ||
-                                    acceptInvitations.length >= 5) &&
-                                "btn-disabled"
-                            } `}
-                            onClick={handleSubmit(handleAddNewList)}
-                        >
-                            {isLoading && (
-                                <span className="loading loading-ring loading-xs ml-1"></span>
-                            )}
-                            Ajouter
-                        </label>
-                    </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

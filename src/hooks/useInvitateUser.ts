@@ -1,7 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import pb from "../lib/pocketbase";
-import { userState } from "../atoms/userAtoms";
-import { useRecoilValue } from "recoil";
 
 interface NewInvitation {
     id: string;
@@ -10,7 +8,7 @@ interface NewInvitation {
 }
 
 export const useInvitateUser = () => {
-    const { userId } = useRecoilValue(userState);
+    // const { userId } = useRecoilValue(userState);
 
     const createInvitation = async ({
         listId,
@@ -24,7 +22,7 @@ export const useInvitateUser = () => {
         const data = {
             user: invitateId,
             list: listId,
-            by: userId,
+            by: pb.authStore?.model?.id,
             status: status,
         };
 
