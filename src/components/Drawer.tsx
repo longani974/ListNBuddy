@@ -10,6 +10,7 @@ import { useClickModal } from "../hooks/useClickModal";
 import InstallPWA from "./InstallPWA";
 import useTheme from "../hooks/useTheme";
 import { authFormState } from "../atoms/showAuthFormAtoms";
+import useLogout from "../hooks/useLogout";
 
 type DrawerProps = {
     children: React.ReactNode;
@@ -25,6 +26,8 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const waitingInvitations = useInvitations("waiting");
 
     const { clickModal } = useClickModal();
+
+    const logout = useLogout();
 
     const getInvitedLists = useCallback(async () => {
         {
@@ -162,6 +165,17 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                     </label>
                                 </li>
                             </>
+                        )}
+                        {isLogin && (
+                            <li
+                            className="bg-transparent pt-1 pb-1"
+                            onClick={logout
+                            }
+                        >
+                            <label htmlFor="my-drawer-2">
+                                Se déconnecter
+                            </label>
+                        </li>
                         )}
 
                         <div className="form-control">
