@@ -7,6 +7,7 @@ import { userState } from "../../atoms/userAtoms";
 import { useLocalStorage } from "usehooks-ts";
 import { Lists } from "../../types/dbPocketbasetypes";
 import { useClickModal } from "../../hooks/useClickModal";
+import AuthButtons from "../AuthButtons";
 
 type ModalMyListsProps = {
     //
@@ -149,6 +150,8 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                             </span>
                                         </div>
                                     )}
+
+                                    <AuthButtons />
                                 </div>
                             </div>
                         </>

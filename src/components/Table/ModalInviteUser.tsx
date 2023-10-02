@@ -16,6 +16,8 @@ import {
     array,
 } from "../../utils/yupTranslate"; // Remplacez './yourLocaleFile' par le chemin vers votre fichier de traduction
 import FormErrorMsg from "../FormErrorMsg";
+import { userState } from "../../atoms/userAtoms";
+import AuthButtons from "../AuthButtons";
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
 yup.setLocale({
@@ -43,13 +45,12 @@ type ModalInviteUserProps = {
 };
 
 const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
-
     const {
         register,
         handleSubmit,
         reset,
         formState: { errors },
-        setError
+        setError,
     } = useForm<FormData>({ resolver: yupResolver<FormData>(schema) });
 
     const {
@@ -65,6 +66,7 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
     };
 
     const isOnline = useRecoilValue(onlineStatusState);
+    const { isLogin } = useRecoilValue(userState);
 
     useEffect(() => {
         if (isSuccess) {
@@ -91,46 +93,57 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Inviter une personne</h3>
-                    {!isOnline && (
-                        <div className="alert alert-error">
-                            Vous êtes hors ligne, vous ne pouvez pas inviter une
-                            personne.
-                        </div>
+                    {!isOnline && isLogin && (
+                        <>
+                            <div className="alert alert-error">
+                                Vous êtes hors ligne, vous ne pouvez pas inviter
+                                une personne.
+                            </div>
+                            <div className="py-4">
+                                <form className="flex flex-col">
+                                    <label className="label">
+                                        <span className="label-text">
+                                            Email de l'invité
+                                        </span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        placeholder="Email"
+                                        className="input input-bordered w-100%"
+                                        {...register("email")}
+
+                                        // value={email}
+                                        // onChange={(e) => setEmail(e.target.value)}
+                                    />
+                                    <FormErrorMsg
+                                        messageError={errors.email?.message}
+                                    />
+                                </form>
+
+                                <label
+                                    htmlFor="inviteUserModal"
+                                    className={`btn btn-primary mt-4 w-full ${
+                                        (!isOnline || isLoading) &&
+                                        "btn-disabled"
+                                    }`}
+                                    onClick={handleSubmit(handleInviteUser)}
+                                >
+                                    {isLoading && (
+                                        <span className="loading loading-ring"></span>
+                                    )}
+                                    Inviter
+                                </label>
+                            </div>
+                        </>
                     )}
-                    <div className="py-4">
-                        <form className="flex flex-col">
-                            <label className="label">
-                                <span className="label-text">
-                                    Email de l'invité
-                                </span>
-                            </label>
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                className="input input-bordered w-100%"
-                                {...register("email")}
-
-                                // value={email}
-                                // onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <FormErrorMsg
-                                messageError={
-                                    errors.email?.message
-                                }
-                            />
-                        </form>
-
-                        <label
-                            htmlFor="inviteUserModal"
-                            className={`btn btn-primary mt-4 w-full ${
-                                (!isOnline || isLoading) && "btn-disabled"
-                            }`}
-                            onClick={handleSubmit(handleInviteUser)}
-                        >
-                            {isLoading && <span className="loading loading-ring"></span>}
-                            Inviter
-                        </label>
-                    </div>
+                    {!isLogin && (
+                        <>
+                        <div className="alert alert-warning">
+                            Vous devez être connecté pour inviter une personne.
+                        </div>
+                        <AuthButtons />
+                        </>
+                    )}
                 </div>
             </div>
         </>

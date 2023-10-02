@@ -23,7 +23,7 @@ import {
 import FormErrorMsg from "../FormErrorMsg";
 import { useClickModal } from "../../hooks/useClickModal";
 import { useLocalStorage } from "usehooks-ts";
-import { authFormState } from "../../atoms/showAuthFormAtoms";
+import AuthButtons from "../AuthButtons";
 
 interface MaxNumberList {
     maxList: 1 | 5;
@@ -82,9 +82,6 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     const [maxList, setMaxList] = useState<MaxNumberList["maxList"]>(1);
     const [nbOfList, setNbOfList] = useState<number>(0);
     const { userId, isLogin } = useRecoilValue(userState);
-
-    const setAuthFormState = useSetRecoilState(authFormState);
-
 
     const { clickModal } = useClickModal();
 
@@ -224,23 +221,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                                         créer une nouvelle, vous devez d'abord
                                         vous connecter.`}
                                     </span>
-                                    <button
-                                        className="btn btn-primary mt-4 w-full"
-                                        onClick={() => setAuthFormState({ showAuthForm: true, authMode: "login" })}
-                                    >
-                                        Se connecter
-                                    </button>
-                                    <button
-                                        className="btn btn-primary mt-4 w-full"
-                                        onClick={() =>
-                                            setAuthFormState({
-                                                showAuthForm: true,
-                                                authMode: "signup",
-                                            })
-                                        }
-                                    >
-                                        S'inscrire
-                                    </button>
+                                    <AuthButtons />
                                 </>
                             )}
                         </div>
