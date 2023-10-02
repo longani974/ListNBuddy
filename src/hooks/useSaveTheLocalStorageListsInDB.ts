@@ -1,17 +1,26 @@
 import pb from "../lib/pocketbase";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { userState } from "../atoms/userAtoms";
 import { Lists } from "../types/dbPocketbasetypes";
 import { useInvitateUser } from "./useInvitateUser";
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation } from "@tanstack/react-query";
 import { useNewArticleAdder } from "./useNewArticleAdder";
+import useInvitations from "./useInvitations";
+import { nbOfAcceptedInvitations } from "../atoms/nbAcceptedInvitations";
+import { Invitations, invitationState } from "../atoms/invitationAtoms";
 
 export default function useSaveTheLocalStorageListsInDB() {
     const [user] = useRecoilState(userState);
 
+    const acceptedInvitations = useInvitations("accept");
+
     const inviteUser = useInvitateUser();
-    const newArticleAdder = useNewArticleAdder(()=>console.log("article added"));
+    const newArticleAdder = useNewArticleAdder(() =>
+        console.log("article added")
+    );
+
+    const setInvitations = useSetRecoilState(invitationState);
 
     const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>(
         "listnbuddy_lists",
@@ -37,10 +46,17 @@ export default function useSaveTheLocalStorageListsInDB() {
 
     const newListMutation = useMutation(createList, {
         onSuccess: async (list) => {
+            const  {totalItems}  = await pb.collection("invitations").getList(1,1, {
+                sort: "created",
+                filter: `user.id = "${user.userId}" && status = "accept"`,
+                fields: "id",
+            });
+            const status = totalItems >= 5 ? "accept" : "waiting";
+            console.log(status, totalItems)
             await inviteUser.mutateAsync({
                 id: list.id,
                 email: pb.authStore?.model?.email,
-                status: "accept",
+                status: status,
             });
 
             await addAllArticles(list.id);
@@ -54,10 +70,13 @@ export default function useSaveTheLocalStorageListsInDB() {
     const handleAddNewList = async () => {
         // TODO: use react-query
         // const list = await createList();
+        console.log(acceptedInvitations.length);
+
         const listName = localStorageLists[0].name;
         const userId = pb.authStore?.model?.id;
         console.log(userId);
         if (!userId) throw new Error("userId is undefined");
+
         const list = await newListMutation.mutateAsync({ listName, userId });
 
         return list;
@@ -69,6 +88,7 @@ export default function useSaveTheLocalStorageListsInDB() {
             newArticleAdder;
         // make a copy of the data.article object except for the key data.article.id
         // because pocketbase will create the id
+        // eslint-disable-next-line
         const { id, ...article } = data.article;
         console.log(article);
 
