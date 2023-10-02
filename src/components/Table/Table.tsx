@@ -355,31 +355,36 @@ const Table: React.FC<Lists> = (data) => {
         </tr>
     </tfoot> */}
                     </table>
-                    <div className="flex justify-end">
-                        <div
-                            className={` ${!articles?.length && "tooltip-open tooltip tooltip-left tooltip-primary z-0"}`}
-                            data-tip="Ajouter votre premier article ->"
-                        >
-                            <label
-                                htmlFor="articleModal"
-                                onClick={() => {
-                                    setMode("create");
-                                    setArticleData(null);
-                                }}
-                                className="btn btn-square btn-ghost p-2"
+                    {(!!localStorageLists.length || data.id) && (
+                        <div className="flex justify-end">
+                            <div
+                                className={` ${
+                                    !articles?.length &&
+                                    "tooltip-open tooltip tooltip-left tooltip-primary z-0"
+                                }`}
+                                data-tip="Ajouter votre premier article ->"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
+                                <label
+                                    htmlFor="articleModal"
+                                    onClick={() => {
+                                        setMode("create");
+                                        setArticleData(null);
+                                    }}
+                                    className="btn btn-square btn-ghost p-2"
                                 >
-                                    <path
-                                        d="M14 10H3v2h11v-2zm0-4H3v2h11V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM3 16h7v-2H3v2z"
-                                        fill="currentColor"
-                                    ></path>
-                                </svg>
-                            </label>
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            d="M14 10H3v2h11v-2zm0-4H3v2h11V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM3 16h7v-2H3v2z"
+                                            fill="currentColor"
+                                        ></path>
+                                    </svg>
+                                </label>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 <ModalToModifieArticle
