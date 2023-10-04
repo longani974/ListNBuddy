@@ -38,12 +38,15 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Mes invitations</h3>
-                    {!isOnline && isLogin && (
+                    {isLogin && (
                         <>
+                        {!isOnline && (
                             <div className="alert alert-error">
                                 Vous êtes hors ligne, vous ne pouvez pas changer
                                 le status de vos invitations.
                             </div>
+                        )}
+                            
                             {showErrorAcceptInvitation && (
                                 <div className="alert alert-warning">
                                     Désolé vous ne pouvez pas être sur plus de 5

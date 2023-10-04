@@ -1,5 +1,5 @@
 import pb from "../lib/pocketbase";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtoms";
 import { Lists } from "../types/dbPocketbasetypes";
 import { useInvitateUser } from "./useInvitateUser";
@@ -7,8 +7,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { useMutation } from "@tanstack/react-query";
 import { useNewArticleAdder } from "./useNewArticleAdder";
 import useInvitations from "./useInvitations";
-import { nbOfAcceptedInvitations } from "../atoms/nbAcceptedInvitations";
-import { Invitations, invitationState } from "../atoms/invitationAtoms";
+
 
 export default function useSaveTheLocalStorageListsInDB() {
     const [user] = useRecoilState(userState);
@@ -19,8 +18,6 @@ export default function useSaveTheLocalStorageListsInDB() {
     const newArticleAdder = useNewArticleAdder(() =>
         console.log("article added")
     );
-
-    const setInvitations = useSetRecoilState(invitationState);
 
     const [localStorageLists, setLocalStorageLists] = useLocalStorage<Lists[]>(
         "listnbuddy_lists",
@@ -46,13 +43,16 @@ export default function useSaveTheLocalStorageListsInDB() {
 
     const newListMutation = useMutation(createList, {
         onSuccess: async (list) => {
-            const  {totalItems}  = await pb.collection("invitations").getList(1,1, {
-                sort: "created",
-                filter: `user.id = "${user.userId}" && status = "accept"`,
-                fields: "id",
-            });
-            const status = totalItems >= 5 ? "accept" : "waiting";
-            console.log(status, totalItems)
+            const { totalItems } = await pb
+                .collection("invitations")
+                .getList(1, 1, {
+                    sort: "created",
+                    filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
+                    fields: "id",
+                    $autoCancel: false,
+                });
+            const status = totalItems < 5 ? "accept" : "waiting";
+
             await inviteUser.mutateAsync({
                 id: list.id,
                 email: pb.authStore?.model?.email,

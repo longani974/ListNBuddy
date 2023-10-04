@@ -144,9 +144,14 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
 
         // Create a list in the local storage if the user is offline
         if (!isLogin || (!isLogin && !isOnline)) {
-            createListLocalStorage(listName);
-            reset();
             clickModal("myNewListModal");
+            // FIXME: the setTimeout is used to wait for the modal to close because ii take time to close and
+            // the state in local storage update before the modal is closed so we can see an warning message for a short time
+            setTimeout(() => {
+                createListLocalStorage(listName);
+                reset();
+            }, 200);
+
             return;
         }
         const list = await mutation.mutateAsync({ listName, userId });
@@ -208,23 +213,23 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                         </div>
                     )}
                     {nbOfList >= maxList && (
-                        <div className="alert alert-warning">
-                            {isLogin &&
-                                `Désolé vous ne pouvez pas être sur plus de ${maxList} listes
+                        <>
+                            <div className="alert alert-warning">
+                                {isLogin &&
+                                    `Désolé vous ne pouvez pas être sur plus de ${maxList} listes
                                 à la fois. Pour en créer une nouvelle, vous devez
                                 d'abord supprimer une liste.`}
-                            {!isLogin && (
-                                <>
+                                {!isLogin && (
                                     <span>
                                         {`Désolé vous ne pouvez pas créer plus
                                         de ${maxList} liste. Pour en
                                         créer une nouvelle, vous devez d'abord
                                         vous connecter.`}
                                     </span>
-                                    <AuthButtons />
-                                </>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                            {!isLogin && <AuthButtons />}
+                        </>
                     )}
                     {nbOfList < maxList && (
                         <div className="py-4">
