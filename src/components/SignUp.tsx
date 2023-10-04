@@ -90,36 +90,35 @@ const SignUp: React.FC<SignUpProps> = () => {
             error?.response.data.email.code === "validation_is_email"
         ) {
             setError("email", { message: "Email non valide." });
-        } else if (
-            isError
-        ) {
+        } else if (isError) {
             setError("email", { message: "Oops... Un problème est survenue." });
         }
-    }, [authMode, error?.response.data.email.code, isError, isSuccess, reset, setAuthFormState, setError]);
+    }, [
+        authMode,
+        error?.response.data.email.code,
+        isError,
+        isSuccess,
+        reset,
+        setAuthFormState,
+        setError,
+    ]);
 
     return (
         <form
-            className="flex flex-col w-80 gap-4 m-auto mt-10 relative"
+            className="flex flex-col w-full gap-4 m-auto  relative"
             onSubmit={handleSubmit(onSubmit)}
         >
-            <label
-                    onClick={() => setAuthFormState({ showAuthForm: false, authMode })}
-                    className="btn btn-sm btn-circle btn-primary absolute -right-0 -top-10
-                "
-                >
-                    ✕
-                </label>
             <input
                 type="text"
                 placeholder="Nom d'utilisateur"
-                className="input input-bordered w-full max-w-xs"
+                className="input input-bordered w-full"
                 {...register("username")}
             />
             <FormErrorMsg messageError={errors.username?.message} />
             <input
                 type="email"
                 placeholder="Adresse e-mail"
-                className="input input-bordered w-full max-w-xs"
+                className="input input-bordered w-full"
                 {...register("email")}
             />
             {/* TODO: errase the msg after error?.response.data.email.code . It is confuse when typing a valid email and the msg still here */}
@@ -127,7 +126,7 @@ const SignUp: React.FC<SignUpProps> = () => {
             <input
                 type="password"
                 placeholder="Mot de passe"
-                className="input input-bordered w-full max-w-xs"
+                className="input input-bordered w-full"
                 {...register("password")}
             />
             <FormErrorMsg messageError={errors.password?.message} />
