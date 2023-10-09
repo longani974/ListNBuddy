@@ -10,15 +10,15 @@ interface Article {
     list: Lists["id"];
 }
 
-export const useNewArticleAdder = (onSuccessFn) => {
+export const useNewArticleAdder = (onSuccessFn?: { (): void }) => {
     const addNewArticle = async (article: Article) => {
         return await pb.collection("articles").create(article);
     };
-    const mutateArticle = useMutation(addNewArticle,{
+    const mutateArticle = useMutation(addNewArticle, {
         onSuccess: () => {
-            console.log("article added")
-            onSuccessFn()
-        }
+            console.log("article added");
+            if (onSuccessFn) onSuccessFn();
+        },
     });
 
     return mutateArticle;

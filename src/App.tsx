@@ -78,8 +78,10 @@ export default function App() {
                         <div className="overflow-x-auto w-full">
                             {!isLogin && localStorageLists !== null && (
                                 // FIXME:
+                                                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                //@ts-ignore
                                 <Table
-                                    {...localStorageLists[indexListToShow]}
+                                    {...localStorageLists[indexListToShow] as Lists}
                                 />
                             )}
 

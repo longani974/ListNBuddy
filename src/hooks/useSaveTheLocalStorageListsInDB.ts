@@ -1,7 +1,7 @@
 import pb from "../lib/pocketbase";
 import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtoms";
-import { Lists } from "../types/dbPocketbasetypes";
+import { Article, Lists } from "../types/dbPocketbasetypes";
 import { useInvitateUser } from "./useInvitateUser";
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation } from "@tanstack/react-query";
@@ -82,7 +82,7 @@ export default function useSaveTheLocalStorageListsInDB() {
         return list;
     };
 
-    const handleAddNewArticle = async (data) => {
+    const handleAddNewArticle = async (data: { article: Article; listId: string; }) => {
         console.log(data);
         const { mutateAsync, isSuccess, isError, error, isLoading } =
             newArticleAdder;
