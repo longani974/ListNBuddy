@@ -19,10 +19,7 @@ const AdSense = ({ slot, format, currentPath }: AdSenseProps) => {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
 
         console.log(window.adsbygoogle)
-        return () => {
-            console.log("unmount adsense")
-            window.adsbygoogle = [];
-        };
+
     }, []);
 
     if (process.env.NODE_ENV === "development") {
