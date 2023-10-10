@@ -195,9 +195,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                             <InstallPWA />
                         </li>
                         <ul>
-                            <li>
                                 <Adsense client="ca-pub-1943996794458760" slot="9500691355" format="auto" />
-                            </li>
                         </ul>
                     </ul>
                 </div>
