@@ -11,6 +11,7 @@ import InstallPWA from "./InstallPWA";
 import useTheme from "../hooks/useTheme";
 import { authFormState } from "../atoms/showAuthFormAtoms";
 import useLogout from "../hooks/useLogout";
+import AdSense from "./ads/AdSense";
 
 type DrawerProps = {
     children: React.ReactNode;
@@ -32,7 +33,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const getInvitedLists = useCallback(async () => {
         {
             try {
-                console.log("getInvitedLists")
+                console.log("getInvitedLists");
                 const resultList = await pb
                     .collection("invitations")
                     .getFullList(200, {
@@ -143,9 +144,8 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                     onClick={() =>
                                         setAuthFormState({
                                             showAuthForm: true,
-                                            authMode : "signup",
+                                            authMode: "signup",
                                         })
-
                                     }
                                 >
                                     <label htmlFor="my-drawer-2">
@@ -157,7 +157,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                                     onClick={() =>
                                         setAuthFormState({
                                             showAuthForm: true,
-                                            authMode : "login",
+                                            authMode: "login",
                                         })
                                     }
                                 >
@@ -169,14 +169,13 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         )}
                         {isLogin && (
                             <li
-                            className="bg-transparent pt-1 pb-1"
-                            onClick={logout
-                            }
-                        >
-                            <label htmlFor="my-drawer-2">
-                                Se déconnecter
-                            </label>
-                        </li>
+                                className="bg-transparent pt-1 pb-1"
+                                onClick={logout}
+                            >
+                                <label htmlFor="my-drawer-2">
+                                    Se déconnecter
+                                </label>
+                            </li>
                         )}
 
                         <div className="form-control">
@@ -196,6 +195,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                             <InstallPWA />
                         </li>
                     </ul>
+                    <AdSense slot="9500691355" format="auto" />
                 </div>
             </div>
             {/* )} */}
