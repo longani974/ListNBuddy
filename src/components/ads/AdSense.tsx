@@ -17,9 +17,6 @@ const AdSense = ({ slot, format, currentPath }: AdSenseProps) => {
         if (window.adsbygoogle.length === 0) {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
         }
-        return () => {
-            window.adsbygoogle = [];
-        };
     }, []);
 
     if (process.env.NODE_ENV === "development") {
