@@ -196,7 +196,7 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         </li>
                         <ul>
                             <li>
-                                <AdSense slot="9500691355" format="auto" />
+                                <AdSense slot="9500691355" format="auto" currentPath="Drawer" />
                             </li>
                         </ul>
                     </ul>

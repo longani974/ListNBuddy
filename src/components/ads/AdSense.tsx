@@ -3,6 +3,7 @@ import { useEffect } from "react";
 interface AdSenseProps {
     slot: string;
     format: string;
+    currentPath: string;
 }
 
 declare global {
@@ -11,11 +12,17 @@ declare global {
     }
 }
 
-const AdSense = ({ slot, format }: AdSenseProps) => {
+const AdSense = ({ slot, format, currentPath }: AdSenseProps) => {
     useEffect(() => {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-            console.log("window.adsbygoogle")
-            console.log(window.adsbygoogle)
+        window.adsbygoogle = [];
+
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+
+        console.log(window.adsbygoogle)
+        return () => {
+            console.log("unmount adsense")
+            window.adsbygoogle = [];
+        };
     }, []);
 
     if (process.env.NODE_ENV === "development") {
@@ -24,6 +31,7 @@ const AdSense = ({ slot, format }: AdSenseProps) => {
     }
 
     return (
+        <div key={currentPath}>
             <ins
                 className="adsbygoogle"
                 style={{ display: "block" }}
@@ -31,6 +39,7 @@ const AdSense = ({ slot, format }: AdSenseProps) => {
                 data-ad-slot={slot}
                 data-ad-format={format}
             />
+        </div>
     );
 };
 
