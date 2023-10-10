@@ -27,7 +27,7 @@ const AdSense = ({ slot, format, currentPath }: AdSenseProps) => {
     }
 
     return (
-        <div key={currentPath}>
+        <div key={currentPath} className=" w-8 min-w-full ">
             <ins
                 className="adsbygoogle"
                 style={{ display: "block" }}
