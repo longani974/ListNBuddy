@@ -15,6 +15,8 @@ const AdSense = ({ slot, format }: AdSenseProps) => {
     useEffect(() => {
         if (window.adsbygoogle.length === 0) {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
+            console.log("window.adsbygoogle")
+            console.log(window.adsbygoogle)
         }
     }, []);
 

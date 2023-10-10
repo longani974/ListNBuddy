@@ -194,10 +194,11 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                         <li className="mt-2">
                             <InstallPWA />
                         </li>
-                        <AdSense
-                            slot="9500691355"
-                            format="auto"
-                        />
+                        <ul>
+                            <li>
+                                <AdSense slot="9500691355" format="auto" />
+                            </li>
+                        </ul>
                     </ul>
                 </div>
             </div>
