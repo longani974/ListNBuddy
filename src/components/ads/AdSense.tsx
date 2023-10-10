@@ -13,12 +13,9 @@ declare global {
 
 const AdSense = ({ slot, format }: AdSenseProps) => {
     useEffect(() => {
-        console.log(window.adsbygoogle)
-        if (window.adsbygoogle.length === 0) {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             console.log("window.adsbygoogle")
             console.log(window.adsbygoogle)
-        }
     }, []);
 
     if (process.env.NODE_ENV === "development") {
