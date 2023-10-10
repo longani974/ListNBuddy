@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ctrl/react-adsense": "^1.7.0",
     "@hookform/resolvers": "^3.1.1",
     "@tanstack/react-query": "^4.29.7",
     "pocketbase": "^0.16.0",
