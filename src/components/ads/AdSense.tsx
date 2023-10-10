@@ -14,7 +14,6 @@ declare global {
 
 const AdSense = ({ slot, format, currentPath }: AdSenseProps) => {
     useEffect(() => {
-        window.adsbygoogle = [];
 
         (window.adsbygoogle = window.adsbygoogle || []).push({});
 
