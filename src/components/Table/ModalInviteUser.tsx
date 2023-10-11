@@ -93,12 +93,14 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                         ✕
                     </label>
                     <h3 className="text-lg font-bold">Inviter une personne</h3>
-                    {!isOnline && isLogin && (
+                    {isLogin && (
                         <>
-                            <div className="alert alert-error">
-                                Vous êtes hors ligne, vous ne pouvez pas inviter
-                                une personne.
-                            </div>
+                            {!isOnline && (
+                                <div className="alert alert-error">
+                                    Vous êtes hors ligne, vous ne pouvez pas
+                                    inviter une personne.
+                                </div>
+                            )}
                             <div className="py-4">
                                 <form className="flex flex-col">
                                     <label className="label">
@@ -138,10 +140,11 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                     )}
                     {!isLogin && (
                         <>
-                        <div className="alert alert-warning">
-                            Vous devez être connecté pour inviter une personne.
-                        </div>
-                        <AuthButtons />
+                            <div className="alert alert-warning">
+                                Vous devez être connecté pour inviter une
+                                personne.
+                            </div>
+                            <AuthButtons />
                         </>
                     )}
                 </div>
