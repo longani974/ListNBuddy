@@ -12,6 +12,7 @@ import { isArticleFetchingState } from "../../atoms/isArticleLoading";
 import { onlineStatusState } from "../../atoms/onlineStatusAtoms";
 import { userState } from "../../atoms/userAtoms";
 import { useLocalStorage } from "usehooks-ts";
+import { Adsense } from "@ctrl/react-adsense";
 
 const Table: React.FC<Lists> = (data) => {
     const [articleData, setArticleData] = useState<Article | null>(null);
@@ -355,6 +356,12 @@ const Table: React.FC<Lists> = (data) => {
         </tr>
     </tfoot> */}
                     </table>
+
+                        <Adsense
+                            client="ca-pub-1943996794458760"
+                            slot="6761017378"
+                            format="auto"
+                        />
                     {(!!localStorageLists.length || data.id) && (
                         <div className="flex justify-end">
                             <div

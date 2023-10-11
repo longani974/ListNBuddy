@@ -11,7 +11,7 @@ import InstallPWA from "./InstallPWA";
 import useTheme from "../hooks/useTheme";
 import { authFormState } from "../atoms/showAuthFormAtoms";
 import useLogout from "../hooks/useLogout";
-import {Adsense} from '@ctrl/react-adsense';
+import { Adsense } from "@ctrl/react-adsense";
 
 type DrawerProps = {
     children: React.ReactNode;
@@ -195,7 +195,11 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
                             <InstallPWA />
                         </li>
                         <ul>
-                                <Adsense client="ca-pub-1943996794458760" slot="9500691355" format="auto" />
+                            <Adsense
+                                client="ca-pub-1943996794458760"
+                                slot="9500691355"
+                                format="auto"
+                            />
                         </ul>
                     </ul>
                 </div>
