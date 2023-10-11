@@ -22,6 +22,7 @@ import {
 import FormErrorMsg from "../FormErrorMsg";
 import { useClickModal } from "../../hooks/useClickModal";
 import { useLocalStorage } from "usehooks-ts";
+import { Adsense } from "@ctrl/react-adsense";
 
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
@@ -314,6 +315,14 @@ const ModalToModifieArticle: React.FC<ModalToModifieArticleProps> = ({
                                 </label>
                             </>
                         )}
+
+                        <div className="mt-4">
+                            <Adsense
+                                slot="2212194431"
+                                client="ca-pub-1943996794458760"
+                                format="auto"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

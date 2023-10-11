@@ -5,6 +5,7 @@ import { useRecoilValue } from "recoil";
 import { useState } from "react";
 import { userState } from "../../atoms/userAtoms";
 import AuthButtons from "../AuthButtons";
+import { Adsense } from "@ctrl/react-adsense";
 
 type ModalInviteUserProps = {
     //
@@ -40,13 +41,13 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                     <h3 className="text-lg font-bold">Mes invitations</h3>
                     {isLogin && (
                         <>
-                        {!isOnline && (
-                            <div className="alert alert-error">
-                                Vous êtes hors ligne, vous ne pouvez pas changer
-                                le status de vos invitations.
-                            </div>
-                        )}
-                            
+                            {!isOnline && (
+                                <div className="alert alert-error">
+                                    Vous êtes hors ligne, vous ne pouvez pas
+                                    changer le status de vos invitations.
+                                </div>
+                            )}
+
                             {showErrorAcceptInvitation && (
                                 <div className="alert alert-warning">
                                     Désolé vous ne pouvez pas être sur plus de 5
@@ -173,12 +174,18 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                     )}
                     {!isLogin && (
                         <>
-                        <div className="alert alert-warning">
-                            Vous devez être connecté pour recevoir des invitations.
-                        </div>
-                        <AuthButtons />
+                            <div className="alert alert-warning">
+                                Vous devez être connecté pour recevoir des
+                                invitations.
+                            </div>
+                            <AuthButtons />
                         </>
                     )}
+                    <Adsense
+                        slot="2212194431"
+                        client="ca-pub-1943996794458760"
+                        format="auto"
+                    />
                 </div>
             </div>
         </>

@@ -356,7 +356,7 @@ const Table: React.FC<Lists> = (data) => {
         </tr>
     </tfoot> */}
                     </table>
-                    <div className="e pr-2 pl-2">
+                    <div className="pr-2 pl-2">
                         <Adsense
                             client="ca-pub-1943996794458760"
                             slot="6761017378"

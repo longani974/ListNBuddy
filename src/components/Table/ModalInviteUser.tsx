@@ -18,6 +18,7 @@ import {
 import FormErrorMsg from "../FormErrorMsg";
 import { userState } from "../../atoms/userAtoms";
 import AuthButtons from "../AuthButtons";
+import { Adsense } from "@ctrl/react-adsense";
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
 yup.setLocale({
@@ -147,6 +148,11 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                             <AuthButtons />
                         </>
                     )}
+                    <Adsense
+                        slot="2212194431"
+                        client="ca-pub-1943996794458760"
+                        format="auto"
+                    />
                 </div>
             </div>
         </>

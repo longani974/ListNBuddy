@@ -8,6 +8,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { Lists } from "../../types/dbPocketbasetypes";
 import { useClickModal } from "../../hooks/useClickModal";
 import AuthButtons from "../AuthButtons";
+import { Adsense } from "@ctrl/react-adsense";
 
 type ModalMyListsProps = {
     //
@@ -269,6 +270,12 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                             </div>
                         </div>
                     )}
+
+                    <Adsense
+                        slot="2212194431"
+                        client="ca-pub-1943996794458760"
+                        format="auto"
+                    />
                 </div>
             </div>
         </>
