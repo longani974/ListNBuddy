@@ -5,7 +5,7 @@ import { useRecoilValue } from "recoil";
 import { useState } from "react";
 import { userState } from "../../atoms/userAtoms";
 import AuthButtons from "../AuthButtons";
-import { Adsense } from "@ctrl/react-adsense";
+// import { Adsense } from "@ctrl/react-adsense";
 
 type ModalInviteUserProps = {
     //
@@ -181,11 +181,11 @@ const ModalMyInvitations: React.FC<ModalInviteUserProps> = () => {
                             <AuthButtons />
                         </>
                     )}
-                    <Adsense
+                    {/* <Adsense
                         slot="2212194431"
                         client="ca-pub-1943996794458760"
                         format="auto"
-                    />
+                    /> */}
                 </div>
             </div>
         </>

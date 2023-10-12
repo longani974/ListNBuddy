@@ -24,7 +24,7 @@ import FormErrorMsg from "../FormErrorMsg";
 import { useClickModal } from "../../hooks/useClickModal";
 import { useLocalStorage } from "usehooks-ts";
 import AuthButtons from "../AuthButtons";
-import { Adsense } from "@ctrl/react-adsense";
+// import { Adsense } from "@ctrl/react-adsense";
 
 interface MaxNumberList {
     maxList: 1 | 5;
@@ -267,13 +267,13 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                             </label>
                         </div>
                     )}
-                    <div className="mt-4" >
+                    {/* <div className="mt-4" >
                         <Adsense
                             slot="2212194431"
                             client="ca-pub-1943996794458760"
                             format="auto"
                         />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </>
