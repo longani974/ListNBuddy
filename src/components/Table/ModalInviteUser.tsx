@@ -132,7 +132,7 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                                             l'inviter à utliser ListnBuddy ?
                                         </div>
                                         <a
-                                            href="sms:?body=Salut%20!%20%F0%9F%9B%92%20J'utilise%20ListnBuddy%2C%20une%20super%20appli%20pour%20partager%20nos%20listes%20de%20courses%20en%20temps%20r%C3%A9el.%20Rejoins-moi%20sur%20ListnBuddy%20en%20cliquant%20sur%20ce%20lien%3A%20https%3A%2F%2Fwww.app.listnbuddy.com.%20On%20peut%20g%C3%A9rer%20nos%20courses%20ensemble%20et%20voir%20les%20mises%20%C3%A0%20jour%20en%20direct.%20%F0%9F%8E%89"
+                                            href="sms:?body=Salut%20!%20Rejoins-moi%20sur%20ListnBuddy%20pour%20partager%20nos%20listes%20de%20courses!%20Inscris-toi%20et%20envoie-moi%20ton%20e-mail%20pour%20que%20je%20puisse%20t'envoyer%20une%20invitation:%20https%3A%2F%2Fapp.listnbuddy.com"
                                             target="_blank"
                                             rel="noreferrer"
                                             className="btn btn-primary mt-4 w-full"

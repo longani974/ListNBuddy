@@ -115,15 +115,6 @@ export default function App() {
                         <ModalMyNewList />
                     </div>
                     {/* )} */}
-
-                    <a
-                        href="sms:?body=Salut%20!%20%F0%9F%9B%92%20J'utilise%20ListnBuddy%2C%20une%20super%20appli%20pour%20partager%20nos%20listes%20de%20courses%20en%20temps%20r%C3%A9el.%20Rejoins-moi%20sur%20ListnBuddy%20en%20cliquant%20sur%20ce%20lien%3A%20https%3A%2F%2Fwww.app.listnbuddy.com.%20On%20peut%20g%C3%A9rer%20nos%20courses%20ensemble%20et%20voir%20les%20mises%20%C3%A0%20jour%20en%20direct.%20%F0%9F%8E%89"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-center text-gray-400"
-                    >
-                        Pocketbase
-                    </a>
                 </Drawer>
             )}
             {!onlineStatus && (
