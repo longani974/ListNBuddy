@@ -39,7 +39,12 @@ const Auth: React.FC<AuthProps> = () => {
                 onClick={async () => {
                     const userData = await pb
                         .collection("users")
-                        .authWithOAuth2({ provider: "google" })
+                        .authWithOAuth2({
+                            provider: "google",
+                            createData:{
+                                emailVisibility: true,
+                            }
+                        })
                         .then(() => {
                             afterSignInFlow();
                         })
