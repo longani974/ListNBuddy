@@ -17,6 +17,7 @@ import { onlineStatusState } from "./atoms/onlineStatusAtoms";
 import { useEffect } from "react";
 import ErrorToast from "./components/ErrorToast";
 import { useLocalStorage } from "usehooks-ts";
+import { useClickModal } from "./hooks/useClickModal";
 
 export default function App() {
     // const [localStorageLists, setLocalStorageLists] = useState<Lists []>([])
@@ -31,9 +32,19 @@ export default function App() {
     const { isLogin } = useRecoilValue(userState);
     const { indexListToShow } = useRecoilValue(listToShow);
     const { showAuthForm } = useRecoilValue(authFormState);
-    // const { clickModal } = useClickModal();
+    const { clickModal } = useClickModal();
 
     const [onlineStatus, setOnlineStatus] = useRecoilState(onlineStatusState);
+
+    // useEffect to get URLSearchParams
+    //TODO: A custom hook to get URLSearchParams like in ModalForgetPassword.tsx
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("newPassword");
+        if (token) {
+            clickModal("modalForgetPassword");
+        }
+    });
 
     // if localStorageLists is null, set it to an empty array in a useEffect
     useEffect(() => {
@@ -72,50 +83,53 @@ export default function App() {
             {showAuthForm && <ModalForgetPassword />}
 
             {!showAuthForm && (
-                <Drawer>
-                    {/* {isLogin && ( */}
-                    <div>
-                        <div className="overflow-x-auto w-full">
-                            {!isLogin && localStorageLists !== null && (
-                                // FIXME:
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                //@ts-ignore
-                                <Table
-                                    {...(localStorageLists[
-                                        indexListToShow
-                                    ] as Lists)}
-                                />
-                            )}
-
-                            {acceptInvitations.length > 0 && (
-                                // TODO: fix this
-                                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                //@ts-ignore
-                                <Table
-                                    {...(acceptInvitations[indexListToShow]
-                                        .expand.list as Lists)}
-                                />
-                            )}
-
-                            {!acceptInvitations.length &&
-                                !localStorageLists?.length && (
-                                    <label
-                                        htmlFor="myNewListModal"
-                                        // onClick={() => {
-                                        //     clickModal("myNewListModal");
-                                        // }}
-                                        className="btn"
-                                    >
-                                        Créer votre première liste
-                                    </label>
+                <>
+                    <Drawer>
+                        {/* {isLogin && ( */}
+                        <div>
+                            <div className="overflow-x-auto w-full">
+                                {!isLogin && localStorageLists !== null && (
+                                    // FIXME:
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    //@ts-ignore
+                                    <Table
+                                        {...(localStorageLists[
+                                            indexListToShow
+                                        ] as Lists)}
+                                    />
                                 )}
+
+                                {acceptInvitations.length > 0 && (
+                                    // TODO: fix this
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    //@ts-ignore
+                                    <Table
+                                        {...(acceptInvitations[indexListToShow]
+                                            .expand.list as Lists)}
+                                    />
+                                )}
+
+                                {!acceptInvitations.length &&
+                                    !localStorageLists?.length && (
+                                        <label
+                                            htmlFor="myNewListModal"
+                                            // onClick={() => {
+                                            //     clickModal("myNewListModal");
+                                            // }}
+                                            className="btn"
+                                        >
+                                            Créer votre première liste
+                                        </label>
+                                    )}
+                            </div>
+                            <ModalMyInvitations />
+                            <ModalMyLists />
+                            <ModalMyNewList />
                         </div>
-                        <ModalMyInvitations />
-                        <ModalMyLists />
-                        <ModalMyNewList />
-                    </div>
-                    {/* )} */}
-                </Drawer>
+                        {/* )} */}
+                    </Drawer>
+                    <ModalForgetPassword />
+                </>
             )}
             {!onlineStatus && (
                 <ErrorToast message="Vous avez perdu votre connection internet.Les fonctionnalitées habituelles ne sont plus disponibles" />

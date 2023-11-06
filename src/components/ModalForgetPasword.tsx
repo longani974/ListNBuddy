@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import pb from "../lib/pocketbase";
 import { useClickModal } from "../hooks/useClickModal";
 
@@ -22,12 +22,21 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
 
     const { clickModal } = useClickModal();
 
+    //TODO: A custom hook to get URLSearchParams like in App.tsx
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenNewPassword = urlParams.get("newPassword");
+        if (tokenNewPassword) {
+            setStape("newPassword");
+            setToken(tokenNewPassword);
+        }
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await pb
             .collection("users")
-            .requestVerification(email)
+            .requestPasswordReset(email)
             .then(() => {
                 setStape("newPassword");
             });
@@ -39,13 +48,11 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
         e.preventDefault();
         await pb
             .collection("users")
-            .confirmPasswordReset(token, newPassword, confirmNewPassword).then(() => {
+            .confirmPasswordReset(token, newPassword, confirmNewPassword)
+            .then(() => {
                 clickModal("modalForgetPassword");
-            }
-            );
+            });
     };
-
-    
 
     return (
         <>
@@ -61,6 +68,7 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
                         <label
                             htmlFor="modalForgetPassword"
                             className="btn btn-sm btn-circle absolute right-2 top-2"
+                            onClick={() => setStape("passwordForget")}
                         >
                             ✕
                         </label>
@@ -109,12 +117,12 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
                                         setConfirmNewPassword(e.target.value)
                                     }
                                 />
-                                <input
+                                {/* <input
                                     type="text"
                                     placeholder="Ticket de vérification"
                                     className="input input-bordered w-full max-w-xs"
                                     onChange={(e) => setToken(e.target.value)}
-                                />
+                                /> */}
                                 <button
                                     type="submit"
                                     className={`btn btn-primary`}
