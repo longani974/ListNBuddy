@@ -19,6 +19,7 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [token, setToken] = useState("");
     const [stape, setStape] = useState<Stape>("passwordForget");
+    const [showMessageCheckEmail, setShowMessageCheckEmail] = useState(false);
 
     const { clickModal } = useClickModal();
 
@@ -38,7 +39,7 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
             .collection("users")
             .requestPasswordReset(email)
             .then(() => {
-                setStape("newPassword");
+                setShowMessageCheckEmail(true);
             });
     };
 
@@ -77,25 +78,34 @@ const ModalForgetPassword: React.FC<ModalForgetPasswordProps> = () => {
                                 ? "Mot de passe oublié"
                                 : "Nouveau mot de passe"}
                         </h3>
-                        {stape === "passwordForget" && (
-                            <form
-                                className="flex flex-col w-80 gap-4 m-auto mt-10"
-                                onSubmit={(e) => handleSubmit(e)}
-                            >
-                                <input
-                                    type="email"
-                                    placeholder="Adresse e-mail"
-                                    className="input input-bordered w-full max-w-xs"
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                                <button
-                                    type="submit"
-                                    className={`btn btn-primary`}
-                                >
-                                    Demande de réinitialisation
-                                </button>
-                            </form>
+                        {showMessageCheckEmail && (
+                            <p>
+                                Nous vous avons envoyé un email avec le lien
+                                pour changer de mot de passe.
+                            </p>
                         )}
+                        {stape === "passwordForget" &&
+                            !showMessageCheckEmail && (
+                                <form
+                                    className="flex flex-col w-80 gap-4 m-auto mt-10"
+                                    onSubmit={(e) => handleSubmit(e)}
+                                >
+                                    <input
+                                        type="email"
+                                        placeholder="Adresse e-mail"
+                                        className="input input-bordered w-full max-w-xs"
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
+                                    />
+                                    <button
+                                        type="submit"
+                                        className={`btn btn-primary`}
+                                    >
+                                        Demande de réinitialisation
+                                    </button>
+                                </form>
+                            )}
                         {stape === "newPassword" && (
                             <form
                                 className="flex flex-col w-80 gap-4 m-auto mt-10"
