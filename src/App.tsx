@@ -44,7 +44,7 @@ export default function App() {
         if (token) {
             clickModal("modalForgetPassword");
         }
-    });
+    },[clickModal]);
 
     // if localStorageLists is null, set it to an empty array in a useEffect
     useEffect(() => {
