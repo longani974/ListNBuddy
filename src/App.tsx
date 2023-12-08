@@ -11,7 +11,7 @@ import useInvitations from "./hooks/useInvitations";
 import ModalMyLists from "./components/Table/ModalMyLists";
 import { listToShow } from "./atoms/listToShow";
 import ModalForgetPassword from "./components/ModalForgetPasword";
-import { Article, Lists } from "./types/dbPocketbasetypes";
+import { Lists } from "./types/dbPocketbasetypes";
 import ModalMyNewList, {
     MaxNumberList,
 } from "./components/Table/ModalMyNewList";
@@ -22,7 +22,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { useClickModal } from "./hooks/useClickModal";
 import pb from "./lib/pocketbase";
 import { useMutation } from "@tanstack/react-query";
-import { useInvitateUser } from "./hooks/useInvitateUser";
+// import { useInvitateUser } from "./hooks/useInvitateUser";
 import { useNewArticleAdder } from "./hooks/useNewArticleAdder";
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -45,14 +45,14 @@ export default function App() {
 
     const [onlineStatus, setOnlineStatus] = useRecoilState(onlineStatusState);
     const [recipesToken, setRecipesToken] = useState<string | null>(null);
-    const [ingredients, setIngredients] = useState();
+    const [ingredients, setIngredients] = useState<{name:string, quantity:string}[]>();
     const [idList, setIdList] = useState<string>("");
     const [maxList, setMaxList] = useState<MaxNumberList["maxList"]>(1);
     const [nbOfList, setNbOfList] = useState<number>(0);
 
-    const newArticleAdder = useNewArticleAdder(() =>
-        console.log("article added")
-    );
+    // const newArticleAdder = useNewArticleAdder(() =>
+    //     console.log("article added")
+    // );
 
     // useEffect to get URLSearchParams
     //TODO: A custom hook to get URLSearchParams like in ModalForgetPassword.tsx
@@ -277,6 +277,9 @@ export default function App() {
             }
         };
         fetchData();
+        // TODO: FIX this:
+            // We don't pass handleAddNewList as depedency to avoid multiple creation of lis
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [clickModal, maxList, nbOfList, recipesToken]);
 
     useEffect(() => {
