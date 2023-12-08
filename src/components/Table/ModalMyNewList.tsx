@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import pb from "../../lib/pocketbase";
 import { Lists } from "../../types/dbPocketbasetypes";
-import { useInvitateUser } from "../../hooks/useInvitateUser";
+// import { useInvitateUser } from "../../hooks/useInvitateUser";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { userState } from "../../atoms/userAtoms";
 import { listToShow } from "../../atoms/listToShow";
@@ -95,7 +95,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
 
     const setIndexListToShow = useSetRecoilState(listToShow);
 
-    const inviteUser = useInvitateUser();
+    // const inviteUser = useInvitateUser();
 
     const acceptInvitations = useInvitations("accept");
 
