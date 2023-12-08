@@ -18,6 +18,8 @@ const RealtimeListener: React.FC<RealtimeListenerProps> = () => {
     const isSubscribed = useRef(false); // Créer un useRef pour vérifier si vous êtes déjà abonné ou non
 
     useEffect(() => {
+        console.log(indexListToShow)
+        console.log(acceptInvitations)
         setListId(acceptInvitations[indexListToShow]?.list);
         return () => {
             console.log("unmount");

@@ -26,7 +26,7 @@ import { useLocalStorage } from "usehooks-ts";
 import AuthButtons from "../AuthButtons";
 // import { Adsense } from "@ctrl/react-adsense";
 
-interface MaxNumberList {
+export interface MaxNumberList {
     maxList: 1 | 5;
 }
 
@@ -128,8 +128,11 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     }, [acceptInvitations, idList, setIndexListToShow]);
 
     const mutation = useMutation(createList, {
-        onSuccess: () => {
-            console.log("success mutation createList");
+        onSuccess: (res) => {
+            setIdList(res?.id)
+            reset();
+            clickModal("")
+            clickModal("myNewListModal");
         },
         onError: () => {
             console.log("error mutation createList");
@@ -146,6 +149,8 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         // Create a list in the local storage if the user is offline
         if (!isLogin || (!isLogin && !isOnline)) {
             clickModal("myNewListModal");
+            console.log("modal2")
+
             // FIXME: the setTimeout is used to wait for the modal to close because ii take time to close and
             // the state in local storage update before the modal is closed so we can see an warning message for a short time
             setTimeout(() => {
@@ -156,17 +161,19 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
             return;
         }
         const list = await mutation.mutateAsync({ listName, userId });
-        await inviteUser
-            .mutateAsync({
-                id: list.id,
-                email: pb.authStore?.model?.email,
-                status: "accept",
-            })
-            .then(() => {
-                setIdList(list.id);
-                reset();
-                clickModal("myNewListModal");
-            });
+        // await inviteUser
+        //     .mutateAsync({
+        //         id: list.id,
+        //         email: pb.authStore?.model?.email,
+        //         status: "accept",
+        //     })
+        //     .then(() => {
+        //         setIdList(list.id);
+        //         reset();
+        //         clickModal("myNewListModal");
+        //         console.log("modal1")
+        //     });
+        return list
     };
 
     useEffect(() => {

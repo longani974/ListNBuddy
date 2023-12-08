@@ -12,6 +12,7 @@ export default function useInvitations(filterStatus: InvitationStatus) {
     >([]);
     const { invitations } = useRecoilValue(invitationState);
 
+
     useEffect(() => {
         setFilteredInvitations([
             ...invitations.filter(
