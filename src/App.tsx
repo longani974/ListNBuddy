@@ -22,6 +22,7 @@ import { useLocalStorage } from "usehooks-ts";
 import { useClickModal } from "./hooks/useClickModal";
 import pb from "./lib/pocketbase";
 import { useMutation } from "@tanstack/react-query";
+import { Record } from "pocketbase";
 // import { useInvitateUser } from "./hooks/useInvitateUser";
 // import { useNewArticleAdder } from "./hooks/useNewArticleAdder";
 const urlParams = new URLSearchParams(window.location.search);
@@ -45,10 +46,12 @@ export default function App() {
 
     const [onlineStatus, setOnlineStatus] = useRecoilState(onlineStatusState);
     const [recipesToken, setRecipesToken] = useState<string | null>(null);
-    const [ingredients, setIngredients] = useState<{name:string, quantity:string}[]>();
+    const [ingredients, setIngredients] =
+        useState<{ name: string; quantity: string }[]>();
     const [idList, setIdList] = useState<string>("");
     const [maxList, setMaxList] = useState<MaxNumberList["maxList"]>(1);
     const [nbOfList, setNbOfList] = useState<number>(0);
+    const [recipeExist, setRecipeExist] = useState<boolean>(false);
 
     // const newArticleAdder = useNewArticleAdder(() =>
     //     console.log("article added")
@@ -63,6 +66,10 @@ export default function App() {
             clickModal("modalForgetPassword");
         }
     }, [clickModal]);
+
+    useEffect(() => {
+        if (recipeExist) clickModal("recipeExistModal");
+    }, [clickModal, recipeExist]);
 
     useEffect(() => {
         const token = urlParams.get("recipes");
@@ -82,15 +89,9 @@ export default function App() {
     }, [isLogin, acceptInvitations.length, localStorageLists.length]);
 
     useEffect(() => {
-        console.log(
-            "fdqsssssssssssssssssssssssssfjljkljlkjrelmhflzenpvt rchzoinurzeuivnpdsotvhi"
-        );
-        console.log(idList);
         const index = acceptInvitations.findIndex(
             (invitation) => invitation.list === idList
         );
-        console.log(index)
-        console.log(acceptInvitations);
         if (index > -1) {
             setIndexListToShow({
                 indexListToShow: index,
@@ -99,13 +100,13 @@ export default function App() {
     }, [acceptInvitations, idList, setIndexListToShow]);
 
     const createListLocalStorage = useCallback(
-        (listName: string) => {
+        (listName: string, articles: Record[]) => {
             // Create a list in the local storage
             const list = {
                 id: Date.now().toString(),
                 name: listName,
                 createBy: "local",
-                expand: { articles: [] },
+                expand: { articles: articles },
             } as unknown as Lists;
             // const lists = JSON.parse(localStorage.getItem("lists") || "[]");
             const lists = localStorageLists || "[]";
@@ -133,7 +134,20 @@ export default function App() {
             fromRecipe: recipeId,
         };
 
-        const recordList = await pb.collection("lists").create(data);
+        const recordList = await pb
+            .collection("lists")
+            .create(data)
+            .catch((err) => {
+                if (
+                    err.message ===
+                    "Une correspondance a été trouvée. Annulation de la requête."
+                ) {
+                    setRecipeExist(true);
+                    throw new Error(
+                        "Une correspondance a été trouvée. Annulation de la requête."
+                    );
+                }
+            });
         return recordList as Lists;
     };
 
@@ -150,6 +164,7 @@ export default function App() {
     const handleAddNewList = async (data: {
         listName: string;
         recipeId: string;
+        ingredients: Record[];
     }) => {
         // TODO: use react-query
         // const list = await createList();
@@ -175,19 +190,17 @@ export default function App() {
             setIdList(acceptInvitations[foundIndex].expand.list.id);
             return;
         }
-        console.log("not return");
         // Create a list in the local storage if the user is offline
         if (!isLogin || (!isLogin && !onlineStatus)) {
             // FIXME: the setTimeout is used to wait for the modal to close because ii take time to close and
             // the state in local storage update before the modal is closed so we can see an warning message for a short time
             setTimeout(() => {
-                createListLocalStorage(listName);
+                createListLocalStorage(listName, data.ingredients);
             }, 200);
             window.history.pushState({}, "", window.location.pathname);
             return;
         }
 
-        console.log("START: LIST");
         const list = await mutation
             .mutateAsync({ listName, userId, recipeId })
             .then((res) => {
@@ -199,73 +212,49 @@ export default function App() {
         return list;
     };
 
-    // useEffect(() => {
-    //     if (recipesToken) {
-    //         await getRecipeFromId(recipesToken).then((data) => {
-    //             //check if recipes already in invitations
-    //             console.log("maybeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
-    //             if (data.expand.ingredients === undefined) return
-    //             console.log("yesaiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
-    //             const deepCopy = JSON.parse(
-    //                 JSON.stringify(data.expand.ingredients)
-    //             );
-    //             console.log(deepCopy);
-    //             // const ingredients = data.expand.ingredients
-    //             // console.log(ingredients)
-    //             if (nbOfList < maxList) {
-    //                 handleAddNewList({
-    //                     listName: data.name,
-    //                     recipeId: data.id,
-    //                 }).then(async (data) => {
-    //                     console.log("list adddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd")
-    //                     if (!data) return;
-
-    //                     urlParams.delete("recipes");
-    //                     window.history.pushState(
-    //                         {},
-    //                         "",
-    //                         window.location.pathname
-    //                     );
-    //                     setRecipesToken(null);
-    //                     setIngredients(deepCopy);
-    //                     data?.id && setIdList(data?.id);
-    //                 });
-    //             } else {
-    //                 clickModal("myNewListModal");
-    //             }
-    //         });
-    //     }
-    //     // TODO: FIX this:
-    //     // We don't pass handleAddNewList as depedency to avoid multiple creation of list
-    // }, [clickModal, maxList, nbOfList, recipesToken]);
-
-    
     useEffect(() => {
-        // const getRecipeFromId = async (recipeId) => {
-        //     const record = await pb.collection("recipes").getOne(recipeId, {
-        //         expand: "ingredients",
-        //     });
-        //     return record;
-        // };
         const fetchData = async () => {
             if (recipesToken) {
+                // TODO: Make a reusable function or useHook
+                // Check if we already download the recipe
+                let foundIndex = -1;
+                for (let i = 0; i < acceptInvitations.length; i++) {
+                    if (
+                        acceptInvitations[i].expand &&
+                        acceptInvitations[i].expand.list &&
+                        acceptInvitations[i].expand.list.fromRecipe ===
+                            recipesToken
+                    ) {
+                        foundIndex = i;
+                        break;
+                    }
+                }
+                if (foundIndex > -1) {
+                    alert("Vous avez déjà télécharger la recette!");
+                    setIdList(acceptInvitations[foundIndex].expand.list.id);
+                    return;
+                }
                 try {
                     const data = await getRecipeFromId(recipesToken);
-                    console.log(data)
                     if (data.expand.ingredients === undefined) return;
-                    console.log("greattttttttttttttttttttttttttttttttttttttttttttttttttttttttt")
-                    const deepCopy = JSON.parse(JSON.stringify(data.expand.ingredients));
+                    const deepCopy = JSON.parse(
+                        JSON.stringify(data.expand.ingredients)
+                    );
                     if (nbOfList < maxList) {
                         handleAddNewList({
                             listName: data.name,
                             recipeId: data.id,
+                            ingredients: data.expand.ingredients as Record[],
                         }).then(async (data) => {
                             if (!data) return;
                             urlParams.delete("recipes");
-                            window.history.pushState({}, "", window.location.pathname);
+                            window.history.pushState(
+                                {},
+                                "",
+                                window.location.pathname
+                            );
                             setRecipesToken(null);
                             setIngredients(deepCopy);
-                            console.log(data?.id)
                             data?.id && setIdList(data?.id);
                         });
                     } else {
@@ -278,22 +267,18 @@ export default function App() {
         };
         fetchData();
         // TODO: FIX this:
-            // We don't pass handleAddNewList as depedency to avoid multiple creation of lis
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [clickModal, maxList, nbOfList, recipesToken]);
+        // We don't pass handleAddNewList as depedency to avoid multiple creation of list
+        // Same for other we do need them
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [clickModal, maxList, recipesToken]);
 
     useEffect(() => {
-        console.log("addinnnngggggg dattaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        console.log(ingredients);
         if (ingredients === undefined) return;
         if (!ingredients.length) return;
-        console.log("gogogogogogogogogogo");
-    
+
         const addIngredients = async () => {
             for (let i = 0; i < ingredients.length; i++) {
-                console.log(i);
-                console.log(ingredients[i].name);
-    
+
                 const data = {
                     name: ingredients[i].name,
                     quantity: ingredients[i].quantity,
@@ -301,24 +286,18 @@ export default function App() {
                     addBy: userId,
                     list: idList,
                 };
-    
+
                 try {
-                    console.log(data)
                     const res = await pb.collection("articles").create(data);
-                    console.log(res);
                 } catch (err) {
                     console.warn(err);
-                } finally {
-                    console.log("e");
                 }
-    
-                console.log("yyyyyyyyyooooooooooooooooooooooollllllllllllllllllllllllllloooooooooooo");
+
             }
         };
-    
+
         addIngredients();
     }, [idList, ingredients, userId]);
-    
 
     const getRecipeFromId = async (recipeId: string) => {
         const record = await pb.collection("recipes").getOne(recipeId, {
@@ -410,6 +389,33 @@ export default function App() {
                         {/* )} */}
                     </Drawer>
                     <ModalForgetPassword />
+                    <>
+                        {/* Put this part before </body> tag */}
+                        <>
+                            <input
+                                type="checkbox"
+                                id="recipeExistModal"
+                                className="modal-toggle"
+                            />
+                            <div className="modal">
+                                <div className="modal-box relative">
+                                    <label
+                                        htmlFor="recipeExistModal"
+                                        className="btn btn-sm btn-circle absolute right-2 top-2"
+                                    >
+                                        ✕
+                                    </label>
+                                    <h3 className="text-lg font-bold">
+                                        Vous avez déjà télécharger cette recette
+                                    </h3>
+
+                                    <div className="alert alert-warning">
+                                        {`Cette recette est déjà présente soit dans vos listes ou dans vos invitations. Si vous souhaitez tout de même la télécharger à nouveau (et effacer les modifications apportées) vous devez la supprimer avant et réesseyer ensuite. `}
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    </>
                 </>
             )}
             {!onlineStatus && (
