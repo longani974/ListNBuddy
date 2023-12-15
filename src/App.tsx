@@ -288,7 +288,7 @@ export default function App() {
                 };
 
                 try {
-                    const res = await pb.collection("articles").create(data);
+                    await pb.collection("articles").create(data);
                 } catch (err) {
                     console.warn(err);
                 }
