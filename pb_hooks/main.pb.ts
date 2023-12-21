@@ -9,13 +9,13 @@ onRecordBeforeCreateRequest((e) => {
     const userId = authRecord.id;
 
     // Assurez-vous que fromRecipeId et userId ne sont pas vides
-    if (!fromRecipeId || !userId) {
+    if (!userId) {
         throw new Error("fromRecipeId ou userId est vide");
     }
     // Étape 2: Rechercher dans la collection 'lists'
     const arrayOfLists = $app.dao()?.findRecordsByFilter(
         "lists",
-        `fromRecipe.id = "${fromRecipeId}"`,
+        `fromRecipe.id = "${fromRecipeId || null}"`,
         "", // Tri (vide si non spécifié)
         0 // Pas de limite spécifique
     );
