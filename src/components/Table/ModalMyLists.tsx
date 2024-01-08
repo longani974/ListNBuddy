@@ -202,6 +202,7 @@ const ModalMyLists: React.FC<ModalMyListsProps> = () => {
                                                                 indexListToShow:
                                                                     index,
                                                             });
+                                                            clickModal("myListsModal")
                                                         }}
                                                     >
                                                         <svg
