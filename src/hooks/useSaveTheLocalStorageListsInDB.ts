@@ -44,7 +44,7 @@ export default function useSaveTheLocalStorageListsInDB() {
     const newListMutation = useMutation(createList, {
         onSuccess: async (list) => {
             // The backend is doing this job
-            
+
             // const { totalItems } = await pb
             //     .collection("invitations")
             //     .getList(1, 1, {
@@ -63,6 +63,7 @@ export default function useSaveTheLocalStorageListsInDB() {
             // console.log("second two")
             await addAllArticles(list.id);
             setLocalStorageLists([]);
+            window.location.reload();
         },
         onError: () => {
             console.log("error mutation createList from here");
