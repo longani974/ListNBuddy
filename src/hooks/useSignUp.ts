@@ -12,6 +12,9 @@ export default function useSignUP() {
         email,
         password,
     }: SignUpFormInput): Promise<Users> {
+        console.log(username)
+        console.log(email)
+        console.log(password)
         const userData = await pb.collection("users").create({
             username,
             email,

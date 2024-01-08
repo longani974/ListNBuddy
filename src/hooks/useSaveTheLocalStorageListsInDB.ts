@@ -2,7 +2,7 @@ import pb from "../lib/pocketbase";
 import { useRecoilState } from "recoil";
 import { userState } from "../atoms/userAtoms";
 import { Article, Lists } from "../types/dbPocketbasetypes";
-import { useInvitateUser } from "./useInvitateUser";
+// import { useInvitateUser } from "./useInvitateUser"; // The backend is doing this job
 import { useLocalStorage } from "usehooks-ts";
 import { useMutation } from "@tanstack/react-query";
 import { useNewArticleAdder } from "./useNewArticleAdder";
@@ -14,7 +14,7 @@ export default function useSaveTheLocalStorageListsInDB() {
 
     const acceptedInvitations = useInvitations("accept");
 
-    const inviteUser = useInvitateUser();
+    // const inviteUser = useInvitateUser(); // The backend is doing this job
     const newArticleAdder = useNewArticleAdder(() =>
         console.log("article added")
     );
@@ -43,27 +43,29 @@ export default function useSaveTheLocalStorageListsInDB() {
 
     const newListMutation = useMutation(createList, {
         onSuccess: async (list) => {
-            const { totalItems } = await pb
-                .collection("invitations")
-                .getList(1, 1, {
-                    sort: "created",
-                    filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
-                    fields: "id",
-                    $autoCancel: false,
-                });
-            const status = totalItems < 5 ? "accept" : "waiting";
+            // The backend is doing this job
+            
+            // const { totalItems } = await pb
+            //     .collection("invitations")
+            //     .getList(1, 1, {
+            //         sort: "created",
+            //         filter: `user.id = "${pb.authStore.model?.id}" && status = "accept"`,
+            //         fields: "id",
+            //         $autoCancel: false,
+            //     });
+            // const status = totalItems < 5 ? "accept" : "waiting";
 
-            await inviteUser.mutateAsync({
-                id: list.id,
-                email: pb.authStore?.model?.email,
-                status: status,
-            });
-
+            // await inviteUser.mutateAsync({
+            //     id: list.id,
+            //     email: pb.authStore?.model?.email,
+            //     status: status,
+            // }).then(()=>(console.log("first one")))
+            // console.log("second two")
             await addAllArticles(list.id);
             setLocalStorageLists([]);
         },
         onError: () => {
-            console.log("error mutation createList");
+            console.log("error mutation createList from here");
         },
     });
 
