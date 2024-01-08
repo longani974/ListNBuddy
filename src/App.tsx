@@ -186,7 +186,7 @@ export default function App() {
             }
         }
         if (foundIndex > -1) {
-            alert("Vous avez déjà télécharger la recette!");
+            alert("Vous avez déjà téléchargé la recette!");
             setIdList(acceptInvitations[foundIndex].expand.list.id);
             return;
         }
@@ -230,7 +230,7 @@ export default function App() {
                     }
                 }
                 if (foundIndex > -1) {
-                    alert("Vous avez déjà télécharger la recette!");
+                    alert("Vous avez déjà téléchargé la recette!");
                     setIdList(acceptInvitations[foundIndex].expand.list.id);
                     return;
                 }
@@ -406,11 +406,11 @@ export default function App() {
                                         ✕
                                     </label>
                                     <h3 className="text-lg font-bold">
-                                        Vous avez déjà télécharger cette recette
+                                        Vous avez déjà téléchargé cette recette
                                     </h3>
 
                                     <div className="alert alert-warning">
-                                        {`Cette recette est déjà présente soit dans vos listes ou dans vos invitations. Si vous souhaitez tout de même la télécharger à nouveau (et effacer les modifications apportées) vous devez la supprimer avant et réesseyer ensuite. `}
+                                        {`Cette recette existe déjà dans vos listes ou invitations. Pour la télécharger à nouveau et remplacer les modifications existantes, veuillez d'abord la supprimer puis réessayer.`}
                                     </div>
                                 </div>
                             </div>
