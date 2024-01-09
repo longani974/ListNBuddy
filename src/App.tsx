@@ -143,6 +143,23 @@ export default function App() {
                     "Une correspondance a été trouvée. Annulation de la requête."
                 ) {
                     setRecipeExist(true);
+                    let foundIndex = -1;
+                    for (let i = 0; i < acceptInvitations.length; i++) {
+                        if (
+                            acceptInvitations[i].expand &&
+                            acceptInvitations[i].expand.list &&
+                            acceptInvitations[i].expand.list.fromRecipe ===
+                                recipesToken
+                        ) {
+                            foundIndex = i;
+                            break;
+                        }
+                    }
+                    if (foundIndex > -1) {
+                        setIdList(acceptInvitations[foundIndex].expand.list.id);
+                        return;
+                    }
+
                     throw new Error(
                         "Une correspondance a été trouvée. Annulation de la requête."
                     );
@@ -278,7 +295,6 @@ export default function App() {
 
         const addIngredients = async () => {
             for (let i = 0; i < ingredients.length; i++) {
-
                 const data = {
                     name: ingredients[i].name,
                     quantity: ingredients[i].quantity,
@@ -292,7 +308,6 @@ export default function App() {
                 } catch (err) {
                     console.warn(err);
                 }
-
             }
         };
 
