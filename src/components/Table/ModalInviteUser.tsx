@@ -18,6 +18,7 @@ import {
 // import FormErrorMsg from "../FormErrorMsg";
 import { userState } from "../../atoms/userAtoms";
 import AuthButtons from "../AuthButtons";
+import { useClickModal } from "../../hooks/useClickModal";
 // import { Adsense } from "@ctrl/react-adsense";
 // Set yup locale for validation error messages
 // We use the yupTranslate file to translate the error messages
@@ -61,6 +62,8 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
         isError,
         error,
     } = useInvitateUser();
+
+    const { clickModal:clickBtn } = useClickModal();
 
     const handleInviteUser: SubmitHandler<FormData> = (data) => {
         listModifier({ ...data, id: listId, status: "waiting" });
@@ -113,6 +116,12 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                                         type="email"
                                         placeholder="Email"
                                         className="input input-bordered w-100%"
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                clickBtn("inviteUserbtn")
+                                            }
+                                        }}
                                         {...register("email")}
 
                                         // value={email}
@@ -154,6 +163,7 @@ const ModalInviteUser: React.FC<ModalInviteUserProps> = ({ listId }) => {
                                     "Pas d'utilisateur avec cette email" && (
                                     <label
                                         htmlFor="inviteUserModal"
+                                        id="inviteUserbtn"
                                         className={`btn btn-primary mt-4 w-full ${
                                             (!isOnline || isLoading) &&
                                             "btn-disabled"

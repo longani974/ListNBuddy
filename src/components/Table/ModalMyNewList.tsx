@@ -84,6 +84,8 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
     const [nbOfList, setNbOfList] = useState<number>(0);
     const { userId, isLogin } = useRecoilValue(userState);
 
+    const { clickModal:clickBtn } = useClickModal();
+
     const { clickModal } = useClickModal();
 
     const {
@@ -203,7 +205,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
             <input
                 type="checkbox"
                 id="myNewListModal"
-                className="modal-toggle"
+                className="modal-toggle"       
             />
             <div className="modal">
                 <div className="modal-box relative">
@@ -251,6 +253,12 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                                     type="text"
                                     placeholder="Liste"
                                     className="input input-bordered w-100%"
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            clickBtn("newListBtn")
+                                        }
+                                    }}
                                     {...register("listName")}
                                 />
                                 <FormErrorMsg
@@ -259,6 +267,7 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
                             </form>
                             <label
                                 htmlFor="myNewListModal"
+                                id="newListBtn"
                                 className={`btn btn-primary mt-4 w-full ${
                                     (!isOnline ||
                                         isLoading ||
