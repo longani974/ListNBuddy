@@ -18,12 +18,8 @@ const RealtimeListener: React.FC<RealtimeListenerProps> = () => {
     const isSubscribed = useRef(false); // Créer un useRef pour vérifier si vous êtes déjà abonné ou non
 
     useEffect(() => {
-        console.log(indexListToShow)
-        console.log(acceptInvitations)
+        // console.warn(acceptInvitations[indexListToShow]?.list)
         setListId(acceptInvitations[indexListToShow]?.list);
-        return () => {
-            console.log("unmount");
-        };
     }, [acceptInvitations, indexListToShow]);
 
     // useRecoilCallback is used here to ensure that the callback function always has the most recent Recoil state, even if it's used asynchronously.

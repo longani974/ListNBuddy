@@ -178,10 +178,6 @@ const ModalMyNewList: React.FC<ModalMyNewListProps> = () => {
         return list
     };
 
-    useEffect(() => {
-        console.log(isLoading);
-    }, [isLoading]);
-
     // Create a list in the lodal storage if the user is offline
     const createListLocalStorage = (listName: string) => {
         // Create a list in the local storage

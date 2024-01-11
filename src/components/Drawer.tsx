@@ -33,7 +33,6 @@ const Drawer: React.FC<DrawerProps> = ({ children }) => {
     const getInvitedLists = useCallback(async () => {
         {
             try {
-                console.log("getInvitedLists");
                 const resultList = await pb
                     .collection("invitations")
                     .getFullList(200, {

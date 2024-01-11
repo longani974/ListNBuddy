@@ -99,6 +99,12 @@ export default function App() {
         }
     }, [acceptInvitations, idList, setIndexListToShow]);
 
+    useEffect(() => {
+        // console.warn("accepte invitations changed")
+        // console.log(idList)
+    }, [acceptInvitations, idList]);
+
+
     const createListLocalStorage = useCallback(
         (listName: string, articles: Record[]) => {
             // Create a list in the local storage
